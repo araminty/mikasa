@@ -5,6 +5,14 @@ go-to: menu
 
 = The Library
 
+@menu
+
+- @guilds_library: Guild Descriptions
+- @demographics_library: Demographic Descriptions
+- @backSpecialScene: Exit library.
+
+@demographics_library
+
 Demographics of Mikasa in 2300:
 
 First Wave: Communities that formed around the cliques of original settlers from Japan, the EU and USA.  The most prosperous non corporate group. Approximately 1.9 million people
@@ -21,7 +29,25 @@ Otherworlders: People who came from the Otherworld through portals or other magi
 
 Shareholders: Literally those holding shares in the big three but used as a catch all term to describe anyone of significant wealth.  Besides the permanent residents who are members of the ownership class, there is a constant churn of wealthy travellers on the space liners that stop at Mikasa and the other four way stations on the way between the inner and outer solar system.  Approximately 50,000 permanent residents, 150,000 off world stakeholders with voting rights in absentia and a fluctuating visiting population around 50,000 people.
 
+@guilds_library
 
-@menu
+The government of Mikasa recognizes 8 different trade organizations, informally called "guilds".  These city government charter awards about a third of the government council voting power to the representatives of these groups.  The groups are:
+
+Mikasan Financial Organization "Gold Guild": Due to Mikasa's history as a tax haven, there is a robust financial services and corporate arbitration sector.  There are only a few thousand members of this trade organization, they heavily reflect corporate interests although not quite to the extent of the executive council.  Unlike the executive council, this organization represents a large number of corporate subsidiaries, not just the Big Three.
+
+Mikasan Medical Association "Pink Guild": Although Mikasa's medical sector is anything but comprehensive, there is a thriving market for both cybernet augmentation (which is considerably less regulated then in other jurisdictions) and "boutique" medical services.  This group tends to be upper middle class and tends to be one of the more progressive elements in the council.  Tens of thousands of voting members.
+
+Mikasan Buisiness Association "Platinum Guild": Ostensibly to represent small business interests, this organization tends to be co-opted by corporations, usually the Big Three.  A bit under 1000 voting members.
+
+Federated Professional Associations of Mikasa "Blue Guild": A trade association of industrial trades which provides certifications and apprenticeships in fields where the corporations need a trustworthy outside certification.  Tens of thousands of voting members.
+
+Mikasan Federation of Trade Unions "White Guild": A "Company Union" of corporate (mostly white collar) workers, over 80% have lifetime contracts with the Big Three and most of the remainder are in Big Three employment.  This group lacks any ability to organize collective action but the corporations sometimes find it useful to tolerate limited criticism from this group.  Hundreds of thousands of voting members but turnout tends to be extremely low.
+
+Independent Contractors Association "Grey Guild": Originally this group was an association of Aurora Bank employees.  Strangely when Aurora Bank disappeared, this organization did not.  It still operates a headquarters in the Aurora district and tends to be a receptive forum for the use of independent contractors, a group that can range from luxury spacecraft detailers to professional assassins.  The number of voting members of this secretive organization is unknown and thanks to their ties to the cities best intelligence operations their membership is unlikely to be known anytime soon.
+
+Public Image Council "Green Guild": Something much closer to a true small business organization then the Platinum Guild, this group represents hospitality, retail and longshore interests.  Tens of thousands of voting members.
+
+Public Sector Union "Biege Guild": The asssociation of public sector employees, the largest union with collective bargaining powers in the city by far.  Tens of thousands of voting members.
+
 
 - @backSpecialScene: Exit library.
