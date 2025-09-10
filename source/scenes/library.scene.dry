@@ -9,6 +9,7 @@ go-to: menu
 
 - @guilds_library: Guild Descriptions
 - @demographics_library: Demographic Descriptions
+- @districts_library: District Descriptions
 - @backSpecialScene: Exit library.
 
 @demographics_library
@@ -28,6 +29,9 @@ Clans of the Mother: Isolationist groups that live disconnected from the city in
 Otherworlders: People who came from the Otherworld through portals or other magical means of transport.  The largest groups are Humans, Fae and Orcs.  Many members of this group are ill equipped to navigate a modern society and literacy rates let alone computer literacy rates are very low.  However this group does have by far the largest proportion of those trained in the magical arts. Approximately 100 thousand people
 
 Shareholders: Literally those holding shares in the big three but used as a catch all term to describe anyone of significant wealth.  Besides the permanent residents who are members of the ownership class, there is a constant churn of wealthy travellers on the space liners that stop at Mikasa and the other four way stations on the way between the inner and outer solar system.  Approximately 50,000 permanent residents, 150,000 off world stakeholders with voting rights in absentia and a fluctuating visiting population around 50,000 people.
+
+- @menu
+- @backSpecialScene: Exit library.
 
 @guilds_library
 
@@ -49,5 +53,27 @@ Public Image Council "Green Guild": Something much closer to a true small busine
 
 Public Sector Union "Biege Guild": The asssociation of public sector employees, the largest union with collective bargaining powers in the city by far.  Tens of thousands of voting members.
 
+- @menu
+- @backSpecialScene: Exit library.
 
+
+@districts_library
+
+The Docks: The oldest and wealthiest part of Mikasa, clustered around the tethers which give Mikasa it's role as a trade hub.  Both wealthy Mikasans and expatriates live here and it has a bustling industry of luxury services.
+
+Aurora: The eyeline of Aurora is dominated by the forbidden Aurora Pyramid, headquarters of the Aurora bank before it's mysterious dissolution.  The other corporations have mostly been kept out of this district by the independent minded communities of the area.  Some of the solar system's most elite high end craftspeople and services operate out of the Aurora district yet there are also places (such as the Aurora Pyramid) that have been abandoned to vagrants.  This district has the second most independent communes after the Deeps.
+
+The Pits: The rusted out remnents of Mikasa's mining and refining industries long ago.  Today it's a brutal warzone and most people here are those with nowhere else to go.
+
+The Deeps: Originally an independent city from Mikasa, the Deeps still resent their annexation.  This community is highly insular and highly independent.  The Deeps will do things differently from Mikasa simply for the sake of doing things differently, for instance they keep their standard gravity plate orientation 165 degrees off station standard orientation, meaning all travel into or out of the Deeps requires a flip.
+
+The Vats: Dominated by the corporate compounds of the megacorp Community Soylent.  Large export industry of GMO foodstuffs (guarenteed to put a smile on your face thanks to psychoactive bacterial cultures).  Since the conflict between Community Soylent and the Magrail Combine, this district has been moving towards a bunker mentality, structures are fortified and the population is highly suspicious of outsiders.
+
+Limelight: The home turf of the electronics powerhouse Brazos Zaibatsu.  Cheap digital displays cover every available surface in this district, constantly playing public domain media and corporate propoganda.
+
+The Railyard: Dominated by the corporate compounds of the megacorp Magrail Combine.  The best armed district in Mikasa, they take a pride in displaying the signiture product of their flagship corporation.  Their open carry culture tends to make outsiders stay away.
+
+The Outside: small independent communities call The Clans of The Mother inhabit tunnels throughout Mikasa.  Their communities are seperated by sections of vacuum and operate autonomously.  They make The Deeps look cosmopolitan by comparison and dont accept outside currency.  The clans are unusually proficient at homegrown AI they call Guardian Spirits but are homocidally suspicious of artificial intelligence that they did not make themselves.
+
+- @menu
 - @backSpecialScene: Exit library.
