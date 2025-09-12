@@ -16,11 +16,11 @@ Naturally Canterbary Logistics is trying to get the Dundalk out of port before t
 @justice_reform
 title: Purge corruption from our legal system
 on-arrival: budget += 2; progress_meme_strength += 1;
-go-to: after_message
 
 Attacking the corrupt judiciary is a safe course of action right now. The guilty parties resign and their replacements swiftly move to impound the Dundalk.  At the impromptu celebrations afterwards people wonder if this might be the start of something more.
 
 We dont stir up any trouble but some wonder if we should have been more daring.
+
 
 @anti_corp
 title: Careful and circumspect criticism of the megacorps
@@ -33,7 +33,6 @@ magrail_anger += 0.10;
 brazos_anger += 0.10;
 martyrs.push("Aisha Lee");
 !}
-go-to: after_message
 
 Overtly criticizing the megacorps would be a swift path to a slander trial.  But the proliferation of euphemisms leaves room for plausible deniability.  A common talking point is how we can't return to harmony until the people get what they are owed.  The people understand the oblique meaning and get whipped up into a frenzy.  The courts imprison several scapegoats and impound the Dundalk.  At the impromptu celebrations afterwards people wonder if this might be the start of something more.  
 
@@ -49,11 +48,11 @@ stake_meme_strength += 1;
 vigil_meme_strength += 2;
 martyrs.push("Platea Song");
 !}
-go-to: after_message
 
 The speakers shout vitrol at the gangsters while many in the crowds mutter under their breath that the corporations are gangsters under a different name.  The courts cave and impound the vessel.  At the impromptu celebrations afterwards people wonder if this might be the start of something more.  
 
 Syndicate hitmen attempt to publicly assassinate a particularly inflamatory speaker named Aisha Lee but are thwarted and lynched by members of the crowd.  A young person named Platea Song dies stopping the assassination and becomes immortalized as a martyr.
+
 
 @mikasa_first
 title: Stir up anger at offworld exploitation
@@ -67,10 +66,6 @@ patriot_meme_strength += 2;
 isolate_meme_strength += 2;
 update_projections();
 !}
-go-to: after_message
 
 Stiring up anger about outsiders rallies the people behind the government in a way that the megacorps and syndicates can't object to.  The courts imprison several scapegoats and impound the Dundalk.  But attacking outsiders stokes the fires of xenophobia, clashes between communities is on the rise.
 
-
-@after_message
-go-to: post_event.events_choice
