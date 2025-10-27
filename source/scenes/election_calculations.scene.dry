@@ -1,3 +1,5 @@
 title: Election
-on-arrival: {! Q.update_projections(); !}
+on-arrival: {! 
+Q.electorate.tabulate_global()
+!}
 go-to: jumpScene
