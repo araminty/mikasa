@@ -87,6 +87,7 @@ class stratum {
         }
         Q.stratums.push(this)
         Q.lookups[this.name] = this
+        Q[this.name] = this
     }
 
     get size() {
