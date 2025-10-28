@@ -1,5 +1,0 @@
-title: Election
-on-arrival: {! 
-Q.electorate.tabulate_global()
-!}
-go-to: jumpScene

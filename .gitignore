@@ -1,3 +1,9 @@
 ./out/*
+out/*
+out/game.json
+out/html/core.js
 scratch.py
 scratch.js
+scratch*.py
+scratch*.js
+.vscode/*

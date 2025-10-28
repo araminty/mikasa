@@ -23,17 +23,45 @@ Guilds:
 
 "Blue":  {!<span style="color: #44b88f;">C</span>!}:[+ Blue_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Blue_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Blue_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Blue_H +] {!<span style="color: #404040;">I</span>!}:[+ Blue_I +]
 
-Districts:{!<span style="color: #ffffffff;">-----------------------------------</span>!}
-D1:{!<span style="color: #ffffffff;">-----------------------------------</span>!} {!<span style="color: #44b88f;">C</span>!}:[+ Docks_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Docks_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Docks_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Docks_H +] {!<span style="color: #404040;">I</span>!}:[+ Docks_I +]
-{!<span style="color: #ffffffff;">-----------------------------------</span>!}
-D2:{!<span style="color: #ffffffff;">-----------------------------------</span>!} {!<span style="color: #44b88f;">C</span>!}:[+ Aurora_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Aurora_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Aurora_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Aurora_H +] {!<span style="color: #404040;">I</span>!}:[+ Aurora_I +]
-{!<span style="color: #ffffffff;">-----------------------------------</span>!}
-D3:{!<span style="color: #ffffffff;">-----------------------------------</span>!} {!<span style="color: #44b88f;">C</span>!}:[+ Vats_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Vats_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Vats_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Vats_H +] {!<span style="color: #404040;">I</span>!}:[+ Vats_I +]
-{!<span style="color: #ffffffff;">-----------------------------------</span>!}
-D4:{!<span style="color: #ffffffff;">-----------------------------------</span>!} {!<span style="color: #44b88f;">C</span>!}:[+ Railyard_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Railyard_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Railyard_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Railyard_H +] {!<span style="color: #404040;">I</span>!}:[+ Railyard_I +]
-{!<span style="color: #ffffffff;">-----------------------------------</span>!}
-D5:{!<span style="color: #ffffffff;">-----------------------------------</span>!} {!<span style="color: #44b88f;">C</span>!}:[+ Pitts_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Pitts_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Pitts_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Pitts_H +] {!<span style="color: #404040;">I</span>!}:[+ Pitts_I +]
-{!<span style="color: #ffffffff;">-----------------------------------</span>!}
-D6:{!<span style="color: #ffffffff;">-----------------------------------</span>!} {!<span style="color: #44b88f;">C</span>!}:[+ Limelight_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Limelight_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Limelight_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Limelight_H +] {!<span style="color: #404040;">I</span>!}:[+ Limelight_I +]
-{!<span style="color: #ffffffff;">-----------------------------------</span>!}
-D7:{!<span style="color: #ffffffff;">-----------------------------------</span>!} {!<span style="color: #44b88f;">C</span>!}:[+ Deeps_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Deeps_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Deeps_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Deeps_H +] {!<span style="color: #404040;">I</span>!}:[+ Deeps_I +]
+Districts:
+
+
+D1:
+
+ {!<span style="color: #44b88f;">C</span>!}:[+ Docks_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Docks_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Docks_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Docks_H +] {!<span style="color: #404040;">I</span>!}:[+ Docks_I +]
+
+
+
+D2:
+
+ {!<span style="color: #44b88f;">C</span>!}:[+ Aurora_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Aurora_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Aurora_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Aurora_H +] {!<span style="color: #404040;">I</span>!}:[+ Aurora_I +]
+
+
+
+D3:
+
+ {!<span style="color: #44b88f;">C</span>!}:[+ Vats_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Vats_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Vats_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Vats_H +] {!<span style="color: #404040;">I</span>!}:[+ Vats_I +]
+
+
+
+D4:
+
+ {!<span style="color: #44b88f;">C</span>!}:[+ Railyard_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Railyard_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Railyard_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Railyard_H +] {!<span style="color: #404040;">I</span>!}:[+ Railyard_I +]
+
+
+
+D5:
+
+ {!<span style="color: #44b88f;">C</span>!}:[+ Pitts_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Pitts_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Pitts_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Pitts_H +] {!<span style="color: #404040;">I</span>!}:[+ Pitts_I +]
+
+
+
+D6:
+
+ {!<span style="color: #44b88f;">C</span>!}:[+ Limelight_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Limelight_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Limelight_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Limelight_H +] {!<span style="color: #404040;">I</span>!}:[+ Limelight_I +]
+
+
+
+D7:
+
+ {!<span style="color: #44b88f;">C</span>!}:[+ Deeps_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Deeps_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Deeps_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Deeps_H +] {!<span style="color: #404040;">I</span>!}:[+ Deeps_I +]
