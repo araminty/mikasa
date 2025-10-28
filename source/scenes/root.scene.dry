@@ -3,9 +3,6 @@ new-page: true
 go-to: post_event if started = 1; start_menu if started = 0
 on-arrival: {!
 
-Q.year = 2300
-Q.month = 1
-
 let e = 2.718281828459045
 
 sum_list = (numbers) => numbers.reduce((sum, num) => (sum || 0) + (num || 0));
