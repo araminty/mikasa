@@ -674,22 +674,39 @@ function applyBlockVoteRules(block, result, state, chamber) {
     return result
 }
 
-function tabulateBlock(block, interestGroups, chamber, state) {
+function tabulateBlockWithAbstention(block, interestGroups, chamber, state) {
     const ig = allocateIgVotes(block, interestGroups, chamber, state)
     const comp = allocateCompetitiveVotes(block, interestGroups, chamber, state)
+    const preRule = sumPartyVoteObjects(ig, comp)
     let result = {
         ig,
         comp,
-        total: sumPartyVoteObjects(ig, comp),
+        total: preRule,
     }
     result = applyBlockVoteRules(block, result, state, chamber)
     const weight = chamber.useExecutiveWeight ? block.demographic.executiveWeight : 1
+    let ballotMass = sum(PARTY_KEYS.map((k) => preRule[k] || 0))
+    let countedMass = sum(PARTY_KEYS.map((k) => result.total[k] || 0))
     if (weight !== 1) {
+        ballotMass *= weight
         for (const k of PARTY_KEYS) {
-            result.total[k] *= weight
+            result.total[k] = (result.total[k] || 0) * weight
         }
+        countedMass = sum(PARTY_KEYS.map((k) => result.total[k] || 0))
     }
-    return result
+    return {
+        ig: result.ig,
+        comp: result.comp,
+        total: result.total,
+        ballotMass,
+        countedMass,
+        abstentionMass: Math.max(0, ballotMass - countedMass),
+    }
+}
+
+function tabulateBlock(block, interestGroups, chamber, state) {
+    const t = tabulateBlockWithAbstention(block, interestGroups, chamber, state)
+    return { ig: t.ig, comp: t.comp, total: t.total }
 }
 
 class ElectionEngineV2 {
@@ -842,9 +859,31 @@ function writePollDisplaysToQ(Q, state, results) {
         }
     }
     for (const sid of STRATUM_IDS) {
+        if (sid === 'drone') { continue }
         const pct = votesToPollPercents(byStratum[sid] || zeroPartyVotes())
         for (const k of PARTY_KEYS) {
             Q[sid + '_poll_' + k] = pct[k]
+        }
+    }
+    let droneBallotMass = 0
+    let droneCorpMass = 0
+    let droneAbstainMass = 0
+    for (const block of state.blocks) {
+        if (block.demographic.id !== 'drone') { continue }
+        const t = tabulateBlockWithAbstention(
+            block, state.interestGroups, chamber, state
+        )
+        droneBallotMass += t.ballotMass
+        droneCorpMass += t.total.C || 0
+        droneAbstainMass += t.abstentionMass
+    }
+    const dronePct = (mass) =>
+        droneBallotMass > 0 ? Math.round((mass / droneBallotMass) * 1000) / 10 : 0
+    Q.drone_poll_C = dronePct(droneCorpMass)
+    Q.drone_poll_abstain = dronePct(droneAbstainMass)
+    for (const k of PARTY_KEYS) {
+        if (k !== 'C') {
+            Q['drone_poll_' + k] = 0
         }
     }
     for (const did of DISTRICT_IDS) {

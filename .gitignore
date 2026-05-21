@@ -1,9 +1,18 @@
-./out/*
+# Whitelist: track only source/, .cursor/, and out/html/img/
+# (plus this file). Everything else is ignored.
+
+/*
+!.gitignore
+
+!source/
+!source/**
+
+!.cursor/
+!.cursor/**
+
+!out/
 out/*
-./out/game.json
-./out/html/core.js
-scratch.py
-scratch.js
-scratch*.py
-scratch*.js
-.vscode/*
+!out/html/
+out/html/*
+!out/html/img/
+!out/html/img/**

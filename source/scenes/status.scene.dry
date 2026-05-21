@@ -43,13 +43,17 @@ on-arrival: {! Q.update_projections(); !}
 
 Share of the popular vote within each stratum (general electorate model; figures are percent):
 
-{!<table style="width:100%; border-collapse:collapse; font-size:0.85em; margin:0.25em 0;">!}
+{!<table style="width:100%; border-collapse:collapse; font-size:0.85em; margin:0.25em 0 0 0;">!}
 {!<tr><th style="text-align:left; font-weight:normal;"></th><th style="text-align:center;">!}{!<span style="color: #44b88f;">C</span>!}{!</th><th style="text-align:center;">!}{!<span style="color: #cf6e19;">G</span>!}{!</th><th style="text-align:center;">!}{!<span style="color: #1100cc;">D</span>!}{!</th><th style="text-align:center;">!}{!<span style="color: #3a0000ff;">H</span>!}{!</th><th style="text-align:center;">!}{!<span style="color: #404040;">I</span>!}{!</th></tr>!}
 {!<tr><td style="text-align:left;">Rich</td><td style="text-align:right;">!}[+ rich_poll_C +]{!</td><td style="text-align:right;">!}[+ rich_poll_G +]{!</td><td style="text-align:right;">!}[+ rich_poll_D +]{!</td><td style="text-align:right;">!}[+ rich_poll_H +]{!</td><td style="text-align:right;">!}[+ rich_poll_I +]{!</td></tr>!}
 {!<tr><td style="text-align:left;">1st</td><td style="text-align:right;">!}[+ first_poll_C +]{!</td><td style="text-align:right;">!}[+ first_poll_G +]{!</td><td style="text-align:right;">!}[+ first_poll_D +]{!</td><td style="text-align:right;">!}[+ first_poll_H +]{!</td><td style="text-align:right;">!}[+ first_poll_I +]{!</td></tr>!}
 {!<tr><td style="text-align:left;">2nd</td><td style="text-align:right;">!}[+ second_poll_C +]{!</td><td style="text-align:right;">!}[+ second_poll_G +]{!</td><td style="text-align:right;">!}[+ second_poll_D +]{!</td><td style="text-align:right;">!}[+ second_poll_H +]{!</td><td style="text-align:right;">!}[+ second_poll_I +]{!</td></tr>!}
 {!<tr><td style="text-align:left;">Coops</td><td style="text-align:right;">!}[+ coop_poll_C +]{!</td><td style="text-align:right;">!}[+ coop_poll_G +]{!</td><td style="text-align:right;">!}[+ coop_poll_D +]{!</td><td style="text-align:right;">!}[+ coop_poll_H +]{!</td><td style="text-align:right;">!}[+ coop_poll_I +]{!</td></tr>!}
-{!<tr><td style="text-align:left;">Drone</td><td style="text-align:right;">!}[+ drone_poll_C +]{!</td><td style="text-align:right;">!}[+ drone_poll_G +]{!</td><td style="text-align:right;">!}[+ drone_poll_D +]{!</td><td style="text-align:right;">!}[+ drone_poll_H +]{!</td><td style="text-align:right;">!}[+ drone_poll_I +]{!</td></tr>!}
+{!</table>!}
+{!<table style="width:100%; border-collapse:collapse; font-size:0.85em; margin:0;">!}
+{!<tr><td style="text-align:left;">Drone</td><td style="text-align:right;">!}[+ drone_poll_C +]{!</td><td colspan="4" style="text-align:right;">!}Abstentions: [+ drone_poll_abstain +]{!</td></tr>!}
+{!</table>!}
+{!<table style="width:100%; border-collapse:collapse; font-size:0.85em; margin:0 0 0.25em 0;">!}
 {!<tr><td style="text-align:left;">OtherW</td><td style="text-align:right;">!}[+ alien_poll_C +]{!</td><td style="text-align:right;">!}[+ alien_poll_G +]{!</td><td style="text-align:right;">!}[+ alien_poll_D +]{!</td><td style="text-align:right;">!}[+ alien_poll_H +]{!</td><td style="text-align:right;">!}[+ alien_poll_I +]{!</td></tr>!}
 {!<tr><td style="text-align:left;">Deepers</td><td style="text-align:right;">!}[+ deeper_poll_C +]{!</td><td style="text-align:right;">!}[+ deeper_poll_G +]{!</td><td style="text-align:right;">!}[+ deeper_poll_D +]{!</td><td style="text-align:right;">!}[+ deeper_poll_H +]{!</td><td style="text-align:right;">!}[+ deeper_poll_I +]{!</td></tr>!}
 {!</table>!}
