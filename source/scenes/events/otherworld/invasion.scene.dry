@@ -1,0 +1,12 @@
+title: TBD
+priority: 1
+max-visits: 1
+tags: event
+new-page: true
+view-if: month = 4 and year = 2302 and otherworld_outpost = 2
+
+An informant from one of the syndicates reports that the great protector has been expressing interest in securing a foothold in Mikasa.  While normally the difficulty of travel from the Otherworld would make this impossible, the otherworld pathways have been stabalizing thanks to the efforts of our outpost and a powerful demon warlord might have additional magics available.  Soon after providing this tip, our informant was caught by the syndicate and executed.
+
+-@defend: Reinforce our outpost
+-@evacuate: Evacuate our outpost and disrupt the pathways
+-@counter: Invasion?  Two can play at that game!

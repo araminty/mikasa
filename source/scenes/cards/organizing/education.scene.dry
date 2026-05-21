@@ -1,0 +1,28 @@
+title: Education and training
+new-page: true
+is-card: true
+card-image: img/asteroid.jpg
+tags: organize_phase
+view_if: organizing_unlock = 1
+
+The education system has both greatly advanced and greatly regressed since the pre-spaceflight era.  On the positive side, ubiquitous open sourced computerized educational resources have made it trivial for parents to provide children with basic life skills. On the negative side, most children are not recieving formal schooling.  Unschooled children are often left unprepared to the workforce and ignorant of world affairs.  The problem is particularly severe among the non-human populations from the otherworld.
+
+-@too_broke: We dont have the resources right now
+-@vocational
+-@home_ec
+-@well_rounded
+
+@vocational
+title: Focus on vocational training to reduce poverty
+chose-if: TBD
+on-arrival: TBD
+Improving vocational training helps workers get better jobs, in particular with the corporations.  School attendence has risen somewhat as students are attracted by the prospect of higher incomes.  The megacorps approve of this curriculum and agree to contract some of their internal training programs over to our education system which allows us to offset the costs of this expansion.
+
+@home_ec
+title: Expand teaching of home economics skills like nutrition, health, electronics and mechanics
+We strive to give students the skills to be more self reliant, making their food nuYen go farther, preventing health complications and repairing their home goods instead of buying new ones.  The cooperatives approve of this curriculum and some of their home schooled students have started attending classes part time.
+
+
+@well_rounded
+title: Provide a well rounded education
+We are laying the foundation for a true public education system.  This is an expensive choice but will improve education outcomes across the board in the long term.  This is particularly beneficial for the otherworld population.

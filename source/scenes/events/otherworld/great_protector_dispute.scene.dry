@@ -1,0 +1,23 @@
+title: Dispute with Great Protector
+priority: 1
+max-visits: 1
+tags: event
+new-page: true
+view-if: month = 6 and year = 2301 and otherworld_outpost = 1
+
+The Great Protector sent a diplomatic complaint alleging that our Otherworld outpost has been spreading seditious ideas.  This could imperil our friendly relations.
+
+-@silence
+-@ignore
+
+@silence
+title: Promise to do something
+on-arrival: TDB
+
+We issue orders for our otherworld outpost to avoid alienating our neighbors with talk of democracy and freedom
+
+@ignore
+title: We wont curtail free speech
+on-arrival: {!  Q.otherworld_outpost = 2 !}
+
+Our refusal is met with complete silence.

@@ -3,33 +3,27 @@ is-pinned-card: true
 tags: advisor, tunnel_clans
 card-image: img/asteroid.jpg
 new-page: true
-view-if: callista_advisor > 0
 
 = Callista and Mei
 
-Callista is a rare member of the deep tunnel clans who travels among the "outsiders".  She is an experienced roboticist and has "guardian spirit" AIs that have been adapting to her needs since soon after birth.
+Callista is a rare member of the "Clans of the Mother" who has left the deep tunnels and entered the city of Mikasa.  Even rarer, she is not one of the comptrollers who handle monetary affairs, the first non-comptroller member of the Clans to visit Mikasa in at least a generation.
 
-[+ callista_advisor +] actions
+Callista has been raised since birth to interact with AI, what the Clans call "Guardian Spirits".  The Clans have zealously avoided the degredation that has affected other AI systems.  Although there are substantial differences between the AI in Mikasa and Guardian Spirits, Callista could help us with fighting the system corruption which is slowly degrading our systems
 
-
-- @callista_smuggle
-
-
-@callista_smuggle
-title: Smuggling
-subtitle: Callista lets us hire the clans to move supplies without the offworlders knowing
-choose-if: hidden_funds > 0
-unavailable-subtitle: We lack the funds
-on-arrival: rebel_militancy += .05; callista_advisor -= 1;
-
-We are gathering supplies
+- @callista_toggle_on
+- @callista_toggle_off
 
 
-@callista_demons
+@callista_toggle_on
 title: Purge Demons
-subtitle: The clans of the mother describe their IT practices in a mystical fashion
-choose-if: hidden_funds > 0
-unavailable-subtitle: We lack the funds
-on-arrival: rebel_militancy += .05; callista_advisor -= 1;
+subtitle: The clans corporate drones will resent us disrupting the systems they rely on
+view-if: callista_toggle = 0
+on-arrival: callista_toggle = 1
 
-The dead internet is now a little less dead
+@callista_toggle_off
+title: Stop Purging Demons
+subtitle: Stop annoying the corporate drones
+view-if: callista_toggle = 1
+on-arrival: callista_toggle = 0
+
+Callista and her Guardian Spirit help make the internet a little less dead

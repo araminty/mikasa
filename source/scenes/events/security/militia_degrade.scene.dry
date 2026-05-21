@@ -1,0 +1,31 @@
+title: Trouble maintaining militia's 
+new-page: true
+is-card: true
+card-image: img/asteroid.jpg
+tags: govt_affairs
+view_if: militia >= 1 and militia_auxiliary < 1
+
+Our militia forces are a stopgap security solution.  There are reports of members drifting away and even accusations of militia's organizing protection rackets.
+
+-@decline
+-@corrupt
+-@oversight
+
+@decline
+title: The ranks are shrinking
+on-arrival: militia *=  2/3
+
+Damn
+
+@corrupt
+title: Crime is rising
+
+Damn
+
+@oversight
+title: Have the police oversee them
+available-if: police_reform>4
+unavailable-subtitle: the police are too corrupt to trust
+on-arrival: militia_auxiliary = 1
+
+Now that the police are reformed, the militia are turned into an auxiliary for the police.

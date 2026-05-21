@@ -7,16 +7,21 @@ view-if: jacobs_advisor > 0
 
 = Jason Jacobs
 
+Jason Jacobs is a software engineer from the Deeps with an obsessive hobby for urban planning.  He was chased out of the Deeps after trying to implement "guerilla urbanism".  He has abundent proposals for how we could streamline our infrastructure, but the deepers will be displeased by us associating with him
+ 
+- @jacobs_renovate_on
 
-
-[+ jacobs_advisor +] actions
-
-
-- @jacobs_renovate
-
-@jacobs_renovate
+@jacobs_renovate_on
 title: Streamline infrastructure
-subtitle: More with less.
-on-arrival: district1_infra+=0.1;district2_infra+=0.1;district3_infra+=0.1;district4_infra+=0.1;district5_infra+=0.1;district6_infra+=0.1;district7_infra+=0.1;
+subtitle: More with less
+view-if: jacobs_on = 0
+on-arrival: jacobs_on = 1
 
 Jacobs helps streamline our infrastructure maintenance keeping up with the demands of a rising population
+
+
+@jacobs_renovate_of
+title: Stop streamlining
+subtitle: Placate the deepers
+view-if: jacobs_on = 1
+on-arrival: jacobs_on = 0

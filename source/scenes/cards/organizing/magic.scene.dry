@@ -1,0 +1,12 @@
+title: Magic Policy
+new-page: true
+is-card: true
+card-image: img/asteroid.jpg
+tags: organize_phase
+view_if: organizing_unlock = 1
+
+Mikasa has more magical users then most of the solar system thanks to passageways to the Otherworld in the Aurora district.
+
+-@control
+-@assimilate
+-@establish_school

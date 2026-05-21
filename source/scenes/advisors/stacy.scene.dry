@@ -12,8 +12,6 @@ view-if: stacy_advisor > 0
 
 Stacy Primogen is a second generation offspring of the Jovian supersoldier project, incubated into a plutocratic Jovian family of arms dealers, she struck out on her own to become a mercenary and influencer.
 
-[+ stacy_advisor +] actions
-
 
 - @stacy_raid_corpos
 - @stacy_raid_syndicates

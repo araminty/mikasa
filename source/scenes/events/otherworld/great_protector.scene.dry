@@ -1,0 +1,40 @@
+title: Realm of the Great Protector
+priority: 1
+max-visits: 1
+tags: event
+new-page: true
+view-if: month = 8 and year = 2300
+
+The flow of refugees from the otherworld has slowed in recent weeks, apparently due to the success of a demon warlord who stylizes herself as the Great Protector.  She is relatively benign by demon standards, prone to exemplary executions but not towards widescale slaughter.  If she succeeds in pacifying the region is should end the current refugee wave.  
+
+Now a herald has arrived from the Great Protector with a diplomatic offer.  In exchange for a weekly shipment of carbonated beverages, the Great Protector promises peace between our realms.  Our sages have advised the council that entanglements with demons are extremely dangerous but that demons will generally issue demands of token tribute as a matter of course even when they have no farther motive.
+
+-@just_say_no
+-@token_tribute
+-@trade_links
+-@green_zone
+
+@just_say_no
+title: We will have nothing to do with demons
+on-arrival: {! TBD, helps one faction's secret plan !}
+
+The less we have to do with demons the better. [? otherworld_relations = 0 : Although it's troubling how in the dark we are about the Otherworld. ?]
+
+-@token_tribute 
+title: A case of cola for peace is a bargain
+on-arrival: {! TBD, cautious end of event chain |}
+
+-@trade_links
+title: Dont stop at soda, let's establish trade relations
+choose-if: otherworld_relations > 3
+unavailable-subtitle: We dont know enough about the otherworld for this
+on-arrival: {! TBD, helps one faction's secret plan !}
+
+Some of our consumer goods seem just as exotic to them as their magic seems to us.
+
+-@green_zone: Organize an Otherworld security zone
+on-arrival: {!  Q.otherworld_outpost = 1 !} # TBD, helps one faction's secret plan
+choose-if: otherworld_relations > 3 and TBD # need high corporation trust and a decent paramilitary
+unavailable-subtitle: [? if otherworld_relations < 4 : We dont know enough about the otherworld for this. ?][? if otherworld_relations > 3 : We need a well armed force and permission from the corporations to use it. ?]
+
+We send an expedition to the Otherworld and secure the region near the pathways to Mikasa.  So long as we maintain goodwill with the Great Protector this outpost could be lucrative.

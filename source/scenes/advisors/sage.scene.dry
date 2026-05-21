@@ -1,0 +1,26 @@
+title: T. Sage
+is-pinned-card: true
+tags: advisor, nerds
+card-image: img/asteroid.jpg
+new-page: true
+view-if: sage_advisor > 0
+
+= T. Sage
+
+The sage dresses like a vagrant but is one of the most experienced otherworld explorers in Mikasa.
+
+- @sage_toggle_on
+- @sage_toggle_off
+- @return
+
+@sage_toggle_on
+title: Cultivate magic users
+view-if: sage_toggle = 0
+subtitle: The cooperatives find these vagrants distasteful
+on-arrival: sage_toggle = 1
+
+@sage_toggle_off
+title: Stop cultivating magic users
+view-if: sage_toggle = 1
+subtitle: Placate the cooperatives
+on-arrival: sage_toggle = 0

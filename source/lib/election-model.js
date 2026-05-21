@@ -1,0 +1,529 @@
+/**
+ * Mikasa election simulation (voter-block model).
+ * Runnable in Node without Dendrynexus. Keep in sync with root_new.scene.dry on-arrival block.
+ */
+
+const PARTY_KEYS = ['D', 'I', 'C', 'G', 'H']
+const PARTY_LABELS = { D: 'Dems', I: 'Ind', C: 'Corp', G: 'Gang', H: 'Hate' }
+
+const STRATUM_DISPLAY = {
+    rich: 'Rich',
+    first: 'First',
+    second: 'Second',
+    coop: 'Clans',
+    drone: 'Corp Drone',
+    alien: 'Otherworlder',
+    deeper: 'Deepers',
+}
+
+const DISTRICT_DISPLAY = {
+    Docks: 'District 1 (The Docks)',
+    Aurora: 'District 2 (Aurora District)',
+    Vats: 'District 3 (The Vats)',
+    Railyard: 'District 4 (The Railyard)',
+    Pitts: 'District 5 (The Pitts)',
+    Limelight: 'District 6 (The Limelight)',
+    Deeps: 'District 7 (The Deeps)',
+}
+
+const E = 2.718281828459045
+const VOTE_SCALE = 10000
+const EXEC_SEATS = 150
+const GUILD_SEATS = 35
+const DISTRICT_SEATS = 15
+
+const sum_list = (numbers) =>
+    numbers.reduce((sum, num) => (sum || 0) + (num || 0), 0)
+
+const piecewise_add = (a, b) =>
+    a.map((_, i) => (a[i] || 0) + (b[i] || 0))
+
+const piecewise_sub = (a, b) =>
+    a.map((_, i) => (a[i] || 0) - (b[i] || 0))
+
+function logistic_convert_list(u, s, ...args) {
+    if (typeof args[0] !== 'number') { args = args[0] }
+    const results = []
+    for (let i = 0; i < args.length; i++) {
+        const v = 1 / (1 + Math.exp((u - args[i]) / s))
+        results.push(v)
+    }
+    return results
+}
+
+function find_balance(...args) {
+    let u = 0
+    let converted = []
+    for (let j = 0; j < 100; j++) {
+        converted = logistic_convert_list(u, E, ...args)
+        const total = sum_list(converted)
+        if (total > 2) { u += 1 }
+        else if (total > 1.2) { u += 0.2 }
+        else if (total > 1.0) { u += 0.05 }
+        else { break }
+    }
+    return converted
+}
+
+function assign_percentages(raw_votes, n_seats) {
+    const total_votes = sum_list(raw_votes)
+    if (total_votes === 0 || n_seats === 0) {
+        return raw_votes.slice(0, 5).map(() => 0)
+    }
+    const votes_per_seat = total_votes / n_seats
+    const remainders = raw_votes.map((v) => v % votes_per_seat)
+    const whole_seats = piecewise_sub(raw_votes, remainders).map((v) => v / votes_per_seat)
+    const unassigned = n_seats - sum_list(whole_seats)
+    const remainders_copy = remainders.slice()
+    for (let i = 0; i < unassigned; i++) {
+        const idx = remainders_copy.reduce(
+            (iMax, x, i, arr) => (x > arr[iMax] ? i : iMax),
+            0
+        )
+        whole_seats[idx] += 1
+        remainders_copy[idx] = 0
+    }
+    return whole_seats.map((v) => Math.round(v))
+}
+
+function appealsFromObject(obj, labels) {
+    return labels.map((label) => obj[label] || 0)
+}
+
+function applyAppealsTo(target, labels, values) {
+    for (let i = 0; i < labels.length; i++) {
+        target[labels[i]] = values[i] || 0
+    }
+}
+
+function drone_disenfranchise(Q, demographic, voteVector) {
+    if (demographic.name !== 'drone') { return voteVector }
+    const corpIdx = Q.vote_labels.indexOf('Corp')
+    const apathyIdx = Q.vote_labels.indexOf('Apathy')
+    const corpVotes = voteVector[corpIdx] || 0
+    const apathyVotes = sum_list(voteVector) - corpVotes
+    const out = voteVector.map(() => 0)
+    out[corpIdx] = corpVotes
+    out[apathyIdx] = apathyVotes
+    return out
+}
+
+class VoterBlock {
+    constructor(demographic, area, interest, headcount) {
+        this.demographic = demographic
+        this.area = area
+        this.interest = interest
+        this.headcount = headcount || 0
+        this.votes = null
+        demographic._registerBlock(this)
+        area._registerBlock(this)
+        interest._registerBlock(this)
+    }
+
+    get id() {
+        return this.area.name + '_' + this.demographic.name + '_' + this.interest.name
+    }
+
+    combinedAppeals(Q, globalShifts) {
+        let appeals = globalShifts.slice()
+        appeals = piecewise_add(appeals, this.area.appealsArray(Q))
+        appeals = piecewise_add(appeals, this.demographic.appealsArray(Q))
+        appeals = piecewise_add(appeals, this.interest.appealsArray(Q))
+        return appeals
+    }
+
+    tabulate(Q, model) {
+        const appeals = this.combinedAppeals(Q, model.global_shifts)
+        const size = this.headcount
+        const balanced = find_balance(appeals)
+        this.votes = balanced.map((x) => x * size * VOTE_SCALE)
+        model[this.id] = this.votes
+        return this.votes
+    }
+}
+
+class Demographic {
+    constructor(Q, name, appeals) {
+        this.name = name || 'missing'
+        this._blocks = []
+        applyAppealsTo(this, Q.vote_labels, appeals || [])
+        Q.stratums.push(this)
+        Q.lookups[this.name] = this
+        Q[this.name] = this
+    }
+
+    _registerBlock(block) {
+        this._blocks.push(block)
+    }
+
+    forEachBlock(fn) {
+        for (let i = 0; i < this._blocks.length; i++) { fn(this._blocks[i], i) }
+    }
+
+    totalPopulation(Q) {
+        let total = 0
+        for (let i = 0; i < Q.regions.length; i++) {
+            total += Q.regions[i].getPopulation(this.name)
+        }
+        return total
+    }
+
+    syncMembershipFractions(Q) {
+        const affiliated = []
+        const size = this.totalPopulation(Q)
+        for (let i = 0; i < Q.interests.length; i++) {
+            const group = Q.interests[i]
+            if (group.name === Q.UNAFFILIATED_LABEL) { continue }
+            const frac = size > 0 ? (group.getRawMembership(this.name) / size) : 0
+            affiliated.push(frac)
+            this[group.name] = frac
+        }
+        this[Q.UNAFFILIATED_LABEL] = 1 - sum_list(affiliated)
+        return affiliated
+    }
+
+    getMembership(interestName) {
+        return this[interestName] || 0
+    }
+
+    appealsArray(Q) { return appealsFromObject(this, Q.vote_labels) }
+}
+
+class Area {
+    constructor(Q, name, populations, appeals) {
+        this.name = name || 'missing'
+        this._blocks = []
+        applyAppealsTo(this, Q.vote_labels, appeals || [])
+        for (let i = 0; i < Q.stratum_labels.length; i++) {
+            const label = Q.stratum_labels[i]
+            this[label] = populations[i] || 0
+        }
+        Q.regions.push(this)
+        Q.lookups[this.name] = this
+        Q[this.name] = this
+    }
+
+    _registerBlock(block) { this._blocks.push(block) }
+
+    forEachBlock(fn) {
+        for (let i = 0; i < this._blocks.length; i++) { fn(this._blocks[i], i) }
+    }
+
+    getPopulation(stratumName) { return this[stratumName] || 0 }
+
+    appealsArray(Q) { return appealsFromObject(this, Q.vote_labels) }
+}
+
+class InterestGroup {
+    constructor(Q, name, appeals, memberships) {
+        this.name = name || 'missing'
+        this._blocks = []
+        this._rawMembership = {}
+        applyAppealsTo(this, Q.vote_labels, appeals || [])
+        const mem = memberships || []
+        for (let i = 0; i < Q.stratum_labels.length; i++) {
+            this._rawMembership[Q.stratum_labels[i]] = mem[i] || 0
+            this[Q.stratum_labels[i]] = mem[i] || 0
+        }
+        Q.interests.push(this)
+        Q.lookups[this.name] = this
+    }
+
+    _registerBlock(block) { this._blocks.push(block) }
+
+    forEachBlock(fn) {
+        for (let i = 0; i < this._blocks.length; i++) { fn(this._blocks[i], i) }
+    }
+
+    getRawMembership(stratumName) { return this._rawMembership[stratumName] || 0 }
+
+    appealsArray(Q) { return appealsFromObject(this, Q.vote_labels) }
+}
+
+class ElectionModel {
+    constructor(Q) {
+        this.Q = Q
+        this.global_shifts = Q.global_shifts
+        this.blocks = []
+    }
+
+    rebuildBlocks() {
+        const Q = this.Q
+        Q.voter_blocks = []
+        this.blocks = []
+        for (let i = 0; i < Q.stratums.length; i++) { Q.stratums[i]._blocks = [] }
+        for (let i = 0; i < Q.regions.length; i++) { Q.regions[i]._blocks = [] }
+        for (let i = 0; i < Q.interests.length; i++) { Q.interests[i]._blocks = [] }
+
+        for (let a = 0; a < Q.regions.length; a++) {
+            const area = Q.regions[a]
+            for (let d = 0; d < Q.stratums.length; d++) {
+                const demographic = Q.stratums[d]
+                demographic.syncMembershipFractions(Q)
+                for (let g = 0; g < Q.interests.length; g++) {
+                    const interest = Q.interests[g]
+                    const headcount = area.getPopulation(demographic.name)
+                        * demographic.getMembership(interest.name)
+                    const block = new VoterBlock(demographic, area, interest, headcount)
+                    this.blocks.push(block)
+                    Q.voter_blocks.push(block)
+                }
+            }
+        }
+    }
+
+    tabulate_region(area) {
+        const Q = this.Q
+        if (typeof area === 'string') { area = Q.lookups[area] }
+        let regionVotes = Q.vote_labels.map(() => 0)
+
+        for (let d = 0; d < Q.stratums.length; d++) {
+            const demographic = Q.stratums[d]
+            let stratumVotes = Q.vote_labels.map(() => 0)
+
+            demographic.forEachBlock((block) => {
+                if (block.area !== area) { return }
+                stratumVotes = piecewise_add(stratumVotes, block.tabulate(Q, this))
+            })
+
+            stratumVotes = drone_disenfranchise(Q, demographic, stratumVotes)
+            this[area.name + '_' + demographic.name] = stratumVotes
+            regionVotes = piecewise_add(regionVotes, stratumVotes)
+        }
+
+        this[area.name] = regionVotes
+        return this
+    }
+
+    tabulate_global() {
+        const Q = this.Q
+        for (let i = 0; i < Q.regions.length; i++) {
+            this.tabulate_region(Q.regions[i])
+        }
+        for (let i = 0; i < Q.stratums.length; i++) {
+            this._aggregateStratum(Q.stratums[i])
+        }
+        for (let i = 0; i < Q.interests.length; i++) {
+            this._aggregateInterest(Q.interests[i])
+        }
+        return this
+    }
+
+    _aggregateStratum(demographic) {
+        const Q = this.Q
+        if (typeof demographic === 'string') { demographic = Q.lookups[demographic] }
+        let votes = Q.vote_labels.map(() => 0)
+        for (let i = 0; i < Q.regions.length; i++) {
+            const area = Q.regions[i]
+            const key = area.name + '_' + demographic.name
+            votes = piecewise_add(votes, this[key] || [])
+        }
+        this[demographic.name] = votes
+        return votes
+    }
+
+    _aggregateInterest(interest) {
+        const Q = this.Q
+        if (typeof interest === 'string') { interest = Q.lookups[interest] }
+        let votes = Q.vote_labels.map(() => 0)
+        interest.forEachBlock((block) => {
+            votes = piecewise_add(votes, block.votes || [])
+        })
+        this[interest.name] = votes
+        return votes
+    }
+
+    _assignSeatsToQ(prefix, voteVector, seatCount) {
+        const Q = this.Q
+        const seats = assign_percentages(voteVector.slice(0, 5), seatCount)
+        for (let i = 0; i < PARTY_KEYS.length; i++) {
+            Q[prefix + '_' + PARTY_KEYS[i]] = seats[i]
+        }
+        return seats
+    }
+
+    seat_projections() {
+        const Q = this.Q
+        this.tabulate_global()
+        this._assignSeatsToQ('Exec', this.Executive, EXEC_SEATS)
+        for (let i = 0; i < Q.interests.length; i++) {
+            const label = Q.interests[i].name
+            if (label === 'Executive') { continue }
+            this._assignSeatsToQ(label, this[label], GUILD_SEATS)
+        }
+        for (let i = 0; i < Q.regions.length; i++) {
+            this._assignSeatsToQ(Q.regions[i].name, this[Q.regions[i].name], DISTRICT_SEATS)
+        }
+    }
+
+    assign_seats() { this.seat_projections() }
+}
+
+function setup_demographics(Q) {
+    const blank = [0, 0, 0, 0, 0, 0, 0]
+
+    new Demographic(Q, 'rich', [0, 0, 0, 6, 1, 0, 2])
+    new Demographic(Q, 'first', [1, 2, 0, 1, -3, 0, 5])
+    new Demographic(Q, 'second', [2, 1, 0, 0, 2, 0, 6])
+    new Demographic(Q, 'coop', [2, 0, 20, -3, -3, 0, 6])
+    new Demographic(Q, 'drone', [3, 0, 0, 3, 2, 0, 2])
+    new Demographic(Q, 'alien', [2, 0, 0, -6, -3, 0, 9])
+    new Demographic(Q, 'deeper', [2, 36, -5, 2, -2, 0, 6])
+
+    new InterestGroup(Q, 'Executive', [0, -3, 10, -5, 2, 1, -20], [1, 0, 0, 0, 0, 0, 0])
+    new InterestGroup(Q, 'Gold', [0, 0, 0, 6, -3, 0, -5], [5, 1, 0, 0, 0, 0.1, 0])
+    new InterestGroup(Q, 'White', [3, 0, 0, 0, -3, 0, -3], [1, 25, 10, 5, 1, 1, 0])
+    new InterestGroup(Q, 'Blue', [5, 0, 0, 0, -3, 0, -2], [0, 10, 25, 5, 25, 1, 0])
+    new InterestGroup(Q, 'Unaffiliated', blank, blank.slice(0, 6))
+
+    new Area(Q, 'Docks', [17, 42, 30, 1, 11, 1, 1], blank)
+    new Area(Q, 'Aurora', [0, 58, 57, 1, 2, 9, 3], blank)
+    new Area(Q, 'Vats', [1, 8, 11, 1, 48, 0, 1], blank)
+    new Area(Q, 'Railyard', [0, 12, 10, 1, 52, 0, 1], blank)
+    new Area(Q, 'Pitts', [0, 28, 71, 1, 2, 0, 1], blank)
+    new Area(Q, 'Limelight', [1, 19, 22, 1, 55, 0, 1], blank)
+    new Area(Q, 'Deeps', [1, 24, 17, 3, 1, 1, 166], blank)
+}
+
+function qified_pops(Q) {
+    for (let i = 0; i < Q.regions.length; i++) {
+        const region = Q.regions[i]
+        for (let j = 0; j < Q.stratums.length; j++) {
+            const stratum = Q.stratums[j].name
+            Q[region.name + '_' + stratum + '_pop'] = region[stratum]
+        }
+    }
+}
+
+/**
+ * Initialize labels, world data, voter blocks, and seat projections on Q.
+ * @param {object} [Q] — game state bag (created if omitted)
+ * @returns {{ Q: object, model: ElectionModel }}
+ */
+function initElectionModel(Q) {
+    Q = Q || {}
+    Q.stratum_labels = ['rich', 'first', 'second', 'coop', 'drone', 'alien', 'deeper']
+    Q.interest_labels = ['Executive', 'Gold', 'White', 'Blue', 'Unaffiliated']
+    Q.UNAFFILIATED_LABEL = 'Unaffiliated'
+    Q.vote_labels = ['Dems', 'Ind', 'Corp', 'Gang', 'Hate', 'Swing', 'Apathy']
+    Q.global_shifts = [0, -20, 0, -1, -3, 0, 0]
+    Q.lookups = {}
+    Q.combined_labels = Q.stratum_labels.concat(Q.vote_labels, Q.interest_labels)
+    Q.stratums = []
+    Q.regions = []
+    Q.interests = []
+    Q.voter_blocks = []
+
+    setup_demographics(Q)
+
+    const model = new ElectionModel(Q)
+    model.rebuildBlocks()
+    model.seat_projections()
+    qified_pops(Q)
+
+    Q.VoterBlock = VoterBlock
+    Q.Demographic = Demographic
+    Q.Area = Area
+    Q.InterestGroup = InterestGroup
+    Q.ElectionModel = ElectionModel
+    Q.electorate = model
+    Q.qified_pops = () => qified_pops(Q)
+    Q.update_projections = model.seat_projections.bind(model)
+
+    return { Q, model }
+}
+
+function seatLine(Q, prefix) {
+    return PARTY_KEYS.map((k) => `${k}: ${Q[prefix + '_' + k]}`).join('  ')
+}
+
+/**
+ * Text report matching election_simulation.scene.dry (+ population table).
+ */
+function padCols(cells, widths) {
+    return cells.map((c, i) => String(c).padEnd(widths[i] || 8)).join(' ')
+}
+
+function formatPopulationTable(Q, districtNames, stratumLabels, stratumDisplay) {
+    const headers = ['Class'].concat(districtNames)
+    const rows = stratumLabels.map((s) => {
+        const label = (stratumDisplay && stratumDisplay[s]) || s
+        const cells = districtNames.map((d) =>
+            String(Q[d + '_' + s + '_pop'] ?? ''))
+        return [label].concat(cells)
+    })
+    const widths = headers.map((h, col) => {
+        let w = h.length
+        for (const row of rows) {
+            w = Math.max(w, row[col].length)
+        }
+        return w + 1
+    })
+    return [padCols(headers, widths)].concat(rows.map((row) => padCols(row, widths)))
+}
+
+function formatElectionReport(Q) {
+    const lines = []
+    lines.push('Election results (seat projections)')
+    lines.push('')
+    lines.push('Executive Committee:')
+    lines.push('  ' + seatLine(Q, 'Exec'))
+    lines.push('')
+    lines.push('Guilds:')
+    for (const guild of ['Gold', 'White', 'Blue']) {
+        lines.push(`  ${guild} Collar: ${seatLine(Q, guild)}`)
+    }
+    lines.push('')
+    lines.push('Districts:')
+    lines.push('')
+    lines.push('Populations (in 10,000s):')
+    lines.push(...formatPopulationTable(
+        Q,
+        Q.regions.map((r) => r.name),
+        Q.stratum_labels,
+        STRATUM_DISPLAY
+    ))
+    lines.push('')
+    for (const region of Q.regions) {
+        lines.push(DISTRICT_DISPLAY[region.name] || region.name)
+        lines.push('  ' + seatLine(Q, region.name))
+        lines.push('')
+    }
+    return lines.join('\n')
+}
+
+/**
+ * Structured snapshot for scripts/tests (--json).
+ */
+function electionSnapshot(Q) {
+    const seats = (prefix) =>
+        Object.fromEntries(PARTY_KEYS.map((k) => [k, Q[prefix + '_' + k]]))
+
+    const populations = {}
+    for (const region of Q.regions) {
+        populations[region.name] = Object.fromEntries(
+            Q.stratum_labels.map((s) => [s, region[s]])
+        )
+    }
+
+    return {
+        executive: seats('Exec'),
+        guilds: {
+            Gold: seats('Gold'),
+            White: seats('White'),
+            Blue: seats('Blue'),
+        },
+        districts: Object.fromEntries(
+            Q.regions.map((r) => [r.name, seats(r.name)])
+        ),
+        populations,
+        voter_block_count: Q.voter_blocks.length,
+    }
+}
+
+module.exports = {
+    initElectionModel,
+    formatElectionReport,
+    electionSnapshot,
+    PARTY_KEYS,
+}

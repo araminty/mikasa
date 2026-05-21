@@ -1,0 +1,10 @@
+---
+description: Edit source/ only; out/ is generated build output
+alwaysApply: true
+---
+
+# Source vs out
+
+- Edit game logic in `source/` (`.scene.dry`, `.qdisplay.dry`, `info.dry`).
+- Do not edit `out/` — built by `npm run dendrynexus make-html`.
+- Verify changes with a local build when behavior matters.

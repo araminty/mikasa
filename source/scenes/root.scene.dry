@@ -208,8 +208,7 @@ class electorate {
                 appeals = piecewise_add(appeals, people.appeals)
                 appeals = piecewise_add(appeals, group.appeals)
                 let size = area[people.name] * people[group.name]
-                let result = find_balance(appeals).map((x) => x * size)
-                let product = result.map(x => x * size * 10000)
+                let product = find_balance(appeals).map((x) => x * size * 10000)
                 this[combined] = product
                 people_votes = piecewise_add(product, people_votes)
             }

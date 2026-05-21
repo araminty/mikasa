@@ -1,0 +1,7 @@
+{
+  "session_id": "cc5c6a4d-cc99-42a5-99c5-cc0965af8153",
+  "md_log": ".cursor/conversation-history/sessions/cc5c6a4d-cc99-42a5-99c5-cc0965af8153.md",
+  "jsonl_log": ".cursor/conversation-history/sessions/cc5c6a4d-cc99-42a5-99c5-cc0965af8153.jsonl",
+  "backfilled_from": "/home/airy/.cursor/projects/home-airy-mikasa/agent-transcripts/cc5c6a4d-cc99-42a5-99c5-cc0965af8153/cc5c6a4d-cc99-42a5-99c5-cc0965af8153.jsonl",
+  "backfilled_at": "2026-05-21T16:00:06Z"
+}

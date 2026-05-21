@@ -4,7 +4,9 @@
   "description": "Building the game:",
   "main": "out/html/index.html",
   "scripts": {
-    "dendrynexus": "dendrynexus"
+    "dendrynexus": "dendrynexus",
+    "simulate-election": "node scripts/simulate-election.js",
+    "simulate-election:v2": "node scripts/simulate-election.js --v2"
   },
   "repository": {
     "type": "git",

@@ -1,0 +1,85 @@
+title: Setup organizing tick functions
+max-visits: 1
+new-page: false
+on-arrival: {!
+
+Q.trade_level = 1.123
+Q.corp_money = 5000
+Q.corp_capital = 50000
+Q.drone_money = 2000
+Q.affluent_money = 500
+Q.poor_money = 1000
+Q.coop_money = 1500
+Q.coop_capital = 10000
+
+// might want to put some spending inertia into this system later on
+
+
+function organize_tick(){
+    Q.protest_good += Q.non_violence -1.5 // hurt corp popularity with all every time it reaches 10
+    Q.protest_bad += 2.25 - Q.non_violence // corp gain popularity with drones and affluent and lose with poor every time it reaches 10
+}
+
+function trade_level_tick(){
+    if (Q.phase == 1) { Q.trade_level *= 1.0016667 }
+    if (Q.phase == 2) { Q.trade_level *= 0.9994444 }
+    if (Q.phase == 3) { Q.trade_level *= 0.9983333 }
+    if (Q.phase == 4) { Q.trade_level *= 0.9994444 }
+
+}
+
+// Tourism would also cover high end bespoke services like ship detailing
+function tourism_revenue() {
+    Q.overall_tourism = 2345 * Q.trade_level / (Q.crime_level * Q.crime_level)
+
+    Q.corp_tourism_rev = Q.overall_tourism * .41 + Q.overall_tourism * Q.trade_level
+    Q.affluent_tourism_rev = Q.overall_tourism * .39 - Q.overall_tourism * Q.trade_level
+    Q.coop_tourism_rev =  (Q.overall_tourism - Q.corp_tourism - Q.affluent_tourism)*.43
+    Q.poor_tourism_rev =  (Q.overall_tourism - Q.corp_tourism - Q.affluent_tourism)*.57
+}
+
+function longshore_revenue() {
+    Q.overall_longshore = 2678 * Q.trade_level / (Q.crime_level * Q.crime_level)
+
+    Q.coop_longshore_rev = Q.overall_longshore * .38 - Q.overall_longshore * Q.trade_level
+    Q.affluent_longshore_rev = Q.overall_longshore * .41 - Q.overall_longshore * Q.trade_level
+    Q.corp_longshore_rev =  (Q.overall_longshore - Q.corp_longshore - Q.affluent_longshore)*.31
+    Q.poor_longshore_rev =  (Q.overall_longshore - Q.corp_longshore - Q.affluent_longshore)*.33
+    Q.drone_longshore_rev =  (Q.overall_longshore - Q.corp_longshore - Q.affluent_longshore)*.36
+}
+
+// would be nice if there was a way to make drones shift to buying local as they get more independent minded
+function corp_purchase(){
+    corp_spend = Q.corp_money / 84
+    Q.corp_local_spend = corp_spend / Q.trade_level * .2
+    drone_spend = Q.drone_money * 0.60
+    Q.drone_local_spend = drone_spend / Q.trade_level * .4
+
+    Q.corp_capital_change = Q.corp_capital*.01 + (corp_spend *0.8 * Math.sqrt(Q.trade_level))
+
+    Q.corp_capital_revenue = corp_capital / 240
+}
+
+function coop_purchase(){
+    coop_spend = Q.coop_money / 36
+    Q.coop_spend
+
+}
+
+
+function economy_tick(){
+    trade_level()
+    corp_purchase()
+
+
+}
+
+function monthly_tick_phase1() {
+    organize_tick()
+    trade_level_tick()
+    econmy_tick()
+}
+
+Q.monthly_tick_phase1 = monthly_tick_phase1
+
+!}

@@ -1,0 +1,174 @@
+---
+description: Mikasa Dendry / Dendrynexus cheat sheet (from source/ patterns)
+globs: source/**/*.dry
+alwaysApply: true
+---
+
+# Mikasa Dendry cheat sheet
+
+Dendry (`.dry`) is compiled by [dendrynexus](https://github.com/aucchen/dendrynexus) into `out/`. Syntax below is inferred from this repo; confirm edge cases with `npm run dendrynexus make-html -- --pretty`.
+
+## Layout
+
+| Path | Role |
+|------|------|
+| `source/scenes/**/*.scene.dry` | Scenes, cards, events, advisors |
+| `source/qdisplays/*.qdisplay.dry` | Qualities: numeric ranges → labels |
+| `source/info.dry` | Game title / author metadata |
+| `out/` | Generated HTML/JS — do not edit |
+
+## Scene file anatomy
+
+```dry
+title: My Scene
+new-page: true
+is-card: true
+card-image: img/foo.jpg
+tags: event, govt_affairs
+priority: 1
+max-visits: 1
+view-if: month = 3 and year = 2300
+on-arrival: foo += 1; bar = 1
+go-to: post_event if started = 1; main if started = 0
+
+Prose and choices here.
+
+- @choice_a: Label shown to player
+- @choice_b
+- #event
+
+@choice_a
+title: Choice title (cards)
+subtitle: Shown under title
+choose-if: police_defund = 0 and police_reform < 2
+available-if: police_investigated = 0
+unavailable-subtitle: Why this is greyed out
+on-arrival: police_reform += 1
+on-depart: defund = 0
+
+Choice body text.
+[? if police_reform = 1: Conditional prose ?]
+```
+
+- **`@subscene`** — block starting with `@name`; choices use `- @name` or `- @name: visible label`.
+- **`#tag`** — include all scenes tagged with that name (e.g. `- #event`, `- #party_affairs` in decks).
+- **`=` heading** — section title in UI (`= Status`).
+- **`>` blockquote** — quoted flavor text in `root.scene.dry`.
+
+## Common scene metadata
+
+| Key | Purpose |
+|-----|---------|
+| `title:` | Display name |
+| `new-page:` | Open as new page (`true` / `false`) |
+| `is-card:` | Playable card |
+| `is-pinned-card:` | Stays in hand (e.g. advance month, advisors) |
+| `is-hand:` / `is-deck:` | Main UI: hand vs deck |
+| `max-cards:` | Hand size |
+| `card-image:` | Card art path |
+| `set-bg:` | Background image |
+| `tags:` | Grouping for `#tag` includes and filters |
+| `priority:` | Event ordering (higher first) |
+| `max-visits:` | `1` = one-shot event/card setup |
+| `view-if:` / `view_if:` | When scene/card appears (both spellings exist in repo) |
+| `on-arrival:` | Run on enter — JS block `{! … !}` or `stat += 1; stat2 = 0` |
+| `on-depart:` | Run when leaving subscene |
+| `on-display:` | JS when scene renders (DOM / `fetch`, see `mod_loader.scene.dry`) |
+| `go-to:` | Auto-navigate: `scene`, `scene.subscene`, or conditions |
+
+### `go-to` examples (from repo)
+
+```dry
+go-to: post_event.events_choice
+go-to: main if difficulty >= 0; main.main_easy if difficulty < 0
+go-to: organize_phase_tick.scene.dry
+go-to: events_choice if has_event = 1; main if has_event = 0
+```
+
+### Choice gating (subscenes)
+
+| Key | Purpose |
+|-----|---------|
+| `choose-if:` / `chose-if:` | Must be true to pick (typo `chose-if` appears in source) |
+| `available-if:` | Alternative gating style |
+| `unavailable-subtitle:` | Text when disabled; may embed `[? … ?]` |
+
+## Inline templating
+
+| Syntax | Meaning |
+|--------|---------|
+| `[+ var +]` | Insert quality/stat value |
+| `[+ month : month +]` | Value with qdisplay label (see `month.qdisplay.dry`) |
+| `[? if x = 1: text ?]` | Conditional prose |
+| `[? if x => 1: text ?]` | Comparison in condition |
+| `{! JavaScript or HTML !}` | Execute JS or emit raw HTML |
+
+HTML tooltips and party colors are common:
+
+```dry
+{!<span style="color: #44b88f;">C</span>!}:[+ Exec_C +]
+```
+
+Party letter colors: **C** corp `#44b88f`, **G** gang `#cf6e19`, **D** dem `#1100cc`, **H** hate `#3a0000ff`, **I** ind `#404040`.
+
+## JavaScript blocks
+
+- Wrap logic in `{! … !}` (multiline OK).
+- **`Q`** — primary game state namespace (`Q.month`, `Q.update_projections()`, classes on `Q` in `root.scene.dry`).
+- Top-level assignments in `on-arrival` often omit `let`/`const` (Dendrynexus global scope).
+- **`on-arrival:` without braces** — semicolon-separated stat updates: `on-arrival: patriot_meme_strength += 1;`
+- Runtime APIs appear in advanced scenes: `this.game.scenes`, `this._compileChoices`, `this.ui` (`post_event.scene.dry`).
+
+### Setup / tick pattern
+
+Hidden setup scenes (`max-visits: 1`, `new-page: false`) define functions and assign hooks:
+
+```dry
+on-arrival: {!
+function organize_tick() { Q.protest_good += Q.non_violence - 1.5 }
+Q.monthly_tick_phase1 = monthly_tick_phase1
+!}
+```
+
+Wire with `go-to:` from a visible card or `on-arrival` on phase start.
+
+## Q-displays (`*.qdisplay.dry`)
+
+Map numeric qualities to text:
+
+```dry
+(1..1) January
+(0.41..0.54) divided
+(..0.06) completely disloyal
+(0.95..) completely loyal
+```
+
+Used via `[+ month : month +]` — second name is the qdisplay id (usually filename stem).
+
+## Game flow (this project)
+
+1. **`root.scene.dry`** — init `Q` (stratums, regions, election math), start menu → `main` / `main_easy`.
+2. **`main.scene.dry`** — decks: Party Affairs, Government Affairs, pinned shuffle/advance.
+3. **`advance.scene.dry`** — month tick → `post_event`.
+4. **`post_event.scene.dry`** — `Q.update_projections()`, drain `#event` queue or return to main.
+5. **Events** — `tags: event`, `view-if:` date, `priority`, `max-visits: 1`.
+6. **Cards** — `is-card: true`, `tags: organize_phase` / `govt_affairs` / `party_affairs`, often `view_if:` unlock flags.
+7. **`status.scene.dry`**, **`library.scene.dry`**, **`election_simulation.scene.dry`** — `is-special: true`.
+8. **`@backSpecialScene`** — return from special scenes (library, mods).
+
+## Build
+
+```bash
+npm install
+npm run dendrynexus make-html -- --pretty
+cp out/game.json out/html/   # if running static html locally
+```
+
+`--pretty` is passed through to dendrynexus (formatting/readability of generated output).
+
+## Editing tips
+
+- Prefer matching existing spelling in the same file (`view-if` vs `view_if`, `choose-if` vs `chose-if`).
+- New events: copy a dated event (e.g. `september_convention.scene.dry`), set `view-if`, `tags: event`, add to event pool via `#event` if needed.
+- New qualities: add qdisplay file + reference in prose with `[+ name : qdisplay_id +]`.
+- Simulation / balance logic lives mainly in `root.scene.dry` and organizing ticks under `source/scenes/cards/organizing/`.

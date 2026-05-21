@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": ".cursor/hooks/log-conversation.py"
+      }
+    ],
+    "sessionEnd": [
+      {
+        "command": ".cursor/hooks/log-conversation.py"
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": ".cursor/hooks/log-conversation.py"
+      }
+    ],
+    "afterAgentThought": [
+      {
+        "command": ".cursor/hooks/log-conversation.py"
+      }
+    ],
+    "afterAgentResponse": [
+      {
+        "command": ".cursor/hooks/log-conversation.py"
+      }
+    ],
+    "postToolUse": [
+      {
+        "command": ".cursor/hooks/log-conversation.py"
+      }
+    ]
+  }
+}
