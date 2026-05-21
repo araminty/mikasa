@@ -20,6 +20,7 @@ title: Purge Demons
 subtitle: The corporate drones will resent us disrupting the systems they rely on
 view-if: callista_toggle = 0
 on-arrival: callista_toggle = 1
+go-to: callista
 
 Callista and her Guardian Spirit help make the internet a little less dead
 
@@ -28,5 +29,6 @@ title: Stop Purging Demons
 subtitle: Appease the corporate drones
 view-if: callista_toggle = 1
 on-arrival: callista_toggle = 0
+go-to: callista
 
 Callista doesn't understand how anybody could leave computers in this state
