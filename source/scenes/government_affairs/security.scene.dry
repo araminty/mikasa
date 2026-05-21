@@ -9,8 +9,8 @@ on-arrival: corporate_long_leash = TBD;
 City security historically has earned little faith from the people of Mikasa.  The corporations long used the police as a dumping ground for the cast off of their private security forces.  The poor payment of the police made them easy targets for syndicate bribery.
 
 [? if police_reform = 1: We have taken some steps to clean up the police but have a long way to go ?]
-[? if police_reform > 1: We are reforming the police but there is more to do ?]
-[? if police_defund => 1: We have extensively purged the police of corruption, leaving them short staffed ?]
+[? if police_reform = 2: We are reforming the police but there is more to do ?]
+[? if police_defund > 2: We have extensively purged the police of corruption, leaving them short staffed ?]
 
 -@defund
 -@improve_pay
@@ -20,8 +20,8 @@ City security historically has earned little faith from the people of Mikasa.  T
 @defund
 title: Purge the ranks
 subtitle: are corrupt police worse then no police at all?
-choose-if: police_defund=0 and police_reform < 2;
-on-arrival: police_defund=1
+choose-if: police_defund = 0 and police_reform < 2
+on-arrival: police_defund = 1
 
 Purging the ranks of the police is a drastic move but ironically one that neither the corporations or syndicates can interfere with.  This frees up budget which could hopefully go towards making less corrupt institutions.  
 [? if militia_police = 1: Hopefully our militia forces can prevent the streets decending into chaos ?]
@@ -30,7 +30,7 @@ Purging the ranks of the police is a drastic move but ironically one that neithe
 @improve_pay
 title: Improve pay and training
 on-arrival: police_reform += 1; police_reform += 1 if militia_police > 1; police_reform += 1 if police_defund=1
-on-depart: defund = 0
+# dendry: on-depart is not a valid property (was: on-depart: defund = 0)
 
 Paying the police more then a poverty wage can make them less dependent on bribes.
 [? if police_defund = 1 and militia_police < 2 : We can hire more honest replacements for the police we previously purged. ?]
@@ -47,8 +47,7 @@ We have established volunteer neighborhood protection services.  This is an alte
 @investigation
 title: Start a discrete investigation
 subtitle: Who watches the watchman?
-available-if: police_investigated=0
-choose-if: corporate_long_leash = 1
+choose-if: police_investigated = 0 and corporate_long_leash = 1
 on-arrival: police_reform += 1; police_reform +=1 if police_reform>1; megacorps_angry_TBD += 1 if police_reform>1;  police_investigated=1
 
 [? if police_reform = 1: Finding corrupt police is like shooting fish in a barrel.  Our investigation unit makes dozens of arrest before word gets out and the corrupt officials get better at covering their tracks. ?]

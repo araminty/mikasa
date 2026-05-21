@@ -4,7 +4,7 @@ max-visits: 1
 tags: event
 view-if: year >=2300
 on-arrival: organizing_unlock = 1; phase = 1;
-go-to: organize_phase_tick.scene.dry
+go-to: organize_phase_tick
 
 The city government in Mikasa only holds substantial power in one district: the Aurora district.  The "big 3" corporations run their home districts as fiefs.  The ganglands of the old mine district are run by the syndicates to the extent they are run at all.  The wealth Docks are controlled by a patchwork of private security forces. And finally the isolationist Deepers are intent on keeping the government out of the Deeps.
 

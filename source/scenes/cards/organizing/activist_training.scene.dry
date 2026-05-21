@@ -16,26 +16,29 @@ Turn popular support into power.
 
 @nonviolence
 title: Train disciplined activists for non-violent demostrations
-chose-if: non_violence < 3
+choose-if: non_violence < 3
 unavailable-subtitle: We already have a well trained vanguard
-on-arrival: non_violence += 1
+on-arrival: non_violence += 1;
+
 Non-violent discipline requires the utmost discipline to resist provocation and win the media war.  We are training a vanguard of activists for this difficult course of action.
-[? if non_violence = 1 : We are spreading knownledge of non-violent personal protection techniques and our activists can keep recording despite corporate suppression efforts ?]
-[? if non_violence = 2 : Our activists are prepared for non-violent resistance and first -aid procedures  ?]
-[? if non_violence = 3 : Our activists are disciplined and committed, the corporations wont be able to portray them as the instigators of violence ?]
+[? if non_violence == 1 : We are spreading knownledge of non-violent personal protection techniques and our activists can keep recording despite corporate suppression efforts ?]
+[? if non_violence == 2 : Our activists are prepared for non-violent resistance and first -aid procedures  ?]
+[? if non_violence == 3 : Our activists are disciplined and committed, the corporations wont be able to portray them as the instigators of violence ?]
 
 
 @sabotage
 title: Deniable sabotage techniques
-chose-if: sabotage < 3
+choose-if: sabotage < 3
 unavailable-subtitle: We already have a well established doctrine
-on-arrival: sabotage += 1
+on-arrival: sabotage += 1;
+
 The corporations harshly punish destruction of property but the workers have developed a wide range of techniques to throw sand in the corporate gears that can't be traced.
 
 
 @defense
 title: Community self defense
-chose-if: militia < 3
+choose-if: militia < 3
 unavailable-subtitle: We've already built up the militia
-on-arrival: militia += 1
+on-arrival: militia += 1;
+
 We have established local community watch efforts to try to protect the citizens from crime.

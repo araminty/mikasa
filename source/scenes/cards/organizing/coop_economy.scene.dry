@@ -10,3 +10,17 @@ The cooperatives are the bedrock of the non-corporate economy on Mikasa.  Cooper
 -@markets
 -@mother
 -@investment
+
+# dendry: choices above lacked @subscenes — stubs below until written
+
+@markets
+title: Interclan markets
+on-arrival: coop_markets += 1
+
+@mother
+title: Clans of mother outreach
+on-arrival: coop_mother += 1
+
+@investment
+title: Self-sufficiency investments
+on-arrival: coop_investment += 1

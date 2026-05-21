@@ -1,6 +1,6 @@
 /**
  * Mikasa election simulation (voter-block model).
- * Runnable in Node without Dendrynexus. Keep in sync with root_new.scene.dry on-arrival block.
+ * Runnable in Node without Dendrynexus. Legacy v1 model; live game uses root.scene.dry (election v2). Keep v2 in sync with source/lib/election-v2.js and root.scene.dry.
  */
 
 const PARTY_KEYS = ['D', 'I', 'C', 'G', 'H']

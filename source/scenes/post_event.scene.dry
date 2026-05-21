@@ -2,8 +2,243 @@ title: Post Event
 new-page: true
 on-arrival: {!
 
-Q.update_projections();
+// --- Electorate modifiers (rebuilt before every poll in Q.update_projections) -------
+// stackId: Q quality bumped in events (e.g. favor_second_wave_housing_dispute += 1).
+// Several rows may share one stackId (multiple effects per choice).
+// Dendry initializes missing qualities to 0 before +=. Each poll applies delta * stacks.
+// Scopes: stratum (demographic), district (region), global.
 
+var ELECTORATE_PARTY_KEYS = ['D', 'I', 'C', 'G', 'H']
+
+function electorateZeroScores() {
+    return { D: 0, I: 0, C: 0, G: 0, H: 0 }
+}
+
+function electorateCopyScores(src) {
+    var out = electorateZeroScores()
+    for (var i = 0; i < ELECTORATE_PARTY_KEYS.length; i++) {
+        var k = ELECTORATE_PARTY_KEYS[i]
+        out[k] = (src && src[k]) || 0
+    }
+    return out
+}
+
+function electorateAddDelta(scores, party, delta) {
+    if (scores && scores[party] !== undefined) {
+        scores[party] += delta
+    }
+}
+
+var ELECTORATE_SCOPES = { stratum: 1, district: 1, global: 1 }
+
+class ElectorateModifier {
+    /**
+     * Positional (table-friendly):
+     *   new ElectorateModifier(rowId, stackId, scope, target, party, delta [, activeIf])
+     *   new ElectorateModifier(stackId, scope, target, party, delta [, activeIf])  // legacy: rowId = stackId
+     * stackId: Q quality for stacks (favor_second_wave_housing_dispute += 1).
+     * scope: 'stratum' | 'district' | 'global' — use '' for target when global.
+     * Object form: { id, stackId?, scope, target, party, delta, activeIf? }
+     */
+    constructor(rowId, stackId, scope, target, party, delta, activeIf) {
+        var fromObject = rowId && typeof rowId === 'object'
+        if (fromObject) {
+            var opts = rowId
+            rowId = opts.id
+            stackId = opts.stackId != null ? opts.stackId : opts.id
+            scope = opts.scope
+            target = opts.target
+            party = opts.party
+            delta = opts.delta
+            activeIf = opts.activeIf
+            this.gateWithActiveIf = activeIf != null
+        } else if (ELECTORATE_SCOPES[stackId]) {
+            // legacy: (stackId, scope, target, party, delta [, activeIf])
+            activeIf = delta
+            delta = party
+            party = target
+            target = scope
+            scope = stackId
+            stackId = rowId
+            this.gateWithActiveIf = arguments.length >= 6 && activeIf != null
+        } else {
+            this.gateWithActiveIf = arguments.length >= 7 && activeIf != null
+        }
+        this.id = rowId
+        this.stackId = stackId || rowId
+        this.scope = scope
+        this.target = target || ''
+        this.party = party
+        this.delta = delta || 0
+        this.activeIf = activeIf || function() { return true }
+    }
+
+    /** Stack count from Q[stackId]; non-numeric or <= 0 → no effect. */
+    stacksFromQ(q) {
+        if (!q || q[this.stackId] == null) { return 0 }
+        var n = Number(q[this.stackId])
+        if (isNaN(n) || n <= 0) { return 0 }
+        return n
+    }
+
+    isActive(q) {
+        try {
+            return !!this.activeIf(q)
+        } catch (e) {
+            return false
+        }
+    }
+
+    apply(state, q) {
+        var stacks = this.stacksFromQ(q)
+        if (stacks <= 0) { return }
+        if (this.gateWithActiveIf && !this.isActive(q)) { return }
+        var shift = this.delta * stacks
+        if (this.scope === 'stratum') {
+            var dem = state.demographicsById[this.target]
+            if (dem) { electorateAddDelta(dem.competitiveScores, this.party, shift) }
+        } else if (this.scope === 'district') {
+            var dist = state.districtsById[this.target]
+            if (dist) { electorateAddDelta(dist.competitiveScores, this.party, shift) }
+        } else if (this.scope === 'global') {
+            electorateAddDelta(state.global.competitiveScores, this.party, shift)
+        }
+    }
+}
+
+Q.ElectorateModifier = ElectorateModifier
+
+// rowId | stackId (= Q) | scope | target | party | delta — target '' for global
+// In events:  dundalk_reform += 1
+
+Q.electorateModifierCatalog = [
+    new ElectorateModifier('alien_dems_feb2300', 'stratum', 'alien', 'D', 0.2),
+    new ElectorateModifier('pitts_gang_jun2300', 'district', 'Pitts', 'G', 0.3),
+    new ElectorateModifier('refugee_pressure_hate', 'global', '', 'H', 0.1),
+    new ElectorateModifier('dundalk_rally_reform', 'dundalk_reform', 'global', '', 'D', 1),
+    new ElectorateModifier('dundalk_stake_rally_corp', 'dundalk_stakeholder', 'global', '', 'C', -2),
+    new ElectorateModifier('dundalk_stake_rally_dems', 'dundalk_stakeholder', 'global', '', 'D', 1),
+    new ElectorateModifier('dundalk_vigil_rally_gang', 'dundalk_vigil', 'global', '', 'G', -2),
+    new ElectorateModifier('dundalk_vigil_rally_dems', 'dundalk_vigil', 'global', '', 'D', +.5),
+    new ElectorateModifier('dundalk_nationalist_dems', 'dundalk_nationalist', 'global', '', 'D', +1.5),
+    new ElectorateModifier('dundalk_nationalist_dems', 'dundalk_nationalist', 'global', '', 'H', +1.5),
+
+    
+
+    // --- organize_phase card stacks (placeholder; tune when cards are written) ---
+    new ElectorateModifier('vocational_track_second_C', 'vocational_track', 'stratum', 'second', 'C', 0.15),
+    new ElectorateModifier('vocational_track_second_D', 'vocational_track', 'stratum', 'second', 'D', 0.1),
+    new ElectorateModifier('contract_outside_global_C', 'contract_outside', 'global', '', 'C', 0.1),
+    new ElectorateModifier('contract_big3_drone_C', 'contract_big3', 'stratum', 'drone', 'C', 0.2),
+    new ElectorateModifier('contract_petty_first_I', 'contract_petty', 'stratum', 'first', 'I', 0.1),
+    new ElectorateModifier('contract_petty_first_G', 'contract_petty', 'stratum', 'first', 'G', 0.1),
+    new ElectorateModifier('contract_coop_coop_D', 'contract_coop', 'stratum', 'coop', 'D', 0.15),
+    new ElectorateModifier('coop_markets_coop_D', 'coop_markets', 'stratum', 'coop', 'D', 0.12),
+    new ElectorateModifier('coop_markets_coop_C', 'coop_markets', 'stratum', 'coop', 'C', -0.08),
+    new ElectorateModifier('coop_mother_coop_D', 'coop_mother', 'stratum', 'coop', 'D', 0.1),
+    new ElectorateModifier('coop_mother_alien_D', 'coop_mother', 'stratum', 'alien', 'D', 0.08),
+    new ElectorateModifier('coop_investment_coop_D', 'coop_investment', 'stratum', 'coop', 'D', 0.12),
+    new ElectorateModifier('coop_investment_coop_C', 'coop_investment', 'stratum', 'coop', 'C', -0.1),
+    new ElectorateModifier('magic_control_alien_C', 'magic_control', 'stratum', 'alien', 'C', 0.1),
+    new ElectorateModifier('magic_control_alien_D', 'magic_control', 'stratum', 'alien', 'D', -0.1),
+    new ElectorateModifier('magic_assimilate_alien_D', 'magic_assimilate', 'stratum', 'alien', 'D', 0.12),
+    new ElectorateModifier('magic_school_alien_D', 'magic_school', 'stratum', 'alien', 'D', 0.15),
+    new ElectorateModifier('magic_school_global_D', 'magic_school', 'global', '', 'D', 0.05),
+
+    // --- otherworld event stacks (placeholder) ---
+    new ElectorateModifier('otherworld_outpost_alien_D', 'otherworld_outpost', 'stratum', 'alien', 'D', 0.1),
+    new ElectorateModifier('otherworld_outpost_global_C', 'otherworld_outpost', 'global', '', 'C', 0.08),
+    new ElectorateModifier('great_protector_appease_global_C', 'great_protector_appeasement', 'global', '', 'C', 0.12),
+    new ElectorateModifier('great_protector_appease_global_D', 'great_protector_appeasement', 'global', '', 'D', -0.05),
+]
+
+
+// --- Reference only: competitiveScores from root buildDemographics / buildDistricts ---
+// Not in the live catalog. Real baselines live in root (_baseCompetitiveScores at init).
+// Shown as modifiers so you can compare scales when authoring story stacks (delta * Q[stackId]).
+//
+// Strata (buildDemographics):
+// new ElectorateModifier('_ref_rich_D', 'stratum', 'rich', 'D', -1),
+// new ElectorateModifier('_ref_rich_C', 'stratum', 'rich', 'C', 1),
+// new ElectorateModifier('_ref_rich_I', 'stratum', 'rich', 'I', 0.5),
+// new ElectorateModifier('_ref_rich_G', 'stratum', 'rich', 'G', -0.5),
+// new ElectorateModifier('_ref_rich_H', 'stratum', 'rich', 'H', 0),
+// new ElectorateModifier('_ref_first_D', 'stratum', 'first', 'D', 0.5),
+// new ElectorateModifier('_ref_first_C', 'stratum', 'first', 'C', -0.5),
+// new ElectorateModifier('_ref_first_G', 'stratum', 'first', 'G', 0),
+// new ElectorateModifier('_ref_first_H', 'stratum', 'first', 'H', -0.5),
+// new ElectorateModifier('_ref_second_D', 'stratum', 'second', 'D', 0.8),
+// new ElectorateModifier('_ref_second_C', 'stratum', 'second', 'C', -0.8),
+// new ElectorateModifier('_ref_second_G', 'stratum', 'second', 'G', 0.2),
+// new ElectorateModifier('_ref_second_H', 'stratum', 'second', 'H', 0),
+// new ElectorateModifier('_ref_coop_D', 'stratum', 'coop', 'D', 1),
+// new ElectorateModifier('_ref_coop_C', 'stratum', 'coop', 'C', -1.5),
+// new ElectorateModifier('_ref_coop_G', 'stratum', 'coop', 'G', -0.5),
+// new ElectorateModifier('_ref_coop_H', 'stratum', 'coop', 'H', -0.5),
+// new ElectorateModifier('_ref_drone_D', 'stratum', 'drone', 'D', 0.2),
+// new ElectorateModifier('_ref_drone_C', 'stratum', 'drone', 'C', 1.5),
+// new ElectorateModifier('_ref_drone_G', 'stratum', 'drone', 'G', 0.3),
+// new ElectorateModifier('_ref_drone_H', 'stratum', 'drone', 'H', 0),
+// new ElectorateModifier('_ref_alien_D', 'stratum', 'alien', 'D', 1.2),
+// new ElectorateModifier('_ref_alien_H', 'stratum', 'alien', 'H', -1),
+// new ElectorateModifier('_ref_alien_G', 'stratum', 'alien', 'G', -0.5),
+// new ElectorateModifier('_ref_alien_C', 'stratum', 'alien', 'C', -0.5),
+// new ElectorateModifier('_ref_deeper_D', 'stratum', 'deeper', 'D', 1.5),
+// new ElectorateModifier('_ref_deeper_I', 'stratum', 'deeper', 'I', 1),
+// new ElectorateModifier('_ref_deeper_C', 'stratum', 'deeper', 'C', -1),
+// new ElectorateModifier('_ref_deeper_G', 'stratum', 'deeper', 'G', -0.5),
+// new ElectorateModifier('_ref_deeper_H', 'stratum', 'deeper', 'H', -0.5),
+//
+// Districts (buildDistricts):
+// new ElectorateModifier('_ref_Docks_C', 'district', 'Docks', 'C', 0.3),
+// new ElectorateModifier('_ref_Docks_G', 'district', 'Docks', 'G', 0.2),
+// new ElectorateModifier('_ref_Aurora_D', 'district', 'Aurora', 'D', 0.2),
+// new ElectorateModifier('_ref_Aurora_I', 'district', 'Aurora', 'I', 0.2),
+// new ElectorateModifier('_ref_Vats_C', 'district', 'Vats', 'C', 0.8),
+// new ElectorateModifier('_ref_Vats_D', 'district', 'Vats', 'D', -0.3),
+// new ElectorateModifier('_ref_Railyard_C', 'district', 'Railyard', 'C', 0.6),
+// new ElectorateModifier('_ref_Railyard_G', 'district', 'Railyard', 'G', 0.1),
+// new ElectorateModifier('_ref_Pitts_G', 'district', 'Pitts', 'G', 0.5),
+// new ElectorateModifier('_ref_Pitts_D', 'district', 'Pitts', 'D', 0.2),
+// new ElectorateModifier('_ref_Limelight_C', 'district', 'Limelight', 'C', 0.4),
+// new ElectorateModifier('_ref_Limelight_G', 'district', 'Limelight', 'G', 0.3),
+// new ElectorateModifier('_ref_Deeps_D', 'district', 'Deeps', 'D', 0.6),
+// new ElectorateModifier('_ref_Deeps_I', 'district', 'Deeps', 'I', 0.4),
+// new ElectorateModifier('_ref_Deeps_H', 'district', 'Deeps', 'H', -0.3),
+
+Q.applyElectorateModifiers = function() {
+    var state = Q.electionV2
+    if (!state) { return }
+
+    state.demographicsById = state.demographicsById || Object.fromEntries(
+        state.demographics.map(function(d) { return [d.id, d] })
+    )
+    state.districtsById = state.districtsById || Object.fromEntries(
+        state.districts.map(function(d) { return [d.id, d] })
+    )
+
+    for (var i = 0; i < state.demographics.length; i++) {
+        var dem = state.demographics[i]
+        dem.competitiveScores = electorateCopyScores(
+            dem._baseCompetitiveScores || dem.competitiveScores
+        )
+    }
+    for (var j = 0; j < state.districts.length; j++) {
+        var dist = state.districts[j]
+        dist.competitiveScores = electorateCopyScores(
+            dist._baseCompetitiveScores || dist.competitiveScores
+        )
+    }
+    state.global.competitiveScores = electorateCopyScores(
+        state._baseGlobalScores || state.global.competitiveScores
+    )
+
+    for (var m = 0; m < Q.electorateModifierCatalog.length; m++) {
+        Q.electorateModifierCatalog[m].apply(state, Q)
+    }
+}
+
+Q.update_projections();
 
 Q.has_event = 0;
 // check if there are any cards in #event, and then go to main if not.
@@ -36,4 +271,5 @@ go-to: events_choice if has_event = 1; main if has_event = 0 and difficulty >= 0
 
 - #event
 
-# This scene is solely for updating numbers after events, and routing to special events.
+# Electorate modifiers: catalog above; stacks from Q[stackId] (several rows may share one stackId).
+# Rebuilt at each Q.update_projections() (root.scene.dry).

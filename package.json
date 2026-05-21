@@ -5,6 +5,7 @@
   "main": "out/html/index.html",
   "scripts": {
     "dendrynexus": "dendrynexus",
+    "lint:dendry": "node scripts/lint-dendry.js",
     "simulate-election": "node scripts/simulate-election.js",
     "simulate-election:v2": "node scripts/simulate-election.js --v2"
   },

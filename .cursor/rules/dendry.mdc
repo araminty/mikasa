@@ -89,9 +89,12 @@ go-to: events_choice if has_event = 1; main if has_event = 0
 
 | Key | Purpose |
 |-----|---------|
-| `choose-if:` / `chose-if:` | Must be true to pick (typo `chose-if` appears in source) |
-| `available-if:` | Alternative gating style |
+| `choose-if:` / `chose-if:` | Must be true to pick (typo `chose-if` appears in source). No trailing `;`. Use `=` not `=>`. |
+| `available-if:` | Alternative gating style (same condition rules) |
+| `view-if:` / `view_if:` | When scene/card appears (same condition rules) |
 | `unavailable-subtitle:` | Text when disabled; may embed `[? … ?]` |
+
+Run `npm run lint:dendry` before committing scene changes.
 
 ## Inline templating
 
@@ -99,8 +102,7 @@ go-to: events_choice if has_event = 1; main if has_event = 0
 |--------|---------|
 | `[+ var +]` | Insert quality/stat value |
 | `[+ month : month +]` | Value with qdisplay label (see `month.qdisplay.dry`) |
-| `[? if x = 1: text ?]` | Conditional prose |
-| `[? if x => 1: text ?]` | Comparison in condition |
+| `[? if x = 1: text ?]` | Conditional prose (`=` only; `=>` is invalid in .dry conditions) |
 | `{! JavaScript or HTML !}` | Execute JS or emit raw HTML |
 
 HTML tooltips and party colors are common:
@@ -147,7 +149,7 @@ Used via `[+ month : month +]` — second name is the qdisplay id (usually filen
 
 ## Game flow (this project)
 
-1. **`root.scene.dry`** — init `Q` (stratums, regions, election math), start menu → `main` / `main_easy`.
+1. **`root.scene.dry`** — init `Q` (election v2: voter blocks, IGs, competitive softmax), start menu → `main` / `main_easy`. Keep in sync with `source/lib/election-v2.js`.
 2. **`main.scene.dry`** — decks: Party Affairs, Government Affairs, pinned shuffle/advance.
 3. **`advance.scene.dry`** — month tick → `post_event`.
 4. **`post_event.scene.dry`** — `Q.update_projections()`, drain `#event` queue or return to main.
@@ -171,4 +173,4 @@ cp out/game.json out/html/   # if running static html locally
 - Prefer matching existing spelling in the same file (`view-if` vs `view_if`, `choose-if` vs `chose-if`).
 - New events: copy a dated event (e.g. `september_convention.scene.dry`), set `view-if`, `tags: event`, add to event pool via `#event` if needed.
 - New qualities: add qdisplay file + reference in prose with `[+ name : qdisplay_id +]`.
-- Simulation / balance logic lives mainly in `root.scene.dry` and organizing ticks under `source/scenes/cards/organizing/`.
+- Simulation / balance logic: `root.scene.dry` (in-game), `npm run simulate-election:v2` (CLI), organizing ticks under `source/scenes/cards/organizing/`.

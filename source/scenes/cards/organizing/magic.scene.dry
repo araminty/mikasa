@@ -10,3 +10,17 @@ Mikasa has more magical users then most of the solar system thanks to passageway
 -@control
 -@assimilate
 -@establish_school
+
+# dendry: choices above lacked @subscenes — stubs below until written
+
+@control
+title: Restrict magical practice
+on-arrival: magic_control += 1
+
+@assimilate
+title: Assimilate magical traditions
+on-arrival: magic_assimilate += 1
+
+@establish_school
+title: Establish a formal school
+on-arrival: magic_school += 1

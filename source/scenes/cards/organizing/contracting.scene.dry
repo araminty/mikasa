@@ -5,7 +5,25 @@ card-image: img/asteroid.jpg
 tags: organize_phase
 view_if: organizing_unlock = 1
 
--@outside corporations
+-@outside_corporations
 -@big_3
 -@petty_capitalists
 -@cooperatives
+
+# dendry: was `-@outside corporations` (space in id — invalid option)
+
+@outside_corporations
+title: Outside corporation suppliers
+on-arrival: contract_outside += 1
+
+@big_3
+title: Big Three suppliers
+on-arrival: contract_big3 += 1
+
+@petty_capitalists
+title: Petty capitalists
+on-arrival: contract_petty += 1
+
+@cooperatives
+title: Cooperative suppliers
+on-arrival: contract_coop += 1

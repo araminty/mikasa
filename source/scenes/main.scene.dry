@@ -7,7 +7,6 @@ max-cards: 3
 
 - @party
 - @govt
-- @shuffle_leadership_pinned
 - @advance
 - #advisor
 
@@ -21,7 +20,6 @@ max-cards: 4
 
 - @party
 - @govt
-- @shuffle_leadership_pinned
 - @advance
 - #advisor
 

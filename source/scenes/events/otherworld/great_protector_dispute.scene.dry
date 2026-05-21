@@ -12,7 +12,8 @@ The Great Protector sent a diplomatic complaint alleging that our Otherworld out
 
 @silence
 title: Promise to do something
-on-arrival: TDB
+on-arrival: great_protector_appeasement += 1
+# dendry: was `on-arrival: TDB` (invalid); appeasement stack placeholder
 
 We issue orders for our otherworld outpost to avoid alienating our neighbors with talk of democracy and freedom
 

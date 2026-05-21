@@ -129,6 +129,7 @@ class Demographic {
         /** Max share of this stratum claimed by all IGs combined (rest = competitive). */
         this.igClaimCap = config.igClaimCap ?? 0.5
         this.executiveWeight = config.executiveWeight ?? 1
+        this.voteRule = config.voteRule || null
     }
 }
 
@@ -311,6 +312,7 @@ function buildDemographics() {
             drone: {
                 igClaimCap: 0.8,
                 executiveWeight: 0.6,
+                voteRule: 'corp_or_abstain',
                 competitiveScores: { D: 0.2, C: 1.5, G: 0.3, H: 0 },
                 competitiveSteepness: { D: 0.3, C: 1 },
             },
@@ -564,20 +566,55 @@ function allocateCompetitiveVotes(block, interestGroups, chamber, state) {
     return votes
 }
 
+function corpOrAbstainPartyVotes(votes) {
+    const out = zeroPartyVotes()
+    out.C = votes.C || 0
+    return out
+}
+
+function sumPartyVoteObjects(a, b) {
+    const out = zeroPartyVotes()
+    for (const k of PARTY_KEYS) {
+        out[k] = (a[k] || 0) + (b[k] || 0)
+    }
+    return out
+}
+
+function applyDroneCorpOrAbstainRule(block, result, state, chamber) {
+    if (block.demographic.voteRule !== 'corp_or_abstain') { return result }
+    result.ig = corpOrAbstainPartyVotes(result.ig)
+    result.comp = corpOrAbstainPartyVotes(result.comp)
+    result.total = sumPartyVoteObjects(result.ig, result.comp)
+    return result
+}
+
+const BLOCK_VOTE_RULES = [
+    applyDroneCorpOrAbstainRule,
+]
+
+function applyBlockVoteRules(block, result, state, chamber) {
+    for (let r = 0; r < BLOCK_VOTE_RULES.length; r++) {
+        result = BLOCK_VOTE_RULES[r](block, result, state, chamber) || result
+    }
+    return result
+}
+
 function tabulateBlock(block, interestGroups, chamber, state) {
     const ig = allocateIgVotes(block, interestGroups, chamber, state)
     const comp = allocateCompetitiveVotes(block, interestGroups, chamber, state)
-    const total = zeroPartyVotes()
-    for (const k of PARTY_KEYS) {
-        total[k] = ig[k] + comp[k]
+    let result = {
+        ig,
+        comp,
+        total: sumPartyVoteObjects(ig, comp),
     }
+    result = applyBlockVoteRules(block, result, state, chamber)
     const weight = chamber.useExecutiveWeight ? block.demographic.executiveWeight : 1
     if (weight !== 1) {
         for (const k of PARTY_KEYS) {
-            total[k] *= weight
+            result.total[k] *= weight
         }
     }
-    return { ig, comp, total }
+    return result
 }
 
 class ElectionEngineV2 {

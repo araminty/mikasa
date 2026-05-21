@@ -1,67 +1,70 @@
 title: Status
 new-page: true
 is-special: true
-on-arrival:  {!
-
-Q.update_projections();
-
-!}
 
 = Status
 
 [+ month : month +] [+ year +]
 
-= Seat Projections:
+= Current seats
 
-Executive: 
- {!<span style="color: #44b88f;">C</span>!}: [+ Exec_C +]  {!<span style="color: #cf6e19;">G</span>!}: [+ Exec_G +]  {!<span style="color: #1100cc;">D</span>!}: [+ Exec_D +]  {!<span style="color: #3a0000ff;">H</span>!}: [+ Exec_H +]  {!<span style="color: #404040;">I</span>!}: [+ Exec_I +]
+Council composition from the opening election (January 2300):
 
-Guilds:
-"Gold":  {!<span style="color: #44b88f;">C</span>!}:[+ Gold_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Gold_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Gold_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Gold_H +] {!<span style="color: #404040;">I</span>!}:[+ Gold_I +]
-
-"White":  {!<span style="color: #44b88f;">C</span>!}:[+ White_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ White_G +] {!<span style="color: #1100cc;">D</span>!}:[+ White_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ White_H +] {!<span style="color: #404040;">I</span>!}:[+ White_I +]
-
-"Blue":  {!<span style="color: #44b88f;">C</span>!}:[+ Blue_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Blue_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Blue_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Blue_H +] {!<span style="color: #404040;">I</span>!}:[+ Blue_I +]
-
-Districts:
-
-
-D1:
-
- {!<span style="color: #44b88f;">C</span>!}:[+ Docks_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Docks_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Docks_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Docks_H +] {!<span style="color: #404040;">I</span>!}:[+ Docks_I +]
-
-
-
-D2:
-
- {!<span style="color: #44b88f;">C</span>!}:[+ Aurora_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Aurora_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Aurora_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Aurora_H +] {!<span style="color: #404040;">I</span>!}:[+ Aurora_I +]
+{!<table style="width:100%; border-collapse:collapse; font-size:0.85em; margin:0.25em 0;">!}
+{!<tr><th style="text-align:left; font-weight:normal;"></th><th style="text-align:center;">!}{!<span style="color: #44b88f;">C</span>!}{!</th><th style="text-align:center;">!}{!<span style="color: #cf6e19;">G</span>!}{!</th><th style="text-align:center;">!}{!<span style="color: #1100cc;">D</span>!}{!</th><th style="text-align:center;">!}{!<span style="color: #3a0000ff;">H</span>!}{!</th><th style="text-align:center;">!}{!<span style="color: #404040;">I</span>!}{!</th></tr>!}
+{!<tr><td style="text-align:left;">Executive</td><td style="text-align:right;">!}[+ Exec_C +]{!</td><td style="text-align:right;">!}[+ Exec_G +]{!</td><td style="text-align:right;">!}[+ Exec_D +]{!</td><td style="text-align:right;">!}[+ Exec_H +]{!</td><td style="text-align:right;">!}[+ Exec_I +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">Gold</td><td style="text-align:right;">!}[+ Gold_C +]{!</td><td style="text-align:right;">!}[+ Gold_G +]{!</td><td style="text-align:right;">!}[+ Gold_D +]{!</td><td style="text-align:right;">!}[+ Gold_H +]{!</td><td style="text-align:right;">!}[+ Gold_I +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">White</td><td style="text-align:right;">!}[+ White_C +]{!</td><td style="text-align:right;">!}[+ White_G +]{!</td><td style="text-align:right;">!}[+ White_D +]{!</td><td style="text-align:right;">!}[+ White_H +]{!</td><td style="text-align:right;">!}[+ White_I +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">Blue</td><td style="text-align:right;">!}[+ Blue_C +]{!</td><td style="text-align:right;">!}[+ Blue_G +]{!</td><td style="text-align:right;">!}[+ Blue_D +]{!</td><td style="text-align:right;">!}[+ Blue_H +]{!</td><td style="text-align:right;">!}[+ Blue_I +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">D1 Docks</td><td style="text-align:right;">!}[+ Docks_C +]{!</td><td style="text-align:right;">!}[+ Docks_G +]{!</td><td style="text-align:right;">!}[+ Docks_D +]{!</td><td style="text-align:right;">!}[+ Docks_H +]{!</td><td style="text-align:right;">!}[+ Docks_I +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">D2 Aurora</td><td style="text-align:right;">!}[+ Aurora_C +]{!</td><td style="text-align:right;">!}[+ Aurora_G +]{!</td><td style="text-align:right;">!}[+ Aurora_D +]{!</td><td style="text-align:right;">!}[+ Aurora_H +]{!</td><td style="text-align:right;">!}[+ Aurora_I +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">D3 Vats</td><td style="text-align:right;">!}[+ Vats_C +]{!</td><td style="text-align:right;">!}[+ Vats_G +]{!</td><td style="text-align:right;">!}[+ Vats_D +]{!</td><td style="text-align:right;">!}[+ Vats_H +]{!</td><td style="text-align:right;">!}[+ Vats_I +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">D4 Railyard</td><td style="text-align:right;">!}[+ Railyard_C +]{!</td><td style="text-align:right;">!}[+ Railyard_G +]{!</td><td style="text-align:right;">!}[+ Railyard_D +]{!</td><td style="text-align:right;">!}[+ Railyard_H +]{!</td><td style="text-align:right;">!}[+ Railyard_I +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">D5 Pitts</td><td style="text-align:right;">!}[+ Pitts_C +]{!</td><td style="text-align:right;">!}[+ Pitts_G +]{!</td><td style="text-align:right;">!}[+ Pitts_D +]{!</td><td style="text-align:right;">!}[+ Pitts_H +]{!</td><td style="text-align:right;">!}[+ Pitts_I +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">D6 Limelight</td><td style="text-align:right;">!}[+ Limelight_C +]{!</td><td style="text-align:right;">!}[+ Limelight_G +]{!</td><td style="text-align:right;">!}[+ Limelight_D +]{!</td><td style="text-align:right;">!}[+ Limelight_H +]{!</td><td style="text-align:right;">!}[+ Limelight_I +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">D7 Deeps</td><td style="text-align:right;">!}[+ Deeps_C +]{!</td><td style="text-align:right;">!}[+ Deeps_G +]{!</td><td style="text-align:right;">!}[+ Deeps_D +]{!</td><td style="text-align:right;">!}[+ Deeps_H +]{!</td><td style="text-align:right;">!}[+ Deeps_I +]{!</td></tr>!}
+{!</table>!}
 
 
 
-D3:
+@polls
+on-arrival: {! Q.update_projections(); !}
 
- {!<span style="color: #44b88f;">C</span>!}:[+ Vats_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Vats_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Vats_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Vats_H +] {!<span style="color: #404040;">I</span>!}:[+ Vats_I +]
+= Projected election results
 
+(if district elections were held now — citywide popular vote under the general electorate model; figures are percent):
 
+{!<table style="width:100%; border-collapse:collapse; font-size:0.85em; margin:0.25em 0;">!}
+{!<tr><th style="text-align:left; font-weight:normal;"></th><th style="text-align:center;"><span class="tooltip-text" title="Megacorporations and their approved candidates" style="color: #44b88f;">C</span></th><th style="text-align:center;"><span class="tooltip-text" title="Syndicates and organized crime" style="color: #cf6e19;">G</span></th><th style="text-align:center;"><span class="tooltip-text" title="Democrats and reform movements" style="color: #1100cc;">D</span></th><th style="text-align:center;"><span class="tooltip-text" title="Xenophobic and hate movements" style="color: #3a0000ff;">H</span></th><th style="text-align:center;"><span class="tooltip-text" title="Independents, Deepers, and unaligned voters" style="color: #404040;">I</span></th></tr>!}
+{!<tr><td style="text-align:left;">Citywide</td><td style="text-align:right;">!}[+ poll_exec_C +]{!</td><td style="text-align:right;">!}[+ poll_exec_G +]{!</td><td style="text-align:right;">!}[+ poll_exec_D +]{!</td><td style="text-align:right;">!}[+ poll_exec_H +]{!</td><td style="text-align:right;">!}[+ poll_exec_I +]{!</td></tr>!}
+{!</table>!}
 
-D4:
+= Detailed results by demographic
 
- {!<span style="color: #44b88f;">C</span>!}:[+ Railyard_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Railyard_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Railyard_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Railyard_H +] {!<span style="color: #404040;">I</span>!}:[+ Railyard_I +]
+Share of the popular vote within each stratum (general electorate model; figures are percent):
 
+{!<table style="width:100%; border-collapse:collapse; font-size:0.85em; margin:0.25em 0;">!}
+{!<tr><th style="text-align:left; font-weight:normal;"></th><th style="text-align:center;">!}{!<span style="color: #44b88f;">C</span>!}{!</th><th style="text-align:center;">!}{!<span style="color: #cf6e19;">G</span>!}{!</th><th style="text-align:center;">!}{!<span style="color: #1100cc;">D</span>!}{!</th><th style="text-align:center;">!}{!<span style="color: #3a0000ff;">H</span>!}{!</th><th style="text-align:center;">!}{!<span style="color: #404040;">I</span>!}{!</th></tr>!}
+{!<tr><td style="text-align:left;">Rich</td><td style="text-align:right;">!}[+ rich_poll_C +]{!</td><td style="text-align:right;">!}[+ rich_poll_G +]{!</td><td style="text-align:right;">!}[+ rich_poll_D +]{!</td><td style="text-align:right;">!}[+ rich_poll_H +]{!</td><td style="text-align:right;">!}[+ rich_poll_I +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">1st</td><td style="text-align:right;">!}[+ first_poll_C +]{!</td><td style="text-align:right;">!}[+ first_poll_G +]{!</td><td style="text-align:right;">!}[+ first_poll_D +]{!</td><td style="text-align:right;">!}[+ first_poll_H +]{!</td><td style="text-align:right;">!}[+ first_poll_I +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">2nd</td><td style="text-align:right;">!}[+ second_poll_C +]{!</td><td style="text-align:right;">!}[+ second_poll_G +]{!</td><td style="text-align:right;">!}[+ second_poll_D +]{!</td><td style="text-align:right;">!}[+ second_poll_H +]{!</td><td style="text-align:right;">!}[+ second_poll_I +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">Coops</td><td style="text-align:right;">!}[+ coop_poll_C +]{!</td><td style="text-align:right;">!}[+ coop_poll_G +]{!</td><td style="text-align:right;">!}[+ coop_poll_D +]{!</td><td style="text-align:right;">!}[+ coop_poll_H +]{!</td><td style="text-align:right;">!}[+ coop_poll_I +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">Drone</td><td style="text-align:right;">!}[+ drone_poll_C +]{!</td><td style="text-align:right;">!}[+ drone_poll_G +]{!</td><td style="text-align:right;">!}[+ drone_poll_D +]{!</td><td style="text-align:right;">!}[+ drone_poll_H +]{!</td><td style="text-align:right;">!}[+ drone_poll_I +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">OtherW</td><td style="text-align:right;">!}[+ alien_poll_C +]{!</td><td style="text-align:right;">!}[+ alien_poll_G +]{!</td><td style="text-align:right;">!}[+ alien_poll_D +]{!</td><td style="text-align:right;">!}[+ alien_poll_H +]{!</td><td style="text-align:right;">!}[+ alien_poll_I +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">Deepers</td><td style="text-align:right;">!}[+ deeper_poll_C +]{!</td><td style="text-align:right;">!}[+ deeper_poll_G +]{!</td><td style="text-align:right;">!}[+ deeper_poll_D +]{!</td><td style="text-align:right;">!}[+ deeper_poll_H +]{!</td><td style="text-align:right;">!}[+ deeper_poll_I +]{!</td></tr>!}
+{!</table>!}
 
+= Results by district
 
-D5:
+Expected general-population vote share in each district (district-election model; figures are percent):
 
- {!<span style="color: #44b88f;">C</span>!}:[+ Pitts_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Pitts_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Pitts_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Pitts_H +] {!<span style="color: #404040;">I</span>!}:[+ Pitts_I +]
-
-
-
-D6:
-
- {!<span style="color: #44b88f;">C</span>!}:[+ Limelight_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Limelight_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Limelight_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Limelight_H +] {!<span style="color: #404040;">I</span>!}:[+ Limelight_I +]
-
-
-
-D7:
-
- {!<span style="color: #44b88f;">C</span>!}:[+ Deeps_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Deeps_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Deeps_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Deeps_H +] {!<span style="color: #404040;">I</span>!}:[+ Deeps_I +]
+{!<table style="width:100%; border-collapse:collapse; font-size:0.85em; margin:0.25em 0;">!}
+{!<tr><th style="text-align:left; font-weight:normal;"></th><th style="text-align:center;">!}{!<span style="color: #44b88f;">C</span>!}{!</th><th style="text-align:center;">!}{!<span style="color: #cf6e19;">G</span>!}{!</th><th style="text-align:center;">!}{!<span style="color: #1100cc;">D</span>!}{!</th><th style="text-align:center;">!}{!<span style="color: #3a0000ff;">H</span>!}{!</th><th style="text-align:center;">!}{!<span style="color: #404040;">I</span>!}{!</th></tr>!}
+{!<tr><td style="text-align:left;">D1 Docks</td><td style="text-align:right;">!}[+ Docks_poll_C +]{!</td><td style="text-align:right;">!}[+ Docks_poll_G +]{!</td><td style="text-align:right;">!}[+ Docks_poll_D +]{!</td><td style="text-align:right;">!}[+ Docks_poll_H +]{!</td><td style="text-align:right;">!}[+ Docks_poll_I +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">D2 Aurora</td><td style="text-align:right;">!}[+ Aurora_poll_C +]{!</td><td style="text-align:right;">!}[+ Aurora_poll_G +]{!</td><td style="text-align:right;">!}[+ Aurora_poll_D +]{!</td><td style="text-align:right;">!}[+ Aurora_poll_H +]{!</td><td style="text-align:right;">!}[+ Aurora_poll_I +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">D3 Vats</td><td style="text-align:right;">!}[+ Vats_poll_C +]{!</td><td style="text-align:right;">!}[+ Vats_poll_G +]{!</td><td style="text-align:right;">!}[+ Vats_poll_D +]{!</td><td style="text-align:right;">!}[+ Vats_poll_H +]{!</td><td style="text-align:right;">!}[+ Vats_poll_I +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">D4 Railyard</td><td style="text-align:right;">!}[+ Railyard_poll_C +]{!</td><td style="text-align:right;">!}[+ Railyard_poll_G +]{!</td><td style="text-align:right;">!}[+ Railyard_poll_D +]{!</td><td style="text-align:right;">!}[+ Railyard_poll_H +]{!</td><td style="text-align:right;">!}[+ Railyard_poll_I +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">D5 Pitts</td><td style="text-align:right;">!}[+ Pitts_poll_C +]{!</td><td style="text-align:right;">!}[+ Pitts_poll_G +]{!</td><td style="text-align:right;">!}[+ Pitts_poll_D +]{!</td><td style="text-align:right;">!}[+ Pitts_poll_H +]{!</td><td style="text-align:right;">!}[+ Pitts_poll_I +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">D6 Limelight</td><td style="text-align:right;">!}[+ Limelight_poll_C +]{!</td><td style="text-align:right;">!}[+ Limelight_poll_G +]{!</td><td style="text-align:right;">!}[+ Limelight_poll_D +]{!</td><td style="text-align:right;">!}[+ Limelight_poll_H +]{!</td><td style="text-align:right;">!}[+ Limelight_poll_I +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">D7 Deeps</td><td style="text-align:right;">!}[+ Deeps_poll_C +]{!</td><td style="text-align:right;">!}[+ Deeps_poll_G +]{!</td><td style="text-align:right;">!}[+ Deeps_poll_D +]{!</td><td style="text-align:right;">!}[+ Deeps_poll_H +]{!</td><td style="text-align:right;">!}[+ Deeps_poll_I +]{!</td></tr>!}
+{!</table>!}

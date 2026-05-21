@@ -3,7 +3,7 @@ title: Election Simulation
 - @2300: 2300
 
 @2300
-on-arrival: {! Q.electorate.assign_seats() ; Q.qified_pops() ; Q.Docks_first_pop=Q.Docks.first ; !}
+on-arrival: {! Q.update_projections({ allDistricts: true }) !}
 go-to: show_results
 
 @show_results
@@ -15,15 +15,15 @@ Due to the multitudinous and ever shifting parties, they are considered a poor m
 
 Executive Committee: 
 
- {!<span style="color: #44b88f;">C</span>!}: [+ Exec_C +]  {!<span style="color: #cf6e19;">G</span>!}: [+ Exec_G +]  {!<span style="color: #1100cc;">D</span>!}: [+ Exec_D +]  {!<span style="color: #3a0000ff;">H</span>!}: [+ Exec_H +]  {!<span style="color: #404040;">I</span>!}: [+ Exec_I +]
+ {!<span style="color: #44b88f;">C</span>!}: [+ Proj_Exec_C +]  {!<span style="color: #cf6e19;">G</span>!}: [+ Proj_Exec_G +]  {!<span style="color: #1100cc;">D</span>!}: [+ Proj_Exec_D +]  {!<span style="color: #3a0000ff;">H</span>!}: [+ Proj_Exec_H +]  {!<span style="color: #404040;">I</span>!}: [+ Proj_Exec_I +]
 
 Guilds:
 
-Gold Collar:  {!<span style="color: #44b88f;">C</span>!}:[+ Gold_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Gold_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Gold_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Gold_H +] {!<span style="color: #404040;">I</span>!}:[+ Gold_I +]
+Gold Collar:  {!<span style="color: #44b88f;">C</span>!}:[+ Proj_Gold_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Proj_Gold_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Proj_Gold_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Proj_Gold_H +] {!<span style="color: #404040;">I</span>!}:[+ Proj_Gold_I +]
 
-White Collar:  {!<span style="color: #44b88f;">C</span>!}:[+ White_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ White_G +] {!<span style="color: #1100cc;">D</span>!}:[+ White_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ White_H +] {!<span style="color: #404040;">I</span>!}:[+ White_I +]
+White Collar:  {!<span style="color: #44b88f;">C</span>!}:[+ Proj_White_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Proj_White_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Proj_White_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Proj_White_H +] {!<span style="color: #404040;">I</span>!}:[+ Proj_White_I +]
 
-Blue Collar:  {!<span style="color: #44b88f;">C</span>!}:[+ Blue_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Blue_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Blue_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Blue_H +] {!<span style="color: #404040;">I</span>!}:[+ Blue_I +]
+Blue Collar:  {!<span style="color: #44b88f;">C</span>!}:[+ Proj_Blue_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Proj_Blue_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Proj_Blue_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Proj_Blue_H +] {!<span style="color: #404040;">I</span>!}:[+ Proj_Blue_I +]
 
 Districts:
 
@@ -51,34 +51,34 @@ Populations (in 10,000s):
 District 1 (The Docks)
 
 
- {!<span style="color: #44b88f;">C</span>!}:[+ Docks_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Docks_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Docks_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Docks_H +] {!<span style="color: #404040;">I</span>!}:[+ Docks_I +]
+ {!<span style="color: #44b88f;">C</span>!}:[+ Proj_Docks_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Proj_Docks_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Proj_Docks_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Proj_Docks_H +] {!<span style="color: #404040;">I</span>!}:[+ Proj_Docks_I +]
 
 
 District 2 (Aurora District)
 
- {!<span style="color: #44b88f;">C</span>!}:[+ Aurora_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Aurora_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Aurora_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Aurora_H +] {!<span style="color: #404040;">I</span>!}:[+ Aurora_I +]
+ {!<span style="color: #44b88f;">C</span>!}:[+ Proj_Aurora_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Proj_Aurora_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Proj_Aurora_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Proj_Aurora_H +] {!<span style="color: #404040;">I</span>!}:[+ Proj_Aurora_I +]
 
 
 District 3 (The Vats)
 
- {!<span style="color: #44b88f;">C</span>!}:[+ Vats_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Vats_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Vats_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Vats_H +] {!<span style="color: #404040;">I</span>!}:[+ Vats_I +]
+ {!<span style="color: #44b88f;">C</span>!}:[+ Proj_Vats_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Proj_Vats_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Proj_Vats_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Proj_Vats_H +] {!<span style="color: #404040;">I</span>!}:[+ Proj_Vats_I +]
 
 
 District 4 (The Railyard)
 
- {!<span style="color: #44b88f;">C</span>!}:[+ Railyard_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Railyard_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Railyard_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Railyard_H +] {!<span style="color: #404040;">I</span>!}:[+ Railyard_I +]
+ {!<span style="color: #44b88f;">C</span>!}:[+ Proj_Railyard_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Proj_Railyard_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Proj_Railyard_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Proj_Railyard_H +] {!<span style="color: #404040;">I</span>!}:[+ Proj_Railyard_I +]
 
 
 District 5 (The Pitts)
 
- {!<span style="color: #44b88f;">C</span>!}:[+ Pitts_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Pitts_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Pitts_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Pitts_H +] {!<span style="color: #404040;">I</span>!}:[+ Pitts_I +]
+ {!<span style="color: #44b88f;">C</span>!}:[+ Proj_Pitts_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Proj_Pitts_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Proj_Pitts_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Proj_Pitts_H +] {!<span style="color: #404040;">I</span>!}:[+ Proj_Pitts_I +]
 
 
 District 6 (The Limelight)
 
- {!<span style="color: #44b88f;">C</span>!}:[+ Limelight_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Limelight_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Limelight_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Limelight_H +] {!<span style="color: #404040;">I</span>!}:[+ Limelight_I +]
+ {!<span style="color: #44b88f;">C</span>!}:[+ Proj_Limelight_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Proj_Limelight_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Proj_Limelight_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Proj_Limelight_H +] {!<span style="color: #404040;">I</span>!}:[+ Proj_Limelight_I +]
 
 
 District 7 (The Deeps)
 
- {!<span style="color: #44b88f;">C</span>!}:[+ Deeps_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Deeps_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Deeps_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Deeps_H +] {!<span style="color: #404040;">I</span>!}:[+ Deeps_I +]
+ {!<span style="color: #44b88f;">C</span>!}:[+ Proj_Deeps_C +] {!<span style="color: #cf6e19;">G</span>!}:[+ Proj_Deeps_G +] {!<span style="color: #1100cc;">D</span>!}:[+ Proj_Deeps_D +] {!<span style="color: #3a0000ff;">H</span>!}:[+ Proj_Deeps_H +] {!<span style="color: #404040;">I</span>!}:[+ Proj_Deeps_I +]

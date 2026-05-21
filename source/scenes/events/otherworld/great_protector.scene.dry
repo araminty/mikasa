@@ -12,29 +12,31 @@ Now a herald has arrived from the Great Protector with a diplomatic offer.  In e
 -@just_say_no
 -@token_tribute
 -@trade_links
--@green_zone
+-@green_zone: Organize an Otherworld security zone
 
 @just_say_no
 title: We will have nothing to do with demons
-on-arrival: {! TBD, helps one faction's secret plan !}
+on-arrival: {! !}
 
-The less we have to do with demons the better. [? otherworld_relations = 0 : Although it's troubling how in the dark we are about the Otherworld. ?]
+The less we have to do with demons the better. [? if otherworld_relations = 0 : Although it's troubling how in the dark we are about the Otherworld. ?]
 
--@token_tribute 
+@token_tribute
 title: A case of cola for peace is a bargain
-on-arrival: {! TBD, cautious end of event chain |}
+on-arrival: {! !}
+# dendry: was nested under @just_say_no without @subscene; TBD mechanics
 
--@trade_links
+@trade_links
 title: Dont stop at soda, let's establish trade relations
 choose-if: otherworld_relations > 3
 unavailable-subtitle: We dont know enough about the otherworld for this
-on-arrival: {! TBD, helps one faction's secret plan !}
+on-arrival: {! !}
 
 Some of our consumer goods seem just as exotic to them as their magic seems to us.
 
--@green_zone: Organize an Otherworld security zone
-on-arrival: {!  Q.otherworld_outpost = 1 !} # TBD, helps one faction's secret plan
-choose-if: otherworld_relations > 3 and TBD # need high corporation trust and a decent paramilitary
+@green_zone
+title: Organize an Otherworld security zone
+on-arrival: {! Q.otherworld_outpost = 1 !}
+choose-if: otherworld_relations > 3 and 1
 unavailable-subtitle: [? if otherworld_relations < 4 : We dont know enough about the otherworld for this. ?][? if otherworld_relations > 3 : We need a well armed force and permission from the corporations to use it. ?]
 
 We send an expedition to the Otherworld and secure the region near the pathways to Mikasa.  So long as we maintain goodwill with the Great Protector this outpost could be lucrative.
