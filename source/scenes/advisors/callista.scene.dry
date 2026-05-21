@@ -23,7 +23,8 @@ on-arrival: callista_toggle = 1
 
 Callista and her Guardian Spirit help make the internet a little less dead
 
-go-to: callista
+- @callista_toggle_off
+- @return
 
 @callista_toggle_off
 title: Stop Purging Demons
@@ -33,4 +34,5 @@ on-arrival: callista_toggle = 0
 
 Callista doesn't understand how anybody could leave computers in this state
 
-go-to: callista
+- @callista_toggle_on
+- @return

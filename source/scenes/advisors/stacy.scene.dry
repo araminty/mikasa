@@ -19,15 +19,19 @@ title: Stir up unrest
 subtitle: Great content
 view-if: stacy_toggle = 0
 on-arrival: stacy_toggle = 1
-go-to: stacy
 
 Stacy stirs up passions with social media and questionable energy drinks
+
+- @stacy_toggle_off
+- @return
 
 @stacy_toggle_off
 title: Lay low
 subtitle: Stacy could annoy someone besides the corporations for a bit
 view-if: stacy_toggle = 1
 on-arrival: stacy_toggle = 0
-go-to: stacy
 
 If Stacy doesn't have enemies available, she can always make more
+
+- @stacy_toggle_on
+- @return
