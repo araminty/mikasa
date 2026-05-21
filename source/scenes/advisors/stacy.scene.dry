@@ -1,48 +1,31 @@
 title: Stacy Primogen (Titan's Strongest Daughter)
 is-pinned-card: true
 tags: advisor, punk
-card-image: img/asteroid.jpg
+card-image: img/stacy.webp
 new-page: true
-view-if: stacy_advisor > 0
-
-
 
 
 = Stacy Primogen
 
-Stacy Primogen is a second generation offspring of the Jovian supersoldier project, incubated into a plutocratic Jovian family of arms dealers, she struck out on her own to become a mercenary and influencer.
+Stacy Primogen is a second generation offspring of the Jovian supersoldier project, incubated into a plutocratic Jovian family of arms dealers, she struck out on her own to become a mercenary and influencer.  She recently has started using the catch phrase "Let's raise the stakes" in an obvious but deniable reference to the Stakeholder movement.
 
 
-- @stacy_raid_corpos
-- @stacy_raid_syndicates
-- @stacy_mob
+- @stacy_toggle_on
+- @stacy_toggle_off
+- @return
 
-@stacy_raid_corpos
-title: Raid Corporations
-subtitle: Stacy could disrupt corporate operations
-choose-if: hidden_funds > 0
-unavailable-subtitle: We lack the funds
-on-arrival: corpo_anger += 1; corpo_strength -= 1; hidden_funds -= 1; stacy_advisor -= 1;
+@stacy_toggle_on
+title: Stir up unrest
+subtitle: Great content
+view-if: stacy_toggle = 1
+on-arrival: stacy_toggle = 0
 
-Stacy launches a choatic raid on the corpos
+Stacy stirs up passions with social media and questionable energy drinks
 
+@stacy_toggle_off
+title: Lay low
+subtitle: Stacy could annoy someone besides the corporations for a bit
+view-if: stacy_toggle = 1
+on-arrival: stacy_toggle = 0
 
-@stacy_raid_syndicates
-title: Raid Syndicates
-subtitle: Stacy could fight criminal organizations
-choose-if: hidden_funds > 0
-unavailable-subtitle: We lack the funds
-on-arrival: {!
-syndicate_anger += 1; syndicate_strength -= 1; hidden_funds -= 1; stacy_advisor -= 1;
-let random_value = Math.random(1);
-Q.text_value = 1+parseFlaot((random_value)).toFixed(1);
-!}
-
-Stacy goes after the syndicates. [+ text_value +] [+ random_value +]
-
-@stacy_mob
-title: Create a mob
-subtitle: Stacy could get angry people on the streets
-on-arrival: hidden_funds += 0; unrest += 1; stacy_advisor -= 1;
-
-Stacy creates a mob amped up on questionable energy drinks
+If Stacy doesn't have enemies available, she can always make more

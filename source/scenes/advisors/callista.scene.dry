@@ -1,7 +1,7 @@
 title: Callista and Mei
 is-pinned-card: true
 tags: advisor, tunnel_clans
-card-image: img/asteroid.jpg
+card-image: img/callista.webp
 new-page: true
 
 = Callista and Mei
@@ -12,18 +12,21 @@ Callista has been raised since birth to interact with AI, what the Clans call "G
 
 - @callista_toggle_on
 - @callista_toggle_off
+- @return
 
 
 @callista_toggle_on
 title: Purge Demons
-subtitle: The clans corporate drones will resent us disrupting the systems they rely on
+subtitle: The corporate drones will resent us disrupting the systems they rely on
 view-if: callista_toggle = 0
 on-arrival: callista_toggle = 1
 
+Callista and her Guardian Spirit help make the internet a little less dead
+
 @callista_toggle_off
 title: Stop Purging Demons
-subtitle: Stop annoying the corporate drones
+subtitle: Appease the corporate drones
 view-if: callista_toggle = 1
 on-arrival: callista_toggle = 0
 
-Callista and her Guardian Spirit help make the internet a little less dead
+Callista doesn't understand how anybody could leave computers in this state
