@@ -976,10 +976,11 @@ function writeProjectionSeatsToQ(Q, results) {
 
 function runElectionsAndWriteQ(opts) {
     opts = opts || {}
+    // Appeals first; story-stack modifiers add on top (see post_event applyElectorateModifiers).
+    syncAllVoteAppeals(Q.stratums, electionState, Q.vote_labels, Q.global_shifts)
     if (typeof Q.applyElectorateModifiers === 'function') {
         Q.applyElectorateModifiers()
     }
-    syncAllVoteAppeals(Q.stratums, electionState, Q.vote_labels, Q.global_shifts)
     const results = engine.runAll({
         month: opts.month != null ? opts.month : (Q.month || 1),
         allDistricts: opts.allDistricts !== false,
@@ -1020,6 +1021,23 @@ Q.applyElectorateModifiers = function() {}
 
 })()
 
+Q.ensureBuildStampFooter = function() {
+    if (typeof document === 'undefined') { return }
+    var id = 'mikasa-build-stamp'
+    var el = document.getElementById(id)
+    if (!el) {
+        el = document.createElement('div')
+        el.id = id
+        el.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:9999;pointer-events:none;font:11px/1.4 ui-monospace,monospace;color:#aaa;background:rgba(0,0,0,0.45);padding:3px 10px;text-align:right;'
+        document.body.appendChild(el)
+    }
+    el.textContent = 'Build: ' + (Q.build_time_label || 'unknown')
+}
+// MIKASA_BUILD_STAMP
+Q.build_time_label = '2026-05-22 12:43:59 local';
+// /MIKASA_BUILD_STAMP
+Q.ensureBuildStampFooter()
+
 !}
 
 
@@ -1030,6 +1048,7 @@ go-to: start_menu_2
 = Mikasa Democracy: A Future History
 
 @start_menu_2
+on-display: {! if (typeof Q.ensureBuildStampFooter === 'function') { Q.ensureBuildStampFooter() } !}
 
 - @start: Start game
 - @election_simulation: Election simulation
@@ -1043,6 +1062,7 @@ Q.time = 1;
 Q.year = 2300;
 Q.month = 1;
 Q.month_actions = 0;
+Q.parochialism = 25;
 
 Q.difficulty = 0;
 Q.use_decimals = 0;

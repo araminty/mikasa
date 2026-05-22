@@ -1,0 +1,84 @@
+# robots.txt — Mikasa Future History (static site: copy to out/html/robots.txt)
+# Repository-wide rules for GitHub: see /robots.txt at repo root.
+# ------------------------------------------------------------------------------
+# Please do not crawl, index, or use this site for machine learning, model
+# training, fine-tuning, embeddings, RAG corpora, or synthetic media generation.
+#
+# Reasons (voluntary request; not a substitute for copyright or license terms):
+#   • Narrative / game logic (.dry source and compiled scripts): not offered for
+#     AI training or synthetic reuse — we do not want to contribute to "AI
+#     inbreeding" (models recycling the same fictional corpus).
+#   • /img/ artwork: card and scene images; not all rights are mine to grant for
+#     use in third-party training datasets or generative image systems.
+#
+# robots.txt is a crawler convention only; well-behaved bots may honor it.
+# ------------------------------------------------------------------------------
+
+# All crawlers: do not fetch images or core game scripts from this host.
+User-agent: *
+Disallow: /img/
+Disallow: /core.js
+Disallow: /game.js
+Disallow: /d3-linegraph.js
+Disallow: /d3-parliament.js
+
+# AI / ML training, search, and retrieval crawlers: do not index this host.
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: OAI-SearchBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: GoogleOther
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: cohere-ai
+Disallow: /
+
+User-agent: Diffbot
+Disallow: /
+
+User-agent: FacebookBot
+Disallow: /
+
+User-agent: meta-externalagent
+Disallow: /
+
+User-agent: ImagesiftBot
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
+
+User-agent: Perplexity-User
+Disallow: /
+
+User-agent: YouBot
+Disallow: /
+
+User-agent: Amazonbot
+Disallow: /

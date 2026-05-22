@@ -47,7 +47,7 @@ We have established volunteer neighborhood protection services.  This is an alte
 @investigation
 title: Start a discrete investigation
 subtitle: Who watches the watchman?
-choose-if: police_investigated = 0 and corporate_long_leash = 1
+choose-if: police_investigated = 0
 on-arrival: police_reform += 1; police_reform +=1 if police_reform>1; megacorps_angry_TBD += 1 if police_reform>1;  police_investigated=1
 
 [? if police_reform = 1: Finding corrupt police is like shooting fish in a barrel.  Our investigation unit makes dozens of arrest before word gets out and the corrupt officials get better at covering their tracks. ?]

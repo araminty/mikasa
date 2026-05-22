@@ -4,7 +4,7 @@ is-card: true
 card-image: img/asteroid.jpg
 tags: party_affairs
 
-There are few proper outlets on Mikasa, the corporations shut down any independent competition with their media that is too successful.  A handful of small outlets get by under the radar of the megacorps but most independent journalists rely on annonymous online peer to peer networks to get their reporting out.  Since most members of this small community follow each other's stories, the zeitgeist of the underground media shifts from time to time.
+There are few proper outlets on Mikasa, the corporations shut down any independent competition with their propoganda that is too successful.  A handful of small outlets get by under the radar of the megacorps but most independent journalists rely on annonymous online peer to peer networks to get their reporting out.  Since most members of this small community follow each other's stories, the zeitgeist of the underground media shifts from time to time.
 
 Depending on what topics the underground is most interested in, different groups might become politically active.  What topics is the underground covering?
 
@@ -15,11 +15,21 @@ Depending on what topics the underground is most interested in, different groups
 @labor
 title: Abusive working conditions and the need for worker protections
 subtitle: Popular among the poor and pisses off nobody but the megacorps
+on-arrival: anti_corp_media += 1
+
+Populist rhetoric is an easy way to get people wanting change.  The Stakeholder revolt might have been crushed but plenty of people are stakeholders in everything but name.
 
 @wealthy
 title: stress the need for self sufficiency and protection of businesses
-subtitle: High skilled workers and communes would like this but the establishment tone would be offputting to workers
+subtitle: High skilled workers and cooperatives would like this but the establishment tone would be offputting to workers
+view-if: self_sufficiency_media = 0
+on-arrival: self_sufficiency_media += 1
+
+Terrestrials or Martians might be surprised that discussions on IP restrictions on agrinutritional growth mediums can draw an audience but the matter is literally a matter of life and death for many in the cooperatives.  The wealthy usually are hostile towards the cooperatives but the discussion creates some cross-class solidarity, at least among the non-shareholder wealthy.
 
 @diplomatic
 title: discussion of Mikasa's place in the solar system economy and negotiations with megacorps
 subtitle: We might be able to negotiate with corps in good faith, but any economic compromise would undermine self sufficiency
+on-arrival: kiss_ass_media += 1
+
+Most people aren't interested in solarpolitical theory crafting but the podcast crowd keeps talking about it.  It doesn't move the needle on public opinion but maybe some good ideas will emerge from it.

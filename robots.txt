@@ -1,0 +1,85 @@
+# robots.txt — Mikasa Future History (GitHub repository root)
+# ------------------------------------------------------------------------------
+# This project is public on GitHub. Please do not crawl, index, or use this
+# repository for machine learning, model training, fine-tuning, embeddings,
+# RAG corpora, or synthetic media generation.
+#
+# Reasons (voluntary request; not a substitute for copyright or license terms):
+#   • /source/ — narrative and game logic (.dry, lib, qdisplays): not offered for
+#     AI training or synthetic reuse (avoid recycling the same fictional corpus).
+#   • /out/html/img/ and other assets — artwork not authorized for third-party
+#     training datasets or generative image systems.
+#   • /scripts/, /.cursor/ — tooling and editor automation; not training corpora.
+#
+# For the static game build only, see also source/robots.txt (paths under out/html/).
+# robots.txt is a crawler convention; compliance varies by bot and host (GitHub
+# may not apply this file to all github.com UI views).
+# ------------------------------------------------------------------------------
+
+# All crawlers: repository paths that must not be ingested.
+User-agent: *
+Disallow: /source/
+Disallow: /out/
+Disallow: /scripts/
+Disallow: /.cursor/
+
+# AI / ML training, search, and retrieval crawlers: do not index this repository.
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: OAI-SearchBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: GoogleOther
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: cohere-ai
+Disallow: /
+
+User-agent: Diffbot
+Disallow: /
+
+User-agent: FacebookBot
+Disallow: /
+
+User-agent: meta-externalagent
+Disallow: /
+
+User-agent: ImagesiftBot
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
+
+User-agent: Perplexity-User
+Disallow: /
+
+User-agent: YouBot
+Disallow: /
+
+User-agent: Amazonbot
+Disallow: /

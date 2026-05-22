@@ -2,7 +2,7 @@ title: Post Event
 new-page: true
 on-arrival: {!
 
-// --- Electorate modifiers (rebuilt before every poll in Q.update_projections) -------
+// --- Electorate modifiers (applied after vote-label sync in Q.update_projections) ---
 // stackId: Q quality bumped in events (e.g. favor_second_wave_housing_dispute += 1).
 // Several rows may share one stackId (multiple effects per choice).
 // Dendry initializes missing qualities to 0 before +=. Each poll applies delta * stacks.
@@ -144,14 +144,37 @@ Q.electorateModifierCatalog = [
     new ElectorateModifier('magic_assimilate_alien_D', 'magic_assimilate', 'stratum', 'alien', 'D', 0.12),
     new ElectorateModifier('magic_school_alien_D', 'magic_school', 'stratum', 'alien', 'D', 0.15),
     new ElectorateModifier('magic_school_global_D', 'magic_school', 'global', '', 'D', 0.05),
+    new ElectorateModifier('orc_marriage_wood_auto', 'orc_marriage_wood', 'global', '', 'D', 0),
+    new ElectorateModifier('orc_marriage_civil_auto', 'orc_marriage_civil', 'global', '', 'D', 0),
+    new ElectorateModifier('orc_marriage_minimum_auto', 'orc_marriage_minimum', 'global', '', 'D', 0),
 
     // --- otherworld event stacks (placeholder) ---
     new ElectorateModifier('otherworld_outpost_alien_D', 'otherworld_outpost', 'stratum', 'alien', 'D', 0.1),
     new ElectorateModifier('otherworld_outpost_global_C', 'otherworld_outpost', 'global', '', 'C', 0.08),
     new ElectorateModifier('great_protector_appease_global_C', 'great_protector_appeasement', 'global', '', 'C', 0.12),
     new ElectorateModifier('great_protector_appease_global_D', 'great_protector_appeasement', 'global', '', 'D', -0.05),
-]
 
+
+
+
+    // --- auto-synced electorate stacks (delta 0) ---
+    new ElectorateModifier('kiss_ass_media_auto', 'kiss_ass_media', 'global', '', 'D', 0),
+    new ElectorateModifier('self_sufficiency_media_auto', 'self_sufficiency_media', 'global', '', 'D', 0),
+    new ElectorateModifier('anti_corp_media_dem', 'anti_corp_media', 'global', '', 'D', 2),
+    new ElectorateModifier('militia_auxiliary_auto', 'militia_auxiliary', 'global', '', 'D', 0),
+    new ElectorateModifier('police_defund_auto', 'police_defund', 'global', '', 'D', 0),
+    new ElectorateModifier('police_investigated_auto', 'police_investigated', 'global', '', 'D', 0),
+    new ElectorateModifier('budget_auto', 'budget', 'global', '', 'D', 0),
+    new ElectorateModifier('jovian_refugee_dread_auto', 'jovian_refugee_dread', 'global', '', 'D', 0),
+    new ElectorateModifier('jovian_refugee_prepare_auto', 'jovian_refugee_prepare', 'global', '', 'D', 0),
+    new ElectorateModifier('militia_auto', 'militia', 'global', '', 'D', 0),
+    new ElectorateModifier('militia_police_auto', 'militia_police', 'global', '', 'D', 0),
+    new ElectorateModifier('non_violence_auto', 'non_violence', 'global', '', 'D', 0),
+    new ElectorateModifier('patriot_meme_strength_auto', 'patriot_meme_strength', 'global', '', 'D', 0),
+    new ElectorateModifier('police_reform_auto', 'police_reform', 'global', '', 'D', 0),
+    new ElectorateModifier('sabotage_auto', 'sabotage', 'global', '', 'D', 0),
+
+]
 
 // --- Reference only: competitiveScores from root buildDemographics / buildDistricts ---
 // Not in the live catalog. Real baselines live in root (_baseCompetitiveScores at init).
@@ -217,21 +240,14 @@ Q.applyElectorateModifiers = function() {
         state.districts.map(function(d) { return [d.id, d] })
     )
 
-    for (var i = 0; i < state.demographics.length; i++) {
-        var dem = state.demographics[i]
-        dem.competitiveScores = electorateCopyScores(
-            dem._baseCompetitiveScores || dem.competitiveScores
-        )
-    }
+    // Districts are not rebuilt by syncAllVoteAppeals; reset from baseline each poll.
     for (var j = 0; j < state.districts.length; j++) {
         var dist = state.districts[j]
         dist.competitiveScores = electorateCopyScores(
             dist._baseCompetitiveScores || dist.competitiveScores
         )
     }
-    state.global.competitiveScores = electorateCopyScores(
-        state._baseGlobalScores || state.global.competitiveScores
-    )
+    // Strata/global already base+appeals from root sync; add stack deltas only.
 
     for (var m = 0; m < Q.electorateModifierCatalog.length; m++) {
         Q.electorateModifierCatalog[m].apply(state, Q)

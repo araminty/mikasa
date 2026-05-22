@@ -3,6 +3,7 @@
 
 /*
 !.gitignore
+!robots.txt
 
 !source/
 !source/**
@@ -14,5 +15,6 @@
 out/*
 !out/html/
 out/html/*
+!out/html/robots.txt
 !out/html/img/
 !out/html/img/**

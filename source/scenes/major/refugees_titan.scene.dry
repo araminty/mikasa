@@ -7,7 +7,7 @@ view-if: month = 2 and year = 2300
 
 The Jovian moons have developed a unique system of warfare since the collapse of the Jovian federation.  The corporate councils ruling the moons allow acts of warfare by non-government bodies but have far ranging restrictions on what weapons can be used in order to limit property damage.  Restrictions on munition weights coupled with the low gravity of the moons have made giant fighting robots the primary form of combat, not to mention a major source of media.
 
-The warfare between different clans of corporate sponsered mercenaries has long waxed and waned.  After the discovery of valuable mineral rights in contested territory, a particularly vicious round of fighting has broken out all over the moon of Titan and even spilling over to other moons.  With civilian casualties mounting, the number of refugees from the clan wars has grown.  These refugees are stateless persons making Mikasa and the other interplanetary transit stations one of the few places they can flee to.  Of the inerplanetary transit stations, Mikasa is currently the one closest to Jupiter and thus the easiest to reach.  It seems like Mikasa might be about to experience a third wave of mass migration.
+The warfare between different clans of corporate sponsered mercenaries has long waxed and waned.  After the discovery of valuable mineral rights in contested territory, a particularly vicious round of fighting has broken out all over the moon of Titan and even spilling over to other moons.  With civilian casualties mounting, the number of refugees from the clan wars has grown.  These refugees are stateless persons making Mikasa and the other interplanetary transit stations one of the few places they can flee to.  Of the interplanetary transit stations, Mikasa is currently the one closest to Jupiter and thus the easiest to reach.  It seems like Mikasa might be about to experience a third wave of mass migration.
 
 -@help
 -@slow
@@ -15,13 +15,13 @@ The warfare between different clans of corporate sponsered mercenaries has long 
 
 @help
 title: We need to prepare to recieve these refugees
-on-arrival: {! TBD !}
+on-arrival: jovian_refugee_prepare += 1
 
 Opinions on the efforts to help the refugees are mixed.  Mikasa's inadequate and aged infrastructure already struggles to provide for the existing population.  On the other hand the city thinks of itself as a city of immigrants so some applaud the effort.
 
 
 @slow
 title: Our systems can't handle more people
-on-arrival: {! TBD !}
+on-arrival: jovian_refugee_dread += 1
 
 Our city is already faltering under the strain of providing safety and basic living conditions for our residents.  There is no legal mechanism to keep the refugees out but we can try to encourage the refugees to keep travelling to reach the other, slightly wealthier interplanetary stations.

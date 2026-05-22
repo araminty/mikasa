@@ -17,6 +17,27 @@ Dendry (`.dry`) is compiled by [dendrynexus](https://github.com/aucchen/dendryne
 | `source/info.dry` | Game title / author metadata |
 | `out/` | Generated HTML/JS — do not edit |
 
+## Electorate stack placeholders
+
+Event `on-arrival` **same-line** assignments (text before the first `{!` on that line) that bump or set stacks (`foo += 1`, `bar -= 2`, `baz = 0`) are registered in `Q.electorateModifierCatalog`. Scenes tagged `advisor` are skipped. After adding a new stack in a scene, run:
+
+```bash
+npm run sync:electorate-modifiers        # apply
+npm run sync:electorate-modifiers -- --check   # CI: fail if catalog stale
+```
+
+This appends missing stacks to `post_event.scene.dry` as `ElectorateModifier` rows with **delta 0** (no poll effect until you tune party/delta/scope).
+
+**Automatic sync** (same script, applies placeholders):
+
+| Trigger | When |
+|---------|------|
+| Cursor hooks | Agent/tab writes a `source/scenes/**/*.dry` file (`afterFileEdit`, `afterTabFileEdit`, `postToolUse` on Write/TabWrite) |
+| Editor save | Saving a scene `.dry` if the [Run On Save](https://marketplace.visualstudio.com/items?itemName=emeraldwalk.RunOnSave) extension is installed (`.vscode/settings.json`) |
+| Git pre-commit | After `npm run setup:git-hooks` once per clone |
+
+One-time: `npm run setup:git-hooks` to enable `.githooks/pre-commit`.
+
 ## Scene file anatomy
 
 ```dry
@@ -164,6 +185,7 @@ Used via `[+ month : month +]` — second name is the qdisplay id (usually filen
 npm install
 npm run dendrynexus make-html -- --pretty
 cp out/game.json out/html/   # if running static html locally
+cp source/robots.txt out/html/robots.txt   # crawler / AI-training opt-out (see file comments)
 ```
 
 `--pretty` is passed through to dendrynexus (formatting/readability of generated output).

@@ -29,6 +29,20 @@
     "postToolUse": [
       {
         "command": ".cursor/hooks/log-conversation.py"
+      },
+      {
+        "command": "node .cursor/hooks/sync-electorate-modifiers.js",
+        "matcher": "Write|TabWrite"
+      }
+    ],
+    "afterFileEdit": [
+      {
+        "command": "node .cursor/hooks/sync-electorate-modifiers.js"
+      }
+    ],
+    "afterTabFileEdit": [
+      {
+        "command": "node .cursor/hooks/sync-electorate-modifiers.js"
       }
     ]
   }

@@ -5,7 +5,11 @@
   "main": "out/html/index.html",
   "scripts": {
     "dendrynexus": "dendrynexus",
+    "write-build-stamp": "node scripts/write-build-stamp.js",
+    "make-html": "node scripts/make-html.js",
     "lint:dendry": "node scripts/lint-dendry.js",
+    "sync:electorate-modifiers": "node scripts/sync-electorate-modifiers.js",
+    "setup:git-hooks": "git config core.hooksPath .githooks",
     "simulate-election": "node scripts/simulate-election.js",
     "simulate-election:v2": "node scripts/simulate-election.js --v2"
   },

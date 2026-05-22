@@ -1,6 +1,7 @@
 title: Status
 new-page: true
 is-special: true
+on-display: {! if (typeof Q.ensureBuildStampFooter === 'function') { Q.ensureBuildStampFooter() } !}
 
 = Status
 
