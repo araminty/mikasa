@@ -2,7 +2,7 @@ title: The political situation
 priority: 1
 max-visits: 1
 tags: event
-view-if: year >=2300
+view-if: year >=2300 and month > 3
 on-arrival: organizing_unlock = 1; phase = 1;
 go-to: organize_phase_tick
 

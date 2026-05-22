@@ -3,7 +3,7 @@ priority: 1
 max-visits: 1
 tags: event
 new-page: true
-view-if: month = 8 and year = 2300
+view-if: month = 8 and year = 2304
 
 The flow of refugees from the otherworld has slowed in recent weeks, apparently due to the success of a demon warlord who stylizes herself as the Great Protector.  She is relatively benign by demon standards, prone to exemplary executions but not towards widescale slaughter.  If she succeeds in pacifying the region is should end the current refugee wave.  
 
@@ -29,7 +29,7 @@ on-arrival: {! !}
 title: Dont stop at soda, let's establish trade relations
 choose-if: otherworld_relations > 3
 unavailable-subtitle: We dont know enough about the otherworld for this
-on-arrival: {! !}
+on-arrival: {!  Q.otherworld_outpost = 1 !}
 
 Some of our consumer goods seem just as exotic to them as their magic seems to us.
 
