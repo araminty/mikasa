@@ -62,6 +62,16 @@ const GUILD_SEATS = 35
 const DISTRICT_SEATS = 15
 const VOTE_SCALE = 10000
 
+const DISTRICT_ELECTION_MONTH = {
+    Docks: 6,
+    Aurora: 4,
+    Vats: 2,
+    Railyard: 11,
+    Pitts: 5,
+    Limelight: 6,
+    Deeps: 8,
+}
+
 // --- utilities ----------------------------------------------------------------
 
 const sum = (nums) => nums.reduce((a, b) => a + b, 0)
@@ -341,18 +351,18 @@ function buildDistricts() {
         [1, 24, 17, 3, 1, 1, 166],
     ]
     const configs = {
-        Docks: { electionMonth: 3, competitiveScores: { C: 0.3, G: 0.2 } },
-        Aurora: { electionMonth: 6, competitiveScores: { D: 0.2, I: 0.2 } },
-        Vats: { electionMonth: 9, competitiveScores: { C: 0.8, D: -0.3 } },
-        Railyard: { electionMonth: 12, competitiveScores: { C: 0.6, G: 0.1 } },
+        Docks: { electionMonth: DISTRICT_ELECTION_MONTH.Docks, competitiveScores: { C: 0.3, G: 0.2 } },
+        Aurora: { electionMonth: DISTRICT_ELECTION_MONTH.Aurora, competitiveScores: { D: 0.2, I: 0.2 } },
+        Vats: { electionMonth: DISTRICT_ELECTION_MONTH.Vats, competitiveScores: { C: 0.8, D: -0.3 } },
+        Railyard: { electionMonth: DISTRICT_ELECTION_MONTH.Railyard, competitiveScores: { C: 0.6, G: 0.1 } },
         Pitts: {
-            electionMonth: 2,
+            electionMonth: DISTRICT_ELECTION_MONTH.Pitts,
             competitiveScores: { G: 0.5, D: 0.2 },
             competitiveTurnoutBonus: -0.15,
             lowTurnoutGangBonus: 1.2,
         },
-        Limelight: { electionMonth: 5, competitiveScores: { C: 0.4, G: 0.3 } },
-        Deeps: { electionMonth: 8, competitiveScores: { D: 0.6, I: 0.4, H: -0.3 } },
+        Limelight: { electionMonth: DISTRICT_ELECTION_MONTH.Limelight, competitiveScores: { C: 0.4, G: 0.3 } },
+        Deeps: { electionMonth: DISTRICT_ELECTION_MONTH.Deeps, competitiveScores: { D: 0.6, I: 0.4, H: -0.3 } },
     }
     return DISTRICT_IDS.map((id, i) => new District(id, pops[i], configs[id] || {}))
 }

@@ -1,0 +1,80 @@
+title: Council Elections
+priority: 8
+tags: event
+new-page: true
+view-if: elections_this_month = 1
+on-arrival: elections_this_month = 0
+
+= [+ month : month +] [+ year +] — Elections
+
+[+ election_report +]
+
+[? if election_show_Docks = 1: **District 1 (The Docks)** ?]
+[? if election_show_Docks = 1: {!<table style="width:100%; border-collapse:collapse; font-size:0.85em; margin:0.25em 0 0.75em 0;">!} ?]
+[? if election_show_Docks = 1: {!<tr><th style="text-align:left; font-weight:normal;"></th><th style="text-align:right;">Vote %</th><th style="text-align:right;">Seats</th><th style="text-align:right;">Change</th></tr>!} ?]
+[? if election_show_Docks = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #44b88f;">C</span>!}{!</td><td style="text-align:right;">!}[+ Docks_ev_C_pct +]{!%</td><td style="text-align:right;">!}[+ Docks_ev_C_seats +]{!</td><td style="text-align:right;">!}[+ Docks_ev_C_chg +]{!</td></tr>!} ?]
+[? if election_show_Docks = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #cf6e19;">G</span>!}{!</td><td style="text-align:right;">!}[+ Docks_ev_G_pct +]{!%</td><td style="text-align:right;">!}[+ Docks_ev_G_seats +]{!</td><td style="text-align:right;">!}[+ Docks_ev_G_chg +]{!</td></tr>!} ?]
+[? if election_show_Docks = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #1100cc;">D</span>!}{!</td><td style="text-align:right;">!}[+ Docks_ev_D_pct +]{!%</td><td style="text-align:right;">!}[+ Docks_ev_D_seats +]{!</td><td style="text-align:right;">!}[+ Docks_ev_D_chg +]{!</td></tr>!} ?]
+[? if election_show_Docks = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #3a0000ff;">H</span>!}{!</td><td style="text-align:right;">!}[+ Docks_ev_H_pct +]{!%</td><td style="text-align:right;">!}[+ Docks_ev_H_seats +]{!</td><td style="text-align:right;">!}[+ Docks_ev_H_chg +]{!</td></tr>!} ?]
+[? if election_show_Docks = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #404040;">I</span>!}{!</td><td style="text-align:right;">!}[+ Docks_ev_I_pct +]{!%</td><td style="text-align:right;">!}[+ Docks_ev_I_seats +]{!</td><td style="text-align:right;">!}[+ Docks_ev_I_chg +]{!</td></tr>!} ?]
+[? if election_show_Docks = 1: {!</table>!} ?]
+
+[? if election_show_Aurora = 1: **District 2 (Aurora District)** ?]
+[? if election_show_Aurora = 1: {!<table style="width:100%; border-collapse:collapse; font-size:0.85em; margin:0.25em 0 0.75em 0;">!} ?]
+[? if election_show_Aurora = 1: {!<tr><th style="text-align:left; font-weight:normal;"></th><th style="text-align:right;">Vote %</th><th style="text-align:right;">Seats</th><th style="text-align:right;">Change</th></tr>!} ?]
+[? if election_show_Aurora = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #44b88f;">C</span>!}{!</td><td style="text-align:right;">!}[+ Aurora_ev_C_pct +]{!%</td><td style="text-align:right;">!}[+ Aurora_ev_C_seats +]{!</td><td style="text-align:right;">!}[+ Aurora_ev_C_chg +]{!</td></tr>!} ?]
+[? if election_show_Aurora = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #cf6e19;">G</span>!}{!</td><td style="text-align:right;">!}[+ Aurora_ev_G_pct +]{!%</td><td style="text-align:right;">!}[+ Aurora_ev_G_seats +]{!</td><td style="text-align:right;">!}[+ Aurora_ev_G_chg +]{!</td></tr>!} ?]
+[? if election_show_Aurora = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #1100cc;">D</span>!}{!</td><td style="text-align:right;">!}[+ Aurora_ev_D_pct +]{!%</td><td style="text-align:right;">!}[+ Aurora_ev_D_seats +]{!</td><td style="text-align:right;">!}[+ Aurora_ev_D_chg +]{!</td></tr>!} ?]
+[? if election_show_Aurora = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #3a0000ff;">H</span>!}{!</td><td style="text-align:right;">!}[+ Aurora_ev_H_pct +]{!%</td><td style="text-align:right;">!}[+ Aurora_ev_H_seats +]{!</td><td style="text-align:right;">!}[+ Aurora_ev_H_chg +]{!</td></tr>!} ?]
+[? if election_show_Aurora = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #404040;">I</span>!}{!</td><td style="text-align:right;">!}[+ Aurora_ev_I_pct +]{!%</td><td style="text-align:right;">!}[+ Aurora_ev_I_seats +]{!</td><td style="text-align:right;">!}[+ Aurora_ev_I_chg +]{!</td></tr>!} ?]
+[? if election_show_Aurora = 1: {!</table>!} ?]
+
+[? if election_show_Vats = 1: **District 3 (The Vats)** ?]
+[? if election_show_Vats = 1: {!<table style="width:100%; border-collapse:collapse; font-size:0.85em; margin:0.25em 0 0.75em 0;">!} ?]
+[? if election_show_Vats = 1: {!<tr><th style="text-align:left; font-weight:normal;"></th><th style="text-align:right;">Vote %</th><th style="text-align:right;">Seats</th><th style="text-align:right;">Change</th></tr>!} ?]
+[? if election_show_Vats = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #44b88f;">C</span>!}{!</td><td style="text-align:right;">!}[+ Vats_ev_C_pct +]{!%</td><td style="text-align:right;">!}[+ Vats_ev_C_seats +]{!</td><td style="text-align:right;">!}[+ Vats_ev_C_chg +]{!</td></tr>!} ?]
+[? if election_show_Vats = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #cf6e19;">G</span>!}{!</td><td style="text-align:right;">!}[+ Vats_ev_G_pct +]{!%</td><td style="text-align:right;">!}[+ Vats_ev_G_seats +]{!</td><td style="text-align:right;">!}[+ Vats_ev_G_chg +]{!</td></tr>!} ?]
+[? if election_show_Vats = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #1100cc;">D</span>!}{!</td><td style="text-align:right;">!}[+ Vats_ev_D_pct +]{!%</td><td style="text-align:right;">!}[+ Vats_ev_D_seats +]{!</td><td style="text-align:right;">!}[+ Vats_ev_D_chg +]{!</td></tr>!} ?]
+[? if election_show_Vats = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #3a0000ff;">H</span>!}{!</td><td style="text-align:right;">!}[+ Vats_ev_H_pct +]{!%</td><td style="text-align:right;">!}[+ Vats_ev_H_seats +]{!</td><td style="text-align:right;">!}[+ Vats_ev_H_chg +]{!</td></tr>!} ?]
+[? if election_show_Vats = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #404040;">I</span>!}{!</td><td style="text-align:right;">!}[+ Vats_ev_I_pct +]{!%</td><td style="text-align:right;">!}[+ Vats_ev_I_seats +]{!</td><td style="text-align:right;">!}[+ Vats_ev_I_chg +]{!</td></tr>!} ?]
+[? if election_show_Vats = 1: {!</table>!} ?]
+
+[? if election_show_Railyard = 1: **District 4 (The Railyard)** ?]
+[? if election_show_Railyard = 1: {!<table style="width:100%; border-collapse:collapse; font-size:0.85em; margin:0.25em 0 0.75em 0;">!} ?]
+[? if election_show_Railyard = 1: {!<tr><th style="text-align:left; font-weight:normal;"></th><th style="text-align:right;">Vote %</th><th style="text-align:right;">Seats</th><th style="text-align:right;">Change</th></tr>!} ?]
+[? if election_show_Railyard = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #44b88f;">C</span>!}{!</td><td style="text-align:right;">!}[+ Railyard_ev_C_pct +]{!%</td><td style="text-align:right;">!}[+ Railyard_ev_C_seats +]{!</td><td style="text-align:right;">!}[+ Railyard_ev_C_chg +]{!</td></tr>!} ?]
+[? if election_show_Railyard = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #cf6e19;">G</span>!}{!</td><td style="text-align:right;">!}[+ Railyard_ev_G_pct +]{!%</td><td style="text-align:right;">!}[+ Railyard_ev_G_seats +]{!</td><td style="text-align:right;">!}[+ Railyard_ev_G_chg +]{!</td></tr>!} ?]
+[? if election_show_Railyard = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #1100cc;">D</span>!}{!</td><td style="text-align:right;">!}[+ Railyard_ev_D_pct +]{!%</td><td style="text-align:right;">!}[+ Railyard_ev_D_seats +]{!</td><td style="text-align:right;">!}[+ Railyard_ev_D_chg +]{!</td></tr>!} ?]
+[? if election_show_Railyard = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #3a0000ff;">H</span>!}{!</td><td style="text-align:right;">!}[+ Railyard_ev_H_pct +]{!%</td><td style="text-align:right;">!}[+ Railyard_ev_H_seats +]{!</td><td style="text-align:right;">!}[+ Railyard_ev_H_chg +]{!</td></tr>!} ?]
+[? if election_show_Railyard = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #404040;">I</span>!}{!</td><td style="text-align:right;">!}[+ Railyard_ev_I_pct +]{!%</td><td style="text-align:right;">!}[+ Railyard_ev_I_seats +]{!</td><td style="text-align:right;">!}[+ Railyard_ev_I_chg +]{!</td></tr>!} ?]
+[? if election_show_Railyard = 1: {!</table>!} ?]
+
+[? if election_show_Pitts = 1: **District 5 (The Pitts)** ?]
+[? if election_show_Pitts = 1: {!<table style="width:100%; border-collapse:collapse; font-size:0.85em; margin:0.25em 0 0.75em 0;">!} ?]
+[? if election_show_Pitts = 1: {!<tr><th style="text-align:left; font-weight:normal;"></th><th style="text-align:right;">Vote %</th><th style="text-align:right;">Seats</th><th style="text-align:right;">Change</th></tr>!} ?]
+[? if election_show_Pitts = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #44b88f;">C</span>!}{!</td><td style="text-align:right;">!}[+ Pitts_ev_C_pct +]{!%</td><td style="text-align:right;">!}[+ Pitts_ev_C_seats +]{!</td><td style="text-align:right;">!}[+ Pitts_ev_C_chg +]{!</td></tr>!} ?]
+[? if election_show_Pitts = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #cf6e19;">G</span>!}{!</td><td style="text-align:right;">!}[+ Pitts_ev_G_pct +]{!%</td><td style="text-align:right;">!}[+ Pitts_ev_G_seats +]{!</td><td style="text-align:right;">!}[+ Pitts_ev_G_chg +]{!</td></tr>!} ?]
+[? if election_show_Pitts = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #1100cc;">D</span>!}{!</td><td style="text-align:right;">!}[+ Pitts_ev_D_pct +]{!%</td><td style="text-align:right;">!}[+ Pitts_ev_D_seats +]{!</td><td style="text-align:right;">!}[+ Pitts_ev_D_chg +]{!</td></tr>!} ?]
+[? if election_show_Pitts = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #3a0000ff;">H</span>!}{!</td><td style="text-align:right;">!}[+ Pitts_ev_H_pct +]{!%</td><td style="text-align:right;">!}[+ Pitts_ev_H_seats +]{!</td><td style="text-align:right;">!}[+ Pitts_ev_H_chg +]{!</td></tr>!} ?]
+[? if election_show_Pitts = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #404040;">I</span>!}{!</td><td style="text-align:right;">!}[+ Pitts_ev_I_pct +]{!%</td><td style="text-align:right;">!}[+ Pitts_ev_I_seats +]{!</td><td style="text-align:right;">!}[+ Pitts_ev_I_chg +]{!</td></tr>!} ?]
+[? if election_show_Pitts = 1: {!</table>!} ?]
+
+[? if election_show_Limelight = 1: **District 6 (The Limelight)** ?]
+[? if election_show_Limelight = 1: {!<table style="width:100%; border-collapse:collapse; font-size:0.85em; margin:0.25em 0 0.75em 0;">!} ?]
+[? if election_show_Limelight = 1: {!<tr><th style="text-align:left; font-weight:normal;"></th><th style="text-align:right;">Vote %</th><th style="text-align:right;">Seats</th><th style="text-align:right;">Change</th></tr>!} ?]
+[? if election_show_Limelight = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #44b88f;">C</span>!}{!</td><td style="text-align:right;">!}[+ Limelight_ev_C_pct +]{!%</td><td style="text-align:right;">!}[+ Limelight_ev_C_seats +]{!</td><td style="text-align:right;">!}[+ Limelight_ev_C_chg +]{!</td></tr>!} ?]
+[? if election_show_Limelight = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #cf6e19;">G</span>!}{!</td><td style="text-align:right;">!}[+ Limelight_ev_G_pct +]{!%</td><td style="text-align:right;">!}[+ Limelight_ev_G_seats +]{!</td><td style="text-align:right;">!}[+ Limelight_ev_G_chg +]{!</td></tr>!} ?]
+[? if election_show_Limelight = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #1100cc;">D</span>!}{!</td><td style="text-align:right;">!}[+ Limelight_ev_D_pct +]{!%</td><td style="text-align:right;">!}[+ Limelight_ev_D_seats +]{!</td><td style="text-align:right;">!}[+ Limelight_ev_D_chg +]{!</td></tr>!} ?]
+[? if election_show_Limelight = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #3a0000ff;">H</span>!}{!</td><td style="text-align:right;">!}[+ Limelight_ev_H_pct +]{!%</td><td style="text-align:right;">!}[+ Limelight_ev_H_seats +]{!</td><td style="text-align:right;">!}[+ Limelight_ev_H_chg +]{!</td></tr>!} ?]
+[? if election_show_Limelight = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #404040;">I</span>!}{!</td><td style="text-align:right;">!}[+ Limelight_ev_I_pct +]{!%</td><td style="text-align:right;">!}[+ Limelight_ev_I_seats +]{!</td><td style="text-align:right;">!}[+ Limelight_ev_I_chg +]{!</td></tr>!} ?]
+[? if election_show_Limelight = 1: {!</table>!} ?]
+
+[? if election_show_Deeps = 1: **District 7 (The Deeps)** ?]
+[? if election_show_Deeps = 1: {!<table style="width:100%; border-collapse:collapse; font-size:0.85em; margin:0.25em 0 0.75em 0;">!} ?]
+[? if election_show_Deeps = 1: {!<tr><th style="text-align:left; font-weight:normal;"></th><th style="text-align:right;">Vote %</th><th style="text-align:right;">Seats</th><th style="text-align:right;">Change</th></tr>!} ?]
+[? if election_show_Deeps = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #44b88f;">C</span>!}{!</td><td style="text-align:right;">!}[+ Deeps_ev_C_pct +]{!%</td><td style="text-align:right;">!}[+ Deeps_ev_C_seats +]{!</td><td style="text-align:right;">!}[+ Deeps_ev_C_chg +]{!</td></tr>!} ?]
+[? if election_show_Deeps = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #cf6e19;">G</span>!}{!</td><td style="text-align:right;">!}[+ Deeps_ev_G_pct +]{!%</td><td style="text-align:right;">!}[+ Deeps_ev_G_seats +]{!</td><td style="text-align:right;">!}[+ Deeps_ev_G_chg +]{!</td></tr>!} ?]
+[? if election_show_Deeps = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #1100cc;">D</span>!}{!</td><td style="text-align:right;">!}[+ Deeps_ev_D_pct +]{!%</td><td style="text-align:right;">!}[+ Deeps_ev_D_seats +]{!</td><td style="text-align:right;">!}[+ Deeps_ev_D_chg +]{!</td></tr>!} ?]
+[? if election_show_Deeps = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #3a0000ff;">H</span>!}{!</td><td style="text-align:right;">!}[+ Deeps_ev_H_pct +]{!%</td><td style="text-align:right;">!}[+ Deeps_ev_H_seats +]{!</td><td style="text-align:right;">!}[+ Deeps_ev_H_chg +]{!</td></tr>!} ?]
+[? if election_show_Deeps = 1: {!<tr><td style="text-align:left;">!}{!<span style="color: #404040;">I</span>!}{!</td><td style="text-align:right;">!}[+ Deeps_ev_I_pct +]{!%</td><td style="text-align:right;">!}[+ Deeps_ev_I_seats +]{!</td><td style="text-align:right;">!}[+ Deeps_ev_I_chg +]{!</td></tr>!} ?]
+[? if election_show_Deeps = 1: {!</table>!} ?]

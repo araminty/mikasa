@@ -59,6 +59,19 @@ const EXEC_SEATS = 150
 const GUILD_SEATS = 35
 const DISTRICT_SEATS = 15
 const VOTE_SCALE = 10000
+const EXEC_ELECTION_MONTH = 12
+const GUILD_KEYS = ['Gold', 'White', 'Blue']
+
+/** District council election month (1–12). Order: Docks … Deeps. */
+const DISTRICT_ELECTION_MONTH = {
+    Docks: 6,
+    Aurora: 4,
+    Vats: 2,
+    Railyard: 11,
+    Pitts: 5,
+    Limelight: 6,
+    Deeps: 8,
+}
 
 // --- utilities ----------------------------------------------------------------
 
@@ -83,6 +96,36 @@ function assign_percentages(rawByParty, nSeats) {
         rem[idx] = 0
     }
     return Object.fromEntries(PARTY_KEYS.map((k, i) => [k, Math.round(whole[i])]))
+}
+
+function formatSeatChange(delta) {
+    if (delta > 0) { return '+' + delta }
+    if (delta < 0) { return String(delta) }
+    return '0'
+}
+
+/** Expose district election results as Q qualities for [+ … +] in scene prose (see scheduled_elections). */
+function publishDistrictElectionReport(did, votes, oldSeats, newSeats) {
+    const pct = votesToPollPercents(votes || zeroPartyVotes())
+    Q['election_show_' + did] = 1
+    for (const k of PARTY_KEYS) {
+        Q[did + '_ev_' + k + '_pct'] = pct[k]
+        Q[did + '_ev_' + k + '_seats'] = newSeats[k] || 0
+        Q[did + '_ev_' + k + '_chg'] = formatSeatChange(
+            (newSeats[k] || 0) - (oldSeats[k] || 0)
+        )
+    }
+}
+
+/** One-quarter guild turnover: 3 parts held seats, 1 part current poll (largest remainder). */
+function rotateGuildSeatsQuarter(currentSeats, pollVotes, nSeats) {
+    const rotate = Math.ceil(nSeats / 4)
+    const keep = nSeats - rotate
+    const mass = zeroPartyVotes()
+    for (const k of PARTY_KEYS) {
+        mass[k] = (currentSeats[k] || 0) * keep + (pollVotes[k] || 0) * rotate
+    }
+    return assign_percentages(mass, nSeats)
 }
 
 function softmax(scores, temperature = 1) {
@@ -412,18 +455,18 @@ function buildDistricts() {
         [1, 24, 17, 3, 1, 1, 166],
     ]
     const configs = {
-        Docks: { electionMonth: 3, competitiveScores: { C: 0.3, G: 0.2 } },
-        Aurora: { electionMonth: 6, competitiveScores: { D: 0.2, I: 0.2 } },
-        Vats: { electionMonth: 9, competitiveScores: { C: 0.8, D: -0.3 } },
-        Railyard: { electionMonth: 12, competitiveScores: { C: 0.6, G: 0.1 } },
+        Docks: { electionMonth: DISTRICT_ELECTION_MONTH.Docks, competitiveScores: { C: 0.3, G: 0.2 } },
+        Aurora: { electionMonth: DISTRICT_ELECTION_MONTH.Aurora, competitiveScores: { D: 0.2, I: 0.2 } },
+        Vats: { electionMonth: DISTRICT_ELECTION_MONTH.Vats, competitiveScores: { C: 0.8, D: -0.3 } },
+        Railyard: { electionMonth: DISTRICT_ELECTION_MONTH.Railyard, competitiveScores: { C: 0.6, G: 0.1 } },
         Pitts: {
-            electionMonth: 2,
+            electionMonth: DISTRICT_ELECTION_MONTH.Pitts,
             competitiveScores: { G: 0.5, D: 0.2 },
             competitiveTurnoutBonus: -0.15,
             lowTurnoutGangBonus: 1.2,
         },
-        Limelight: { electionMonth: 5, competitiveScores: { C: 0.4, G: 0.3 } },
-        Deeps: { electionMonth: 8, competitiveScores: { D: 0.6, I: 0.4, H: -0.3 } },
+        Limelight: { electionMonth: DISTRICT_ELECTION_MONTH.Limelight, competitiveScores: { C: 0.4, G: 0.3 } },
+        Deeps: { electionMonth: DISTRICT_ELECTION_MONTH.Deeps, competitiveScores: { D: 0.6, I: 0.4, H: -0.3 } },
     }
     return DISTRICT_IDS.map((id, i) => new District(id, pops[i], configs[id] || {}))
 }
@@ -1015,6 +1058,99 @@ engine.assign_seats = function(opts) {
     return runElectionsAndWriteQ(Object.assign({ commitSeats: true }, opts || {}))
 }
 
+/**
+ * Apply scheduled seat updates after month tick (current polling).
+ * Guild: each month, 1/4 of seats reallocated silently (no election event).
+ * Executive: full refresh in December. Districts: per DISTRICT_ELECTION_MONTH.
+ */
+Q.runScheduledElections = function(opts) {
+    opts = opts || {}
+    const month = opts.month != null ? opts.month : (Q.month || 1)
+    const year = opts.year != null ? opts.year : (Q.year || 2300)
+    const report = {
+        month,
+        year,
+        skipped: false,
+        executive: false,
+        districts: [],
+        any: false,
+        lines: [],
+    }
+
+    if (
+        !opts.force
+        && !Q.elections_allow_same_month_repeat
+        && Q.elections_applied_month === month
+        && Q.elections_applied_year === year
+    ) {
+        report.skipped = true
+        report.any = false
+        for (const did of DISTRICT_IDS) {
+            Q['election_show_' + did] = 0
+        }
+        return report
+    }
+
+    for (const did of DISTRICT_IDS) {
+        Q['election_show_' + did] = 0
+    }
+
+    const results = runElectionsAndWriteQ({
+        month,
+        allDistricts: false,
+        commitSeats: false,
+    })
+
+    for (const g of GUILD_KEYS) {
+        const current = Object.fromEntries(
+            PARTY_KEYS.map((k) => [k, Q[g + '_' + k] || 0])
+        )
+        const pollVotes = results.guild.byGuild[g] || zeroPartyVotes()
+        const newSeats = rotateGuildSeatsQuarter(current, pollVotes, GUILD_SEATS)
+        for (const k of PARTY_KEYS) {
+            Q[g + '_' + k] = newSeats[k]
+        }
+    }
+
+    if (month === EXEC_ELECTION_MONTH) {
+        const ex = results.executive.seats
+        for (const k of PARTY_KEYS) {
+            Q['Exec_' + k] = ex[k]
+        }
+        report.executive = true
+        report.lines.push('The Executive Council was re-elected for the coming year.')
+    }
+
+    for (const did of DISTRICT_IDS) {
+        if (DISTRICT_ELECTION_MONTH[did] !== month) { continue }
+        const run = results.districts[did]
+        if (!run || !run.seats || !run.seats[did]) { continue }
+        const oldSeats = Object.fromEntries(
+            PARTY_KEYS.map((k) => [k, Q[did + '_' + k] || 0])
+        )
+        const ds = run.seats[did]
+        const votes = run.byDistrict[did] || zeroPartyVotes()
+        for (const k of PARTY_KEYS) {
+            Q[did + '_' + k] = ds[k]
+        }
+        report.districts.push(did)
+        publishDistrictElectionReport(did, votes, oldSeats, ds)
+    }
+
+    Q.elections_applied_month = month
+    Q.elections_applied_year = year
+
+    report.any = report.executive || report.districts.length > 0
+    if (report.any) {
+        Q.elections_this_month = 1
+        Q.election_report = report.lines.join('\n\n')
+    } else {
+        Q.elections_this_month = 0
+        Q.election_report = ''
+    }
+    return report
+}
+
 // ElectorateModifier catalog lives in post_event.scene.dry; stub until that scene runs.
 Q.electorateModifierCatalog = []
 Q.applyElectorateModifiers = function() {}
@@ -1035,7 +1171,7 @@ Q.ensureBuildStampFooter = function() {
     el.textContent = 'Build: ' + (Q.build_time_label || 'unknown')
 }
 // MIKASA_BUILD_STAMP
-Q.build_time_label = '2026-05-22 13:25:01 local';
+Q.build_time_label = '2026-05-22 14:44:59 local';
 // /MIKASA_BUILD_STAMP
 Q.ensureBuildStampFooter()
 
@@ -1066,6 +1202,9 @@ Q.month_actions = 0;
 Q.parochialism = 25;
 Q.parochial_radicalism = 0.65; // moderate radicalism → ~35% clawed back to Dems, rest stays on H
 
+Q.elections_applied_month = 0;
+Q.elections_applied_year = 0;
+Q.elections_allow_same_month_repeat = 0;
 Q.difficulty = 0;
 Q.use_decimals = 0;
 

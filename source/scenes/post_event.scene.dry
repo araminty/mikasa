@@ -171,6 +171,7 @@ Q.electorateModifierCatalog = [
 
 
     // --- auto-synced electorate stacks (delta 0) ---
+    new ElectorateModifier('elections_this_month_auto', 'elections_this_month', 'global', '', 'D', 0),
     new ElectorateModifier('kiss_ass_media_auto', 'kiss_ass_media', 'global', '', 'D', 0),
     new ElectorateModifier('self_sufficiency_media_auto', 'self_sufficiency_media', 'global', '', 'D', 0),
     new ElectorateModifier('militia_auxiliary_auto', 'militia_auxiliary', 'global', '', 'D', 0),
@@ -302,6 +303,10 @@ Q.applyElectorateModifiers = function() {
 }
 
 Q.update_projections();
+
+if (typeof Q.runScheduledElections === 'function') {
+    Q.runScheduledElections()
+}
 
 Q.has_event = 0;
 // check if there are any cards in #event, and then go to main if not.
