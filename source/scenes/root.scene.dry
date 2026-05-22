@@ -1025,16 +1025,17 @@ Q.ensureBuildStampFooter = function() {
     if (typeof document === 'undefined') { return }
     var id = 'mikasa-build-stamp'
     var el = document.getElementById(id)
+    var stampStyle = 'position:fixed;bottom:8px;right:10px;z-index:9999;pointer-events:none;font:11px/1.4 ui-monospace,monospace;color:#ccc;background:rgba(0,0,0,0.55);padding:2px 6px;border-radius:3px;text-align:right;text-shadow:none;-webkit-font-smoothing:antialiased;'
     if (!el) {
         el = document.createElement('div')
         el.id = id
-        el.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:9999;pointer-events:none;font:11px/1.4 ui-monospace,monospace;color:#aaa;background:rgba(0,0,0,0.45);padding:3px 10px;text-align:right;'
         document.body.appendChild(el)
     }
+    el.style.cssText = stampStyle
     el.textContent = 'Build: ' + (Q.build_time_label || 'unknown')
 }
 // MIKASA_BUILD_STAMP
-Q.build_time_label = '2026-05-22 12:43:59 local';
+Q.build_time_label = '2026-05-22 13:25:01 local';
 // /MIKASA_BUILD_STAMP
 Q.ensureBuildStampFooter()
 
@@ -1063,6 +1064,7 @@ Q.year = 2300;
 Q.month = 1;
 Q.month_actions = 0;
 Q.parochialism = 25;
+Q.parochial_radicalism = 0.65; // moderate radicalism → ~35% clawed back to Dems, rest stays on H
 
 Q.difficulty = 0;
 Q.use_decimals = 0;

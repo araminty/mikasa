@@ -120,9 +120,22 @@ Q.electorateModifierCatalog = [
     new ElectorateModifier('dundalk_stake_rally_dems', 'dundalk_stakeholder', 'global', '', 'D', 1),
     new ElectorateModifier('dundalk_vigil_rally_gang', 'dundalk_vigil', 'global', '', 'G', -2),
     new ElectorateModifier('dundalk_vigil_rally_dems', 'dundalk_vigil', 'global', '', 'D', +.5),
-    new ElectorateModifier('dundalk_nationalist_dems', 'dundalk_nationalist', 'global', '', 'D', +1.5),
-    new ElectorateModifier('dundalk_nationalist_dems', 'dundalk_nationalist', 'global', '', 'H', +1.5),
+    new ElectorateModifier('dundalk_nationalist_dems', 'dundalk_nationalist', 'global', '', 'D', 1.5),
+    new ElectorateModifier('dundalk_nationalist_dems', 'dundalk_nationalist', 'global', '', 'H', 1.5),
+    new ElectorateModifier('anti_corp_media_dem', 'anti_corp_media', 'global', '', 'D', 2),
+    new ElectorateModifier('anti_corp_media_rich', 'anti_corp_media', 'stratum', 'rich', 'D', -4), // they dont like being villainized
 
+
+    // --- parochialism → xenophobia_derived / xenophobia_clawed_back (stacks set in syncParochialismXenophobiaStacks)
+    // Full outsider-hostility: H up, C down (corps scapegoated either way). Claw applies only to H/D.
+    new ElectorateModifier('xenophobia_boost_H1', 'xenophobia_derived', 'stratum', 'first', 'H', 0.02),
+    new ElectorateModifier('xenophobia_boost_H2', 'xenophobia_derived', 'stratum', 'second', 'H', 0.01),
+    new ElectorateModifier('xenophobia_hurt_C1', 'xenophobia_derived', 'stratum', 'first', 'C', -0.02),
+    new ElectorateModifier('xenophobia_hurt_C2', 'xenophobia_derived', 'stratum', 'second', 'C', -0.01),
+    new ElectorateModifier('xenophobia_claw_H1', 'xenophobia_clawed_back', 'stratum', 'first', 'H', -0.01),
+    new ElectorateModifier('xenophobia_claw_H2', 'xenophobia_clawed_back', 'stratum', 'second', 'H', -0.005),
+    new ElectorateModifier('xenophobia_claw_D1', 'xenophobia_clawed_back', 'stratum', 'first', 'D', 0.01),
+    new ElectorateModifier('xenophobia_claw_D2', 'xenophobia_clawed_back', 'stratum', 'second', 'D', 0.005),
     
 
     // --- organize_phase card stacks (placeholder; tune when cards are written) ---
@@ -160,7 +173,6 @@ Q.electorateModifierCatalog = [
     // --- auto-synced electorate stacks (delta 0) ---
     new ElectorateModifier('kiss_ass_media_auto', 'kiss_ass_media', 'global', '', 'D', 0),
     new ElectorateModifier('self_sufficiency_media_auto', 'self_sufficiency_media', 'global', '', 'D', 0),
-    new ElectorateModifier('anti_corp_media_dem', 'anti_corp_media', 'global', '', 'D', 2),
     new ElectorateModifier('militia_auxiliary_auto', 'militia_auxiliary', 'global', '', 'D', 0),
     new ElectorateModifier('police_defund_auto', 'police_defund', 'global', '', 'D', 0),
     new ElectorateModifier('police_investigated_auto', 'police_investigated', 'global', '', 'D', 0),
@@ -229,9 +241,44 @@ Q.electorateModifierCatalog = [
 // new ElectorateModifier('_ref_Deeps_I', 'district', 'Deeps', 'I', 0.4),
 // new ElectorateModifier('_ref_Deeps_H', 'district', 'Deeps', 'H', -0.3),
 
+/** How radical the xenophobia is (0–1 linear, then sqrt above 1). Higher → harder for Dems to claw back. */
+function effectiveParochialRadicalism(rad) {
+    if (isNaN(rad) || rad <= 0) { return 0 }
+    if (rad <= 1) { return rad }
+    return Math.sqrt(rad)
+}
+
+/** Share of derived xenophobia Dems can claw off H (1 − radicalism, floored at 0). */
+function demClawBackFraction(rad) {
+    return Math.max(0, 1 - effectiveParochialRadicalism(rad))
+}
+
+/**
+ * Derive modifier stacks from Q.parochialism (0–100).
+ * xenophobia_derived: ramps above Suspicion (41+). H+/C− on 1st/2nd via catalog.
+ * xenophobia_clawed_back: derived * demClawBackFraction(rad); C still hit by derived only.
+ */
+Q.syncParochialismXenophobiaStacks = function(q) {
+    q = q || Q
+    var p = Number(q.parochialism)
+    if (isNaN(p)) { p = 0 }
+    var rad = Number(q.parochial_radicalism)
+    if (isNaN(rad)) { rad = 0.65 }
+    var clawMult = demClawBackFraction(rad)
+
+    var suspicionFloor = 41
+    var maxStack = 20
+    var raw = p <= suspicionFloor ? 0 : ((p - suspicionFloor) / (100 - suspicionFloor)) * maxStack
+
+    q.xenophobia_derived = raw
+    q.xenophobia_clawed_back = raw * clawMult
+}
+
 Q.applyElectorateModifiers = function() {
     var state = Q.electionV2
     if (!state) { return }
+
+    Q.syncParochialismXenophobiaStacks(Q)
 
     state.demographicsById = state.demographicsById || Object.fromEntries(
         state.demographics.map(function(d) { return [d.id, d] })

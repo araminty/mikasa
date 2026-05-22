@@ -26,7 +26,15 @@ Council composition from the opening election (January 2300):
 {!<tr><td style="text-align:left;">D7 Deeps</td><td style="text-align:right;">!}[+ Deeps_C +]{!</td><td style="text-align:right;">!}[+ Deeps_G +]{!</td><td style="text-align:right;">!}[+ Deeps_D +]{!</td><td style="text-align:right;">!}[+ Deeps_H +]{!</td><td style="text-align:right;">!}[+ Deeps_I +]{!</td></tr>!}
 {!</table>!}
 
+@politics
 
+= Public attitude towards outsiders
+
+[+ parochialism : parochialism +] ([+ parochialism +])
+
+= Intensity of anti-outsider movement
+
+[+ parochial_radicalism : parochial_radicalism +] ([+ parochial_radicalism +])
 
 @polls
 on-arrival: {! Q.update_projections(); !}
