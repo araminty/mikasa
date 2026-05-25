@@ -17,26 +17,9 @@ Dendry (`.dry`) is compiled by [dendrynexus](https://github.com/aucchen/dendryne
 | `source/info.dry` | Game title / author metadata |
 | `out/` | Generated HTML/JS — do not edit |
 
-## Electorate stack placeholders
+## Electorate modifier catalog
 
-Event `on-arrival` **same-line** assignments (text before the first `{!` on that line) that bump or set stacks (`foo += 1`, `bar -= 2`, `baz = 0`) are registered in `Q.electorateModifierCatalog`. Scenes tagged `advisor` are skipped. After adding a new stack in a scene, run:
-
-```bash
-npm run sync:electorate-modifiers        # apply
-npm run sync:electorate-modifiers -- --check   # CI: fail if catalog stale
-```
-
-This appends missing stacks to `post_event.scene.dry` as `ElectorateModifier` rows with **delta 0** (no poll effect until you tune party/delta/scope).
-
-**Automatic sync** (same script, applies placeholders):
-
-| Trigger | When |
-|---------|------|
-| Cursor hooks | Agent/tab writes a `source/scenes/**/*.dry` file (`afterFileEdit`, `afterTabFileEdit`, `postToolUse` on Write/TabWrite) |
-| Editor save | Saving a scene `.dry` if the [Run On Save](https://marketplace.visualstudio.com/items?itemName=emeraldwalk.RunOnSave) extension is installed (`.vscode/settings.json`) |
-| Git pre-commit | After `npm run setup:git-hooks` once per clone |
-
-One-time: `npm run setup:git-hooks` to enable `.githooks/pre-commit`.
+Story choices bump **stack** qualities on `on-arrival:` (e.g. `dundalk_reform += 1`). Poll effects come from rows in `Q.electorateModifierCatalog` in **`electorate_runtime.scene.dry`** (`MIKASA_ELECTORATE_RUNTIME_*` block). When you add a new stack in an event, add a matching `new ElectorateModifier(...)` row by hand (party, delta, scope, target).
 
 ## Scene file anatomy
 
@@ -170,29 +153,31 @@ Used via `[+ month : month +]` — second name is the qdisplay id (usually filen
 
 ## Game flow (this project)
 
-1. **`root.scene.dry`** — init `Q` (election v2: voter blocks, IGs, competitive softmax), start menu → `main` / `main_easy`. Keep in sync with `source/lib/election-v2.js`.
-2. **`main.scene.dry`** — decks: Party Affairs, Government Affairs, pinned shuffle/advance.
-3. **`advance.scene.dry`** — month tick → `post_event`.
-4. **`post_event.scene.dry`** — `Q.update_projections()`, drain `#event` queue or return to main.
-5. **Events** — `tags: event`, `view-if:` date, `priority`, `max-visits: 1`.
-6. **Cards** — `is-card: true`, `tags: organize_phase` / `govt_affairs` / `party_affairs`, often `view_if:` unlock flags.
-7. **`status.scene.dry`**, **`library.scene.dry`**, **`election_simulation.scene.dry`** — `is-special: true`.
-8. **`@backSpecialScene`** — return from special scenes (library, mods).
+1. **`root.scene.dry`** — start menu, new-game stat init, build stamp. Bootstraps runtime scenes.
+2. **`election_runtime.scene.dry`** — election v2 (voter blocks, IGs, competitive softmax). CLI mirror: `source/lib/election-v2.js`.
+3. **`electorate_runtime.scene.dry`** — `ElectorateModifier` catalog and `Q.applyElectorateModifiers`.
+4. **`economic_assets_runtime.scene.dry`** — homes/assets API, Jacobs report helpers.
+5. **`main.scene.dry`** — decks: Party Affairs, Government Affairs, pinned shuffle/advance.
+6. **`advance.scene.dry`** — month tick → `post_event`.
+7. **`post_event.scene.dry`** — month-end tick (`update_projections`, scheduled elections, event queue) or return to main.
+8. **Events** — `tags: event`, `view-if:` date, `priority`, `max-visits: 1`.
+9. **Cards** — `is-card: true`, `tags: organize_phase` / `govt_affairs` / `party_affairs`, often `view_if:` unlock flags.
+10. **`status.scene.dry`**, **`library.scene.dry`**, **`election_simulation.scene.dry`** — `is-special: true`.
+11. **`@backSpecialScene`** — return from special scenes (library, mods).
 
 ## Build
 
 ```bash
 npm install
-npm run dendrynexus make-html -- --pretty
-cp out/game.json out/html/   # if running static html locally
+npm run make-html
 cp source/robots.txt out/html/robots.txt   # crawler / AI-training opt-out (see file comments)
 ```
 
-`--pretty` is passed through to dendrynexus (formatting/readability of generated output).
+`make-html` embeds the compile in `out/html/core.js` via dendrynexus; no extra copy steps.
 
 ## Editing tips
 
 - Prefer matching existing spelling in the same file (`view-if` vs `view_if`, `choose-if` vs `chose-if`).
 - New events: copy a dated event (e.g. `september_convention.scene.dry`), set `view-if`, `tags: event`, add to event pool via `#event` if needed.
 - New qualities: add qdisplay file + reference in prose with `[+ name : qdisplay_id +]`.
-- Simulation / balance logic: `root.scene.dry` (in-game), `npm run simulate-election:v2` (CLI), organizing ticks under `source/scenes/cards/organizing/`.
+- Simulation / balance logic: runtime scenes (`election_runtime`, `electorate_runtime`, `organize_phase_tick`), `npm run simulate-election:v2 -- --from-scene` (extracts `MIKASA_*_BEGIN`/`END` blocks).

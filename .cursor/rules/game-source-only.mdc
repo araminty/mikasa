@@ -1,0 +1,34 @@
+---
+description: Game behavior lives only in scene.dry and qdisplay files (plus build stamp)
+alwaysApply: true
+---
+
+# Game source boundary
+
+All **game behavior** changes belong in:
+
+- `source/scenes/**/*.scene.dry`
+- `source/qdisplays/*.qdisplay.dry`
+- `source/info.dry` (title / author metadata only)
+
+The **sole source injection** at build time is `scripts/write-build-stamp.js`, which rewrites `Q.build_time_label` in `root.scene.dry` before compile.
+
+## Build output (`out/`)
+
+`npm run make-html` may write all of `out/` through **normal dendrynexus `make-html` behavior** (compile → `core.js`, template copy, etc.). Do not hand-edit `out/` for game logic.
+
+No custom build injections beyond dendrynexus + stamp:
+
+- No project `templates/` overrides
+- No post-build patches to `out/html/` for runtime behavior
+- No sidecar loaders (e.g. synchronous `game.json` XHR in `index.html`)
+
+Dev-only scripts (`lint:dendry`, `simulate-election`, `serve:dev`, `extract-scene-js`) must not affect the playable build.
+
+## Revert test
+
+If every file outside `source/` were reverted to the pre-refactor baseline and you ran `make-html`, in-game behavior should match what the current scene/qdisplay sources describe. Dev tooling may break; that is acceptable.
+
+## Runtime JS pattern
+
+Large JS blocks go in silent setup scenes (`max-visits: 1`, `new-page: false`) with `MIKASA_*_BEGIN` / `END` markers for Node extraction. Bootstrap via `go-to:` from `root.scene.dry`.

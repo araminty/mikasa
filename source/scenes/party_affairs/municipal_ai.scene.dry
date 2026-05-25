@@ -1,0 +1,38 @@
+title: Municipal AI
+new-page: true
+is-card: true
+card-image: img/asteroid.jpg
+tags: party_affairs
+
+= Municipal AI
+
+# Card by Otto the LLM (Cursor), May 2026.
+
+Mikasa was built to run itself. Recyclers, magrails, and gravity plating still sit in the walls—but whole wings stay dark because anything that phones home through the public nets can catch a {!<span class="tooltip-text" title="Corrupted AI—botnet code that infects systems on the public nets. The Clans call them Demons.">Demon</span>!}. The {!<span class="tooltip-text" title="Internet relay satellites around Mikasa; plenty of capacity if the nets were clean.">halo</span>!} has bandwidth to spare. What we have is a {!<span class="tooltip-text" title="Self-expanding botnets filled public systems with spam. Too many people profit for anyone in power to fix it.">dead internet</span>!} instead.
+
+Every working assistant here is a {!<span class="tooltip-text" title="AIs that borrow cycles across the station and move on before they can be corrupted.">digital migrant</span>!}—borrow cycles, finish the job, disappear. The question is who gets to send them.
+
+- @open_maintenance
+- @contract_audit
+- @corp_clerks
+
+@open_maintenance
+title: Deploy open municipal models for grid and life-support
+subtitle: Air-gapped from the dead internet; popular with cooperatives
+on-arrival: ai_open_maintenance += 1
+
+Train small models on sealed sensor logs and run them on idle municipal hardware, never touching the spam seas. Technicians in the Deeps and Aurora can read the weights. It will not reopen a corridor as fast as a megacorp migrant—but cooperatives would rather patch their own stack than rent another chokepoint.
+
+@contract_audit
+title: Audit every corporate AI baked into city contracts
+subtitle: Test for Demon exposure and dead-internet bleed-through
+on-arrival: ai_contract_audit += 1
+
+Payroll, permits, and security cameras increasingly run on vendor models nobody inspects. Publish what they are, demand proof of isolation, and pull contracts when an assistant bleeds into public nets. The corporations will call it sabotage. Anyone who has watched a recycler brick mid-cycle will call it overdue.
+
+@corp_clerks
+title: Let megacorp AI clerks handle permits and billing
+subtitle: Fast migrants that already navigate the dead internet
+on-arrival: ai_corp_admin += 1
+
+Community Soylent and Magrail Combine already run admin bots that know how to hustle through the mess. Hand them the queue and the wait times collapse. Drone-tier clerks start updating their résumés—and nobody can quite say what else rides in on the connection.

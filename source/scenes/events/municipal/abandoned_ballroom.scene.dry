@@ -1,0 +1,70 @@
+title: Abandoned Ballroom
+subtitle: Municipal survey
+priority: 2
+max-visits: 1
+tags: event
+new-page: true
+view-if: month > 4 and third_wave_on_society = 1 and abandoned_ballroom = 0
+on-arrival: abandoned_ballroom = 1
+
+A maintainence team was shocked today to stumble upon a giant abandoned ballroom in the Docks district.  A search in the archives eventually determined that the ballroom dates back to the early days of Mikasa but was apparently never opened because of security concerns.  The site is absolutely massive and features an enormous amount of gold fixtures and gold plating.  Apparently around the time it was constructed gold was seen as a conspicious way to display wealth.  Ironically the asteroid mining rush drastically lowered the price of gold and it's prestige status about a decade after the construction.  Our archivist noted that when it was built the ballroom would have been seen as embarrassingly gaudy and once the price of gold crashed people would have found it hilarious... if it hadn't been sealed off and forgotten.  Shockingly, the original municipal offices of Mikasa were demolished to make room for this stupidity.
+
+Despite being located on the fringes of the Docks district, the site is already well integrated into the city infrastructure and represents prime real estate.  The corporations and local elites would love to get their hands on it.  But it also could be very easily converted into housing for refugees, ironically putting some of the poorest people in Mikasa into one of it's best locations.
+
+- @refugee_housing: Convert the ballroom into refugee housing
+- @give_brazos: Grant the site to Brazos Zaibatsu
+- @give_magrail: Grant the site to Combined Magrail Trust
+- @give_soylent: Grant the site to Community Soylent
+- @local_elites: Reserve the site for Docks local elites
+
+@refugee_housing
+title: Convert the ballroom into refugee housing
+on-arrival: {!
+ballroom_refugee_housing = 1;
+Q.addHome({ id: 'docks_ballroom_refugee_north', name: 'Ballroom north megaplex', district: 'Docks', ownerType: 'public', owner: 'city', housingFor: 'third_wave', major: true });
+Q.addHome({ id: 'docks_ballroom_refugee_south', name: 'Ballroom catering megaplex', district: 'Docks', ownerType: 'public', owner: 'city', housingFor: 'third_wave', major: true });
+Q.addHome({ id: 'docks_ballroom_refugee_gallery', name: 'Gilded gallery dormitory', district: 'Docks', ownerType: 'public', owner: 'city', housingFor: 'third_wave', major: true });
+Q.addHome({ id: 'docks_ballroom_refugee_chandelier', name: 'Chandelier vault housing block', district: 'Docks', ownerType: 'public', owner: 'city', housingFor: 'third_wave', major: false });
+!}
+
+The city strips out the worst of the gold trim for salvage and rebuilds the pre-ballroom foundations to serve as refugee housing. Third-wave refugees move into neighborhoods whose construction features a random combination of ancient gold fixtures and utilitarian concrete and grav panels.
+
+@give_brazos
+title: Grant the ballroom to Brazos Zaibatsu
+on-arrival: {!
+ballroom_given_brazos = 1;
+Q.addAsset({ id: 'docks_ballroom_brazos_display', name: 'Brazos gold-wall display pavilion', district: 'Docks', ownerType: 'ig', owner: 'Brazos', kind: 'office', major: true });
+Q.addAsset({ id: 'docks_ballroom_brazos_studio', name: 'Brazos immersive media studio', district: 'Docks', ownerType: 'ig', owner: 'Brazos', kind: 'factory', major: true });
+!}
+
+Brazos Zaibatsu wins the concession and immediately lines every surface with cheap digital displays behind the surviving gold leaf. The pavilion showcases luxury Brazos hardware; the studio churns out propaganda wrapped in ironic retro glamour. Limelight's marketing department sends a congratulatory fruit basket.
+
+@give_magrail
+title: Grant the ballroom to Combined Magrail Trust
+on-arrival: {!
+ballroom_given_magrail = 1;
+Q.addAsset({ id: 'docks_ballroom_magrail_concourse', name: 'Magrail Docks prestige concourse', district: 'Docks', ownerType: 'ig', owner: 'Magrail', kind: 'office', major: true });
+Q.addAsset({ id: 'docks_ballroom_magrail_freight_hub', name: 'Magrail ballroom freight annex', district: 'Docks', ownerType: 'ig', owner: 'Magrail', kind: 'factory', major: true });
+!}
+
+Magrail turns the ballroom into a showpiece terminal linking Docks longshore traffic to their maglev network. Shareholders get a gilded waiting lounge; freight handlers get a high-throughput annex tunneled through what used to be the orchestra pit.
+
+@give_soylent
+title: Grant the ballroom to Community Soylent
+on-arrival: {!
+ballroom_given_soylent = 1;
+Q.addAsset({ id: 'docks_ballroom_soylent_showcase', name: 'Soylent showcase hall', district: 'Docks', ownerType: 'ig', owner: 'Soylent', kind: 'office', major: true });
+Q.addAsset({ id: 'docks_ballroom_soylent_catering_vault', name: 'Soylent luxury catering vault', district: 'Docks', ownerType: 'ig', owner: 'Soylent', kind: 'factory', major: true });
+!}
+
+Community Soylent reopens the ballroom as a shareholder-only tasting hall where every dish is guaranteed to put a smile on your face. The catering vault below pumps psychoactive bacterial cultures through gold-plated service lines. Cynics call it vulgar; Soylent calls it on-brand.
+
+@local_elites
+title: Reserve the ballroom for Docks local elites
+on-arrival: {!
+ballroom_local_elites = 1;
+Q.addAsset({ id: 'docks_ballroom_elite_salon', name: 'Ballroom salon', district: 'Docks', ownerType: 'stratum', owner: 'rich', kind: 'office', major: true });
+Q.addAsset({ id: 'docks_ballroom_elite_exchange', name: 'Goldsmith art district', district: 'Docks', ownerType: 'stratum', owner: 'rich', kind: 'market', major: true });
+!}
+
+Rather than hand the site to an offworld megacorp, the city grants long-term leases to Docks shareholders and local capital. The salon hosts the kind of parties the ballroom was built for (albeit in only a fraction of the space) along with a number of resturaunts located in what was supposed to be a massive catering annex.  Meanwhile a new art scene centered around goldsmithing has sprung into existance.  Some of the works are quite subversive, a noteable work is {! (Q.martyrs && Q.martyrs.indexOf("Aisha Renee") >= 0) ? "Alex Platea" : "Aisha Renee" !}'s "Emotional Support Maille" which depicts chainmail constructed out of gold at the moment of being punctured open by bricks.

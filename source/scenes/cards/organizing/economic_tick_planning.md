@@ -52,3 +52,35 @@ Check import spending:
 
 Domestic spending:
     Corp import substitution 
+
+
+
+The ways the economy should link to the political system
+1) If the work conditions are bad, xenophobia and crime ramp up, helping the Hate and Gangs win votes
+2) The Big 3 get politically stronger if they are doing better
+3) The Big 3 have less patience with the player if they are suffering ecocnomically
+
+Then the economy relates to the endgame:
+1) Establishing heavy industries by the coops increases your military power
+2) Industries owned by local rich (so not shareholders) also help but not as much as the coops unless they really like you
+3) Being more self sufficient increase your ability to withstand a siege
+4) The corps have more military power if they've been profitable
+
+So investments help you getting into the endgame.  Investments could be made by government action cards or just because the groups in question are doing well economically.
+
+I'm thinking about establishing a system where there is a "prosperity" value for voterblocks, the 3 corps and the 3 syndicates.  Amounts of cash would not be tracked.  However the affluence of different groups are linked, so one group getting wealthier or poorer would start to drag other groups up or down.
+
+
+The prosperity level of the corps could be relayed to the player as stock prices on the Martian Stock exchange.
+
+7 families prosperity is displayed through the street price of a narcotic called "Cloud 9"
+Bleeding Edges prosperity is displayed through the insurance premiums for cyber protection on businesses and cybernetic implants
+Sharks is the cost of black market installation of cybernetic eyes (The Occular Index)
+
+Economic background that should impact prosperity levels:
+Trade level, especially for the Docks
+Crime level, especially for the Pitts
+Overall state of education (perhaps otherworlder specific state too for them?)
+
+
+

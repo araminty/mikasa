@@ -4,6 +4,7 @@ priority: 5
 max-visits: 1
 tags: event
 view-if: month = 2 and year = 2302
+on-arrival: third_wave_on_society = 1
 
 The Jovian moons have developed a unique system of warfare since the collapse of the Jovian federation.  The corporate councils ruling the moons allow acts of warfare by non-government bodies but have far ranging restrictions on what weapons can be used in order to limit property damage.  Restrictions on munition weights coupled with the low gravity of the moons have made giant fighting robots the primary form of combat, not to mention a major source of media.
 

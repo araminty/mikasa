@@ -3,7 +3,7 @@ priority: 1
 max-visits: 1
 tags: event
 new-page: true
-view-if: month = 8 and year = 2304
+view-if: month = 8 and year = 2306
 
 The flow of refugees from the otherworld has slowed in recent weeks, apparently due to the success of a demon warlord who stylizes herself as the Great Protector.  She is relatively benign by demon standards, prone to exemplary executions but not towards widescale slaughter.  If she succeeds in pacifying the region is should end the current refugee wave.  
 
@@ -36,7 +36,7 @@ Some of our consumer goods seem just as exotic to them as their magic seems to u
 @green_zone
 title: Organize an Otherworld security zone
 on-arrival: {! Q.otherworld_outpost = 1 !}
-choose-if: otherworld_relations > 3 and 1
+choose-if: otherworld_relations > 3
 unavailable-subtitle: [? if otherworld_relations < 4 : We dont know enough about the otherworld for this. ?][? if otherworld_relations > 3 : We need a well armed force and permission from the corporations to use it. ?]
 
 We send an expedition to the Otherworld and secure the region near the pathways to Mikasa.  So long as we maintain goodwill with the Great Protector this outpost could be lucrative.

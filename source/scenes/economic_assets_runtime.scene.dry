@@ -1,0 +1,871 @@
+title: Economic assets runtime
+max-visits: 1
+new-page: false
+on-arrival: {!
+
+// BEGIN economic-name-catalog (edit in place; source/lib/economic-asset-name-catalog.js is reference only)
+function installEconomicNameCatalog(q) {
+    const CATALOG = {
+        first_wave: {
+            japanese: [
+                'Hoshino Lane Workshop',
+                'Nishikawa Commons',
+                'Sakuragi Repair Annex',
+                'Tanabe Gravity Works',
+                'Misaki Row Atelier',
+                'Kawaguchi Mutual Hall',
+                'Amano Street Foundry',
+                'Ishikura Cook Block',
+                'Fujimori Tool Collective',
+                'Yamashita Transit Loft',
+                'Okada Maker Yard',
+                'Morita Family Works',
+            ],
+            french: [
+                'Rue Lafayette Atelier',
+                'Belleville Maker House',
+                'Quai du Nord Workshop',
+                'Montmartre Annex',
+                'Saint-Cloud Repair Hall',
+            ],
+            german: [
+                'Weissmart Forge',
+                'Hafenstraße Works',
+                'Neuhausen Tool House',
+                'Bergmann Lane Collective',
+            ],
+            italian: [
+                'Via Roma Workshop',
+                'Trastevere Repair Loft',
+                'Porto Vecchio Maker Hall',
+                'San Marco Mutual Yard',
+            ],
+            english: [
+                'Cedar Wharf Studios',
+                'North Harbor Works',
+                'Pioneer Row Atelier',
+                'Station Point Commons',
+            ],
+        },
+    
+        second_wave: {
+            swahili: [
+                'Umoja Tower',
+                'Kilimani Cook Commons',
+                'Mtoni Housing Block',
+                'Harambee Maker Yard',
+                'Bahari Street Workshop',
+                'Kijito Repair Hall',
+                'Safari Row Collective',
+                'Maji Mazuri Commons',
+                'Twende Lane Works',
+                'Amani Block',
+                'Jua Kali Foundry',
+                'Mwangaza Housing Annex',
+            ],
+            south_asian: [
+                'Anand Yard',
+                'Shanti Row Megaplex',
+                'Ganesh Industrial Annex',
+                'Bengal Quarter Towers',
+                'Chennai Cook Commons',
+                'Delhi Gate Workshop',
+                'Kerala Mutual Hall',
+                'Lahore Street Works',
+                'Mumbai Lane Repair Loft',
+                'Sundarban Housing Block',
+                'Tamil Square Atelier',
+                'Vijayanagar Maker Collective',
+            ],
+        },
+    
+        brazos: {
+            tejano: [
+                'Alamo HouseDraft Pavilion',
+                'Rio Grande Media Spur',
+                'Tejano Norte Display Node',
+                'Lone Star Compliance Yard',
+                'Mission Trail Workshop',
+                'Gulf Coast Signal Hall',
+                'San Antonio Feed Tower',
+                'El Paso Border Display Annex',
+                'Corpus Christi Media Pier',
+                'Big Bend Relay Cut',
+                'Maverick Row Workshop',
+                'Lone Star Grande Pavilion',
+                'Chaparral Compliance Hall',
+                'Brazos Bend Signal Yard',
+                'Norteño Content Forge',
+            ],
+            corporate: [
+                'Brazos TotalReach Center',
+                'Zaibatsu Narrative Forge',
+                'Limelight Output Annex',
+                'Omniview Distribution Node',
+                'Hyperstream Ad Works',
+                'Brazos PixelRain Atrium',
+                'TotalShare Experience Node',
+                'AdNauseam Production Forge',
+                'Limelight Feed Buffer',
+                'StreamServe Content Vault',
+                'AlwaysOn Display Cathedral',
+                'ConsumerJoy Compliance Center',
+                'BrandLoyalty Immersion Studio',
+                'OptiClick Narrative Yard',
+                'Brazos Synergy Pavilion',
+                'InfiniteScroll Media Complex',
+                'AttentionCapture Works',
+                'SponsoredReality Annex',
+                'ClickHarvest Distribution Hub',
+                'Zaibatsu Optics Laboratory',
+            ],
+        },
+    
+        soylent: [
+            'NutriSmile Hub',
+            'Wellness Valley Annex',
+            'Harmony Acres Processing',
+            'Community Grin Facility',
+            'FreshStart Silo Complex',
+            'Togetherness Protein Yard',
+            'BrightBowl Catering Vault',
+            'Wholesome Reach Center',
+            'CareCircle Nutrient Works',
+            'Sunrise Assurance Plant',
+            'Friendly Fields Annex',
+            'VitalHarmony Commons',
+            'KindBite Distribution Center',
+            'WeCare Protein Annex',
+            'TogetherToday Silo Complex',
+            'SmileSync Nutrient Works',
+            'Heartfelt Harvest Facility',
+            'GentleGrain Assurance Plant',
+            'NurtureNest Commons',
+            'HappyPath Cultivation Vault',
+            'OpenArms Meal Forge',
+            'PureTrust Agrinutrient Hub',
+            'BloomTogether Processing Yard',
+            'ComfortCrate Refillery',
+            'ThriveMate Catering Complex',
+            'ShareJoy Nutrient Annex',
+            'WelcomeHome Protein Center',
+            'TrustBite Assurance Silo',
+            'WarmHearth Meal Commons',
+            'JoyfulYield Cultivation Block',
+        ],
+    
+        magrail: [
+            "Heavy Industry Company Housing Block A",
+            "Freight Consolidation Point No. 4",
+            "Municipal Rail Executives' Rest Block B",
+            "Privatized Grain Transfer Elevator",
+            "District Utility Relay Substation",
+            "Corporate Unity Marshalling Hall",
+            "Fiscal Year-End Brake Testing Facility",
+            "Tether Approach Sorting Shed",
+            "Block 7 Refrigerated Siding Complex",
+            "Rolling Stock Personnel Wash Facility",
+            "Junior Executive Maglev Training Annex",
+            "Board of Directors Siding Office",
+            "Cold Storage Transfer Depot",
+            "Track Maintenance Contractor Equipment Shed",
+            "Inter-District Freight Accounting Center",
+            "Executive Wellness Retreat Near the Yards",
+            "Agribusiness Produce Loading Ramp",
+            "Manifest Verification Office",
+            "Building 12 Gauge Conversion Workshop",
+            "Night Shift Canteen and Locker Building",
+            "Authorized Personnel Only Crossing Gate",
+            "Hump Yard Operations Bunker",
+            "Capitalist Competition Scoreboard Pavilion",
+            "Rail Executives' Country Club Meeting Hall",
+            "Temporary Housing for Surplus Contract Labor",
+            "Intermodal Transfer Platform No. 2",
+            "Corporate Security Freight Inspection Booth",
+            "Mandatory Productivity Overtime Assembly Point",
+            "Executive Committee Supply Distribution Shed",
+            "Brake Van Repair Subsidiary No. 3",
+        ],
+    
+        deeper: [
+            // English — dismissive
+            'Piss Off Valley',
+            'Get Lost Ravine',
+            'Buzz Off Commons',
+            'Clear Out Cut',
+            // English — childish / gross / mocking
+            'Fart in Your Face Boulevard',
+            'Stinky Sock Tunnel',
+            'Yo Mamma Ravine',
+            'Nyah Nyah Gorge',
+            'Loser Town Block',
+            'Nobody Asked You Commons',
+            'We Were Here First Valley',
+            'Eat My Dust Hollow',
+            'Booger Lane Works',
+            'Buttface Heights',
+            // French / German / Italian
+            'Dégage Gorge',
+            'Hau Ab Works',
+            'Dummkopf Hollow',
+            'Levati Block',
+            'Têtes de Linotte Cut',
+            // Spanish / Portuguese / Dutch
+            'Vete Ravine',
+            'Largo Valley',
+            'Sai Fora Gallery',
+            'Rot Op Cut',
+            'Tonto Valley',
+            // Japanese / Swahili / Hindi (romanized)
+            'Baka Baka Block',
+            'Deteke Gorge',
+            'Nenda Hollow',
+            'Pumbavu Ravine',
+            'Jao Jao Commons',
+            // Polish / absurdist
+            'Wypad Valley',
+            'Stick Your Nose In It Tunnel',
+            // More English childish
+            'Stupidhead Basin',
+            'Chewy Shoe Substation',
+            'Dingus Valley',
+            'Go Suck an Egg Ravine',
+            'Talk to the Hand Commons',
+            'Tourists Go Home Cut',
+            'Mind Your Own Business Tunnel',
+            'Not In My Tunnel Block',
+            'Smell Ya Later Hollow',
+            'Cry About It Ravine',
+            // German
+            'Schwachkopf Cut',
+            'Depp Tunnel',
+            'Vollpfosten Ravine',
+            'Hohlkopf Works',
+            'Trottel Commons',
+            // French
+            'Crétin Canyon',
+            'Balourd Hollow',
+            'Nigaud Valley',
+            'Andouille Gorge',
+            'Nuls des Tunnels Block',
+            // Italian
+            'Cretino Works',
+            'Buffone Cut',
+            'Stupido Block',
+            'Fuori dai Piedi Ravine',
+            'Testa di Rapa Hollow',
+            // Spanish / Portuguese
+            'Gil Valley',
+            'Idiota Hollow',
+            'Maleducado Cut',
+            'Otário Ravine',
+            'Babaca Block',
+            'Zopenco Cut',
+            // Dutch / Scandinavian
+            'Oen Tunnel',
+            'Idioot Cut',
+            'Tåpe Block',
+            'Fjutt Tunnel',
+            // Polish / Czech-ish
+            'Głupku Valley',
+            'Wynocha Cut',
+            'Debil Commons',
+            // Japanese / Korean / Swahili / Hindi
+            'Aho Aho Commons',
+            'Baka Yaro Cut',
+            'Babo Block',
+            'Mjinga Hollow',
+            'Buddhu Ravine',
+            'Ullu ka Pattha Works',
+            // Turkish / Greek / Russian (romanized)
+            'Aptal Valley',
+            'Ilithios Cut',
+            'Durak Hollow',
+            // Deeps lore
+            '165-Degree Flip Housing',
+            'Annex This Cut',
+            'Wrong Way Gravity Plaza',
+        ],
+    }
+    
+    /** @type {Record<string, number>} */
+    const FIRST_WAVE_WEIGHTS = {
+        japanese: 50,
+        french: 13,
+        german: 13,
+        italian: 12,
+        english: 12,
+    }
+    
+    function hashSeed(seed) {
+        var s = String(seed == null ? '' : seed)
+        var h = 0
+        for (var i = 0; i < s.length; i++) {
+            h = ((h << 5) - h) + s.charCodeAt(i)
+            h |= 0
+        }
+        return Math.abs(h)
+    }
+    
+    function pick(pool, seed) {
+        if (!pool || !pool.length) { return '' }
+        var idx = hashSeed(seed) % pool.length
+        return pool[idx]
+    }
+    
+    function pickWeighted(buckets, seed) {
+        var total = 0
+        for (var i = 0; i < buckets.length; i++) {
+            total += buckets[i].weight
+        }
+        if (total <= 0) { return pick(buckets[0] && buckets[0].pool, seed) }
+        var roll = hashSeed(seed) % total
+        for (var j = 0; j < buckets.length; j++) {
+            roll -= buckets[j].weight
+            if (roll < 0) {
+                return pick(buckets[j].pool, seed + ':' + j)
+            }
+        }
+        return pick(buckets[buckets.length - 1].pool, seed)
+    }
+    
+    function pickFirstWave(seed) {
+        var buckets = []
+        for (var key in FIRST_WAVE_WEIGHTS) {
+            if (!Object.prototype.hasOwnProperty.call(FIRST_WAVE_WEIGHTS, key)) { continue }
+            buckets.push({
+                weight: FIRST_WAVE_WEIGHTS[key],
+                pool: CATALOG.first_wave[key],
+            })
+        }
+        return pickWeighted(buckets, 'first:' + seed)
+    }
+    
+    function pickSecondWave(seed) {
+        return pickWeighted([
+            { weight: 50, pool: CATALOG.second_wave.swahili },
+            { weight: 50, pool: CATALOG.second_wave.south_asian },
+        ], 'second:' + seed)
+    }
+    
+    /** Cooperatives: even mix of first-wave and second-wave naming. */
+    function pickCoop(seed) {
+        if (hashSeed('coop-branch:' + seed) % 2 === 0) {
+            return pickFirstWave('coop:' + seed)
+        }
+        return pickSecondWave('coop:' + seed)
+    }
+    
+    function pickBrazos(seed) {
+        return pickWeighted([
+            { weight: 45, pool: CATALOG.brazos.tejano },
+            { weight: 55, pool: CATALOG.brazos.corporate },
+        ], 'brazos:' + seed)
+    }
+    
+    function pickSoylent(seed) {
+        return pick(CATALOG.soylent, 'soylent:' + seed)
+    }
+    
+    function pickMagrail(seed) {
+        return pick(CATALOG.magrail, 'magrail:' + seed)
+    }
+    
+    function pickDeeper(seed) {
+        return pick(CATALOG.deeper, 'deeper:' + seed)
+    }
+    
+    /** Third wave: migrant mix of first + second (+ smatter of corp utilitarian). */
+    function pickThirdWave(seed) {
+        return pickWeighted([
+            { weight: 28, pool: CATALOG.first_wave.japanese },
+            { weight: 8, pool: CATALOG.first_wave.french },
+            { weight: 8, pool: CATALOG.first_wave.german },
+            { weight: 7, pool: CATALOG.first_wave.italian },
+            { weight: 7, pool: CATALOG.first_wave.english },
+            { weight: 22, pool: CATALOG.second_wave.swahili },
+            { weight: 15, pool: CATALOG.second_wave.south_asian },
+            { weight: 5, pool: CATALOG.magrail },
+        ], 'third:' + seed)
+    }
+    
+    /** Rich / shareholder local capital: megacorp naming tones blended. */
+    function pickRich(seed) {
+        return pickWeighted([
+            { weight: 30, pool: CATALOG.soylent },
+            { weight: 30, pool: CATALOG.brazos.corporate },
+            { weight: 25, pool: CATALOG.magrail },
+            { weight: 15, pool: CATALOG.brazos.tejano },
+        ], 'rich:' + seed)
+    }
+    
+    /**
+     * Pick a display name for an owner.
+     * @param {object} opts
+     * @param {'ig'|'stratum'|'public'} opts.ownerType
+     * @param {string} opts.owner — Soylent | Magrail | Brazos | first | second | third_wave | rich | …
+     * @param {string} [opts.id] — stable id for seeding
+     * @param {boolean} [opts.isHome]
+     */
+    function pickOwnerDisplayName(opts) {
+        opts = opts || {}
+        var owner = String(opts.owner || '')
+        var seed = opts.id || (owner + '_' + (opts.district || '') + '_' + (opts.isHome ? 'home' : 'asset'))
+    
+        if (opts.ownerType === 'ig') {
+            if (owner === 'Soylent') { return pickSoylent(seed) }
+            if (owner === 'Magrail') { return pickMagrail(seed) }
+            if (owner === 'Brazos') { return pickBrazos(seed) }
+            return pick(owner.toLowerCase(), seed) || owner + ' Facility'
+        }
+    
+        if (owner === 'first') { return pickFirstWave(seed) }
+        if (owner === 'second') { return pickSecondWave(seed) }
+        if (owner === 'third_wave') { return pickThirdWave(seed) }
+        if (owner === 'rich') { return pickRich(seed) }
+        if (owner === 'deeper') { return pickDeeper(seed) }
+        if (owner === 'coop') { return pickCoop(seed) }
+    
+        return pickThirdWave(seed)
+    }
+    
+    q.pickOwnerDisplayName = pickOwnerDisplayName
+}
+// END economic-name-catalog
+
+
+function ensureEconomicAssets() {
+    if (!Q.economicAssets) { Q.economicAssets = [] }
+}
+
+function addEconomicRecord(rec) {
+    ensureEconomicAssets()
+    var entry = {
+        level: 1,
+        health: 1,
+        major: false,
+        infraWeight: 0.8,
+        outputPerLevel: 0.08,
+        countsAsHome: false,
+    }
+    for (var k in rec) {
+        if (Object.prototype.hasOwnProperty.call(rec, k)) { entry[k] = rec[k] }
+    }
+    if (entry.countsAsHome) {
+        entry.kind = entry.kind || 'megaplex'
+        entry.outputPerLevel = 0
+        if (!entry.infraWeight || entry.infraWeight === 0.8) { entry.infraWeight = 1.2 }
+    } else if (!entry.kind) {
+        entry.kind = 'office'
+    }
+    if (!entry.id) {
+        entry.id = entry.owner + '_' + entry.district + '_' + Q.economicAssets.length
+    }
+    Q.economicAssets.push(entry)
+    return entry
+}
+
+function addAsset(opts) {
+    var rec = {}
+    for (var k in opts) {
+        if (Object.prototype.hasOwnProperty.call(opts, k)) { rec[k] = opts[k] }
+    }
+    rec.countsAsHome = false
+    return addEconomicRecord(rec)
+}
+
+function addHome(opts) {
+    var rec = {}
+    for (var k in opts) {
+        if (Object.prototype.hasOwnProperty.call(opts, k)) { rec[k] = opts[k] }
+    }
+    rec.countsAsHome = true
+    return addEconomicRecord(rec)
+}
+
+/** Strata that own housing stock (not drones / corps). Pop in 10,000s; 1 home per 100k people. */
+var ECONOMIC_HOME_STRATA = [
+    'rich', 'first', 'second', 'coop', 'third_wave', 'alien', 'deeper',
+]
+
+/** Target homes = floor(required × 1.2) where required = ceil(pop / 10). */
+function homesTargetForPopulation(popInTenThousands) {
+    var pop = Number(popInTenThousands)
+    if (isNaN(pop) || pop <= 0) { return 0 }
+    var required = Math.ceil(pop / 10)
+    return Math.floor(required * 1.2)
+}
+
+function hasEconomicAssetId(id) {
+    if (!Q.economicAssets) { return false }
+    for (var i = 0; i < Q.economicAssets.length; i++) {
+        if (Q.economicAssets[i].id === id) { return true }
+    }
+    return false
+}
+
+/** Seed homes once at start — ~20% above quota (post–population-decline recovery). */
+function initEconomicAssets() {
+    if (Q.economicAssetsInitialized) { return }
+    Q.economicAssetsInitialized = 1
+    if (typeof installEconomicNameCatalog === 'function') {
+        installEconomicNameCatalog(Q)
+    }
+    ensureEconomicAssets()
+
+    if (!hasEconomicAssetId('pitts_skill_issue_heights')) {
+        addHome({
+            id: 'pitts_skill_issue_heights',
+            name: 'Skill Issue Heights',
+            district: 'Pitts',
+            ownerType: 'stratum',
+            owner: 'rich',
+            major: true,
+        })
+    }
+
+    var state = Q.electionV2
+    if (!state || !state.blocks || typeof Q.pickOwnerDisplayName !== 'function') {
+        return
+    }
+
+    var byStratumDistrict = {}
+    for (var bi = 0; bi < state.blocks.length; bi++) {
+        var block = state.blocks[bi]
+        var sid = block.demographic.id
+        if (ECONOMIC_HOME_STRATA.indexOf(sid) < 0) { continue }
+        var did = block.district.id
+        if (!byStratumDistrict[sid]) { byStratumDistrict[sid] = {} }
+        byStratumDistrict[sid][did] = (byStratumDistrict[sid][did] || 0) + block.population
+    }
+
+    for (var si = 0; si < ECONOMIC_HOME_STRATA.length; si++) {
+        var stratum = ECONOMIC_HOME_STRATA[si]
+        var districtPops = byStratumDistrict[stratum]
+        if (!districtPops) { continue }
+
+        var totalPop = 0
+        for (var dk in districtPops) {
+            if (Object.prototype.hasOwnProperty.call(districtPops, dk)) {
+                totalPop += districtPops[dk]
+            }
+        }
+        if (totalPop <= 0) { continue }
+
+        var target = homesTargetForPopulation(totalPop)
+        if (target <= 0) { continue }
+
+        var skillInPitts = (
+            stratum === 'rich' && hasEconomicAssetId('pitts_skill_issue_heights')
+        )
+        var alreadyPlaced = skillInPitts ? 1 : 0
+        var toPlace = target - alreadyPlaced
+        if (toPlace <= 0) { continue }
+
+        var districtRows = []
+        for (var distId in districtPops) {
+            if (!Object.prototype.hasOwnProperty.call(districtPops, distId)) { continue }
+            var share = districtPops[distId] / totalPop
+            var exact = toPlace * share
+            districtRows.push({
+                id: distId,
+                base: Math.floor(exact),
+                frac: exact - Math.floor(exact),
+            })
+        }
+
+        var assigned = 0
+        for (var dr = 0; dr < districtRows.length; dr++) {
+            assigned += districtRows[dr].base
+        }
+        var remainder = toPlace - assigned
+        districtRows.sort(function(a, b) { return b.frac - a.frac })
+        for (var rr = 0; rr < remainder && rr < districtRows.length; rr++) {
+            districtRows[rr].base += 1
+        }
+
+        for (var dj = 0; dj < districtRows.length; dj++) {
+            var row = districtRows[dj]
+            for (var hi = 0; hi < row.base; hi++) {
+                if (skillInPitts && row.id === 'Pitts' && hi === 0) {
+                    continue
+                }
+                var homeId = 'home_' + stratum + '_' + row.id + '_' + hi
+                if (hasEconomicAssetId(homeId)) { continue }
+                addHome({
+                    id: homeId,
+                    name: Q.pickOwnerDisplayName({
+                        ownerType: 'stratum',
+                        owner: stratum,
+                        district: row.id,
+                        id: homeId,
+                        isHome: true,
+                    }),
+                    district: row.id,
+                    ownerType: 'stratum',
+                    owner: stratum,
+                    major: false,
+                })
+            }
+        }
+    }
+}
+
+var ECONOMIC_STRATUM_LABELS = {
+    rich: 'Rich',
+    first: '1st Wave',
+    second: '2nd Wave',
+    coop: 'Coops',
+    drone: 'Drones',
+    alien: 'Otherworlders',
+    deeper: 'Deepers',
+    third_wave: '3rd Wave',
+}
+
+function sortedEconomicAssets() {
+    ensureEconomicAssets()
+    var assets = Q.economicAssets || []
+    return assets.slice().sort(function(a, b) {
+        if (a.district !== b.district) {
+            return a.district < b.district ? -1 : 1
+        }
+        if (!!a.countsAsHome !== !!b.countsAsHome) {
+            return a.countsAsHome ? -1 : 1
+        }
+        var an = a.name || a.id
+        var bn = b.name || b.id
+        return an < bn ? -1 : (an > bn ? 1 : 0)
+    })
+}
+
+function economicAssetTypeLabel(entry) {
+    var typeLabel = entry.countsAsHome ? 'Home' : 'Asset'
+    if (entry.kind) { typeLabel += ' (' + entry.kind + ')' }
+    return typeLabel
+}
+
+function economicAssetStatusLabel(entry) {
+    return (entry.health == null || Number(entry.health) >= 1) ? 'Operational' : 'Offline'
+}
+
+function affiliationTextPlain(entry) {
+    if (entry.ownerType === 'ig') {
+        var tag = 'Corp'
+        if (
+            entry.owner === 'Families'
+            || entry.owner === 'Edges'
+            || entry.owner === 'Sharks'
+        ) {
+            tag = 'Syndicate'
+        }
+        return entry.owner + ' (' + tag + ')'
+    }
+    if (entry.ownerType === 'public') {
+        var forLabel = entry.housingFor
+            ? (ECONOMIC_STRATUM_LABELS[entry.housingFor] || entry.housingFor)
+            : 'general'
+        return 'City (' + forLabel + ' housing)'
+    }
+    return (ECONOMIC_STRATUM_LABELS[entry.owner] || entry.owner) + ' (stratum)'
+}
+
+/** Plain-text holdings register (see scheduled_elections election_report pattern). */
+function formatEconomicAssetsReportText() {
+    if (typeof ensureEconomicAssets !== 'function') {
+        return 'Economic registry is not available yet.'
+    }
+    var rows = sortedEconomicAssets()
+    if (!rows.length) {
+        return 'No registered homes or economic assets yet.'
+    }
+
+    var lines = []
+    for (var i = 0; i < rows.length; i++) {
+        var e = rows[i]
+        lines.push(
+            (e.name || e.id)
+            + ' — '
+            + economicAssetTypeLabel(e)
+            + ', '
+            + (e.district || '')
+            + ', '
+            + affiliationTextPlain(e)
+            + ', '
+            + economicAssetStatusLabel(e)
+        )
+    }
+    lines.push('')
+    lines.push(rows.length + ' sites registered.')
+    return lines.join('\n')
+}
+
+function updateJacobsAssetsReport() {
+    if (typeof Q.initEconomicAssets === 'function') { Q.initEconomicAssets() }
+    Q.jacobs_assets_report = formatEconomicAssetsReportText()
+}
+
+function appendEconomicReportCell(tr, text, tagName) {
+    var cell = document.createElement(tagName || 'td')
+    cell.style.textAlign = 'left'
+    cell.style.padding = '0.15em 0.35em 0.15em 0'
+    if (tagName === 'th') {
+        cell.style.fontWeight = 'normal'
+    }
+    cell.textContent = text
+    tr.appendChild(cell)
+    return cell
+}
+
+function appendEconomicAffiliationCell(tr, entry) {
+    var td = document.createElement('td')
+    td.style.textAlign = 'left'
+    td.style.padding = '0.15em 0.35em 0.15em 0'
+
+    if (entry.ownerType === 'ig') {
+        var color = '#44b88f'
+        var tag = 'Corp'
+        if (
+            entry.owner === 'Families'
+            || entry.owner === 'Edges'
+            || entry.owner === 'Sharks'
+        ) {
+            color = '#cf6e19'
+            tag = 'Syndicate'
+        }
+        var span = document.createElement('span')
+        span.style.color = color
+        span.textContent = entry.owner
+        td.appendChild(span)
+        td.appendChild(document.createTextNode(' (' + tag + ')'))
+    } else if (entry.ownerType === 'public') {
+        var forLabel = entry.housingFor
+            ? (ECONOMIC_STRATUM_LABELS[entry.housingFor] || entry.housingFor)
+            : 'general'
+        td.textContent = 'City (' + forLabel + ' housing)'
+    } else {
+        var stratumName = ECONOMIC_STRATUM_LABELS[entry.owner] || entry.owner
+        td.textContent = stratumName + ' (stratum)'
+    }
+
+    tr.appendChild(td)
+}
+
+/** DOM report (see mod_loader.scene.dry): fill a placeholder div from on-display. */
+function renderEconomicAssetsReport(containerId) {
+    var root = document.getElementById(containerId || 'jacobs_assets_report')
+    if (!root) { return }
+    root.innerHTML = ''
+
+    if (typeof ensureEconomicAssets !== 'function') {
+        var missing = document.createElement('p')
+        var em = document.createElement('em')
+        em.textContent = 'Economic registry is not available yet.'
+        missing.appendChild(em)
+        root.appendChild(missing)
+        return
+    }
+
+    var rows = sortedEconomicAssets()
+    if (!rows.length) {
+        var empty = document.createElement('p')
+        var emptyEm = document.createElement('em')
+        emptyEm.textContent = 'No registered homes or economic assets yet.'
+        empty.appendChild(emptyEm)
+        root.appendChild(empty)
+        return
+    }
+
+    var table = document.createElement('table')
+    table.style.width = '100%'
+    table.style.borderCollapse = 'collapse'
+    table.style.fontSize = '0.85em'
+    table.style.margin = '0.25em 0'
+
+    var header = document.createElement('tr')
+    appendEconomicReportCell(header, 'Site', 'th')
+    appendEconomicReportCell(header, 'Type', 'th')
+    appendEconomicReportCell(header, 'District', 'th')
+    appendEconomicReportCell(header, 'Affiliation', 'th')
+    appendEconomicReportCell(header, 'Status', 'th')
+    table.appendChild(header)
+
+    for (var i = 0; i < rows.length; i++) {
+        var e = rows[i]
+        var tr = document.createElement('tr')
+        appendEconomicReportCell(tr, e.name || e.id)
+        appendEconomicReportCell(tr, economicAssetTypeLabel(e))
+        appendEconomicReportCell(tr, e.district || '')
+        appendEconomicAffiliationCell(tr, e)
+        appendEconomicReportCell(tr, economicAssetStatusLabel(e))
+        table.appendChild(tr)
+    }
+
+    root.appendChild(table)
+
+    var foot = document.createElement('p')
+    foot.style.fontSize = '0.85em'
+    foot.style.margin = '0.35em 0 0 0'
+    foot.textContent = rows.length + ' sites registered.'
+    root.appendChild(foot)
+}
+
+function formatEconomicAssetsReportHtml() {
+    var rows = sortedEconomicAssets()
+    if (!rows.length) {
+        return '<p><em>No registered homes or economic assets yet.</em></p>'
+    }
+
+    var html = '<table style="width:100%;border-collapse:collapse;font-size:0.85em;margin:0.25em 0;">'
+    html += '<tr><th style="text-align:left;font-weight:normal;">Site</th>'
+    html += '<th style="text-align:left;font-weight:normal;">Type</th>'
+    html += '<th style="text-align:left;font-weight:normal;">District</th>'
+    html += '<th style="text-align:left;font-weight:normal;">Affiliation</th>'
+    html += '<th style="text-align:left;font-weight:normal;">Status</th></tr>'
+
+    for (var i = 0; i < rows.length; i++) {
+        var e = rows[i]
+        html += '<tr><td style="text-align:left;">' + (e.name || e.id) + '</td>'
+        html += '<td style="text-align:left;">' + economicAssetTypeLabel(e) + '</td>'
+        html += '<td style="text-align:left;">' + (e.district || '') + '</td>'
+        html += '<td style="text-align:left;">'
+        if (e.ownerType === 'ig') {
+            var color = '#44b88f'
+            var tag = 'Corp'
+            if (
+                e.owner === 'Families' || e.owner === 'Edges' || e.owner === 'Sharks'
+            ) {
+                color = '#cf6e19'
+                tag = 'Syndicate'
+            }
+            html += '<span style="color:' + color + ';">' + e.owner + '</span> (' + tag + ')'
+        } else if (e.ownerType === 'public') {
+            var forLabel = e.housingFor
+                ? (ECONOMIC_STRATUM_LABELS[e.housingFor] || e.housingFor)
+                : 'general'
+            html += 'City (' + forLabel + ' housing)'
+        } else {
+            html += (ECONOMIC_STRATUM_LABELS[e.owner] || e.owner) + ' (stratum)'
+        }
+        html += '</td><td style="text-align:left;">' + economicAssetStatusLabel(e) + '</td></tr>'
+    }
+
+    html += '</table>'
+    html += '<p style="font-size:0.85em;margin:0.35em 0 0 0;">'
+    html += rows.length + ' sites registered.</p>'
+    return html
+}
+
+Q.ensureEconomicAssets = ensureEconomicAssets
+Q.addAsset = addAsset
+Q.addHome = addHome
+Q.initEconomicAssets = initEconomicAssets
+Q.formatEconomicAssetsReportHtml = formatEconomicAssetsReportHtml
+Q.formatEconomicAssetsReportText = formatEconomicAssetsReportText
+Q.updateJacobsAssetsReport = updateJacobsAssetsReport
+Q.renderEconomicAssetsReport = renderEconomicAssetsReport
+
+if (typeof Q.initEconomicAssets === 'function') { Q.initEconomicAssets() }
+economic_assets_runtime_ready = 1
+
+!}
+go-to: root.after_economic_assets_runtime

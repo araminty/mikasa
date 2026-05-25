@@ -1,7 +1,6 @@
 title: Status
 new-page: true
 is-special: true
-on-display: {! if (typeof Q.ensureBuildStampFooter === 'function') { Q.ensureBuildStampFooter() } !}
 
 = Status
 
@@ -27,6 +26,10 @@ Council composition from the opening election (January 2300):
 {!</table>!}
 
 @politics
+on-arrival: {!
+if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+if (typeof Q.syncStratumProsperityAverages === 'function') { Q.syncStratumProsperityAverages() }
+!}
 
 = Public attitude towards outsiders
 
@@ -35,6 +38,62 @@ Council composition from the opening election (January 2300):
 = Intensity of anti-outsider movement
 
 [+ parochial_radicalism : parochial_radicalism +] ([+ parochial_radicalism +])
+
+= Economy
+
+Prosperity indicators (higher generally means that faction is doing better):
+
+= Prosperity by class
+
+Citywide average prosperity in each stratum (population-weighted across districts; 1.0 = Mikasa average):
+
+{!<table style="width:100%; border-collapse:collapse; font-size:0.85em; margin:0.25em 0;">!}
+{!<tr><th style="text-align:left; font-weight:normal;">Stratum</th><th style="text-align:left;">Condition</th></tr>!}
+{!<tr><td style="text-align:left;">Rich</td><td style="text-align:left;"><span class="tooltip-text" title="Prosperity index: !}[+ prosperity_rich +]{!">!}[+ prosperity_rich : prosperity +]{!</span></td></tr>!}
+{!<tr><td style="text-align:left;">1st</td><td style="text-align:left;"><span class="tooltip-text" title="Prosperity index: !}[+ prosperity_first +]{!">!}[+ prosperity_first : prosperity +]{!</span></td></tr>!}
+{!<tr><td style="text-align:left;">2nd</td><td style="text-align:left;"><span class="tooltip-text" title="Prosperity index: !}[+ prosperity_second +]{!">!}[+ prosperity_second : prosperity +]{!</span></td></tr>!}
+{!<tr><td style="text-align:left;">Coops</td><td style="text-align:left;"><span class="tooltip-text" title="Prosperity index: !}[+ prosperity_coop +]{!">!}[+ prosperity_coop : prosperity +]{!</span></td></tr>!}
+{!<tr><td style="text-align:left;">Drone</td><td style="text-align:left;"><span class="tooltip-text" title="Prosperity index: !}[+ prosperity_drone +]{!">!}[+ prosperity_drone : prosperity +]{!</span></td></tr>!}
+{!<tr><td style="text-align:left;">OtherW</td><td style="text-align:left;"><span class="tooltip-text" title="Prosperity index: !}[+ prosperity_alien +]{!">!}[+ prosperity_alien : prosperity +]{!</span></td></tr>!}
+{!<tr><td style="text-align:left;">Deepers</td><td style="text-align:left;"><span class="tooltip-text" title="Prosperity index: !}[+ prosperity_deeper +]{!">!}[+ prosperity_deeper : prosperity +]{!</span></td></tr>!}
+[? if third_wave_on_society = 1: {!<tr><td style="text-align:left;">3rd Wave</td><td style="text-align:left;">!}[+ prosperity_third_wave : prosperity +]{!</td></tr>!} ?]
+{!</table>!}
+
+= Martian Stock Exchange
+
+Listed shares of the Big Three (Mikasa operations):
+
+{!<table style="width:100%; border-collapse:collapse; font-size:0.85em; margin:0.25em 0;">!}
+{!<tr><th style="text-align:left; font-weight:normal;">Ticker</th><th style="text-align:left;">Corporation</th><th style="text-align:right;">Price</th></tr>!}
+{!<tr><td style="text-align:left;">SOYL</td><td style="text-align:left;">!}{!<span style="color: #44b88f;">Community Soylent</span>!}{!</td><td style="text-align:right;">!}[+ stock_soylent +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">MAGR</td><td style="text-align:left;">!}{!<span style="color: #44b88f;">Combined Magrail Trust</span>!}{!</td><td style="text-align:right;">!}[+ stock_magrail +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">BRAZ</td><td style="text-align:left;">!}{!<span style="color: #44b88f;">Brazos Zaibatsu</span>!}{!</td><td style="text-align:right;">!}[+ stock_brazos +]{!</td></tr>!}
+{!</table>!}
+
+= Underground indices
+
+{!<table style="width:100%; border-collapse:collapse; font-size:0.85em; margin:0.25em 0;">!}
+{!<tr><th style="text-align:left; font-weight:normal;">Syndicate</th><th style="text-align:left;">Indicator</th><th style="text-align:right;">Level</th></tr>!}
+{!<tr><td style="text-align:left;">Seven Families</td><td style="text-align:left;"><span class="tooltip-text" title="Cloud 9 — street price of the narcotic Cloud 9 (Seven Families); doses affordable per 1,000 nuyen">C9</span></td><td style="text-align:right;">!}[+ cloud_9_street_price +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">Bleeding Edges</td><td style="text-align:left;"><span class="tooltip-text" title="Cyber Insurance Premium — cost to insure AA-rated secure systems and cybernetic implants against Bleeding Edges activity (basis points)">CIP</span></td><td style="text-align:right;">!}[+ edges_cyber_insurance_premium +]{!</td></tr>!}
+{!<tr><td style="text-align:left;">Sharks</td><td style="text-align:left;"><span class="tooltip-text" title="Lonevo Ocular Index — black-market street price to install a Lonevo T420 cybereye (Sharkskin Army)">LOI</span></td><td style="text-align:right;">!}[+ ocular_index +]{!</td></tr>!}
+{!</table>!}
+
+@paramilitaries
+
+= Public safety
+
+Police reform: [+ police_reform +]
+
+Police defunded / purged: [+ police_defund +]
+
+Police investigated: [+ police_investigated +]
+
+Community militia: [+ militia +]
+
+Militia auxiliary: [+ militia_auxiliary +]
+
+Militia policing streets: [+ militia_police +]
 
 @polls
 on-arrival: {! Q.update_projections(); !}
@@ -65,6 +124,7 @@ Share of the popular vote within each stratum (general electorate model; figures
 {!<table style="width:100%; border-collapse:collapse; font-size:0.85em; margin:0 0 0.25em 0;">!}
 {!<tr><td style="text-align:left;">OtherW</td><td style="text-align:right;">!}[+ alien_poll_C +]{!</td><td style="text-align:right;">!}[+ alien_poll_G +]{!</td><td style="text-align:right;">!}[+ alien_poll_D +]{!</td><td style="text-align:right;">!}[+ alien_poll_H +]{!</td><td style="text-align:right;">!}[+ alien_poll_I +]{!</td></tr>!}
 {!<tr><td style="text-align:left;">Deepers</td><td style="text-align:right;">!}[+ deeper_poll_C +]{!</td><td style="text-align:right;">!}[+ deeper_poll_G +]{!</td><td style="text-align:right;">!}[+ deeper_poll_D +]{!</td><td style="text-align:right;">!}[+ deeper_poll_H +]{!</td><td style="text-align:right;">!}[+ deeper_poll_I +]{!</td></tr>!}
+[? if third_wave_on_society = 1: {!<tr><td style="text-align:left;">3rd Wave</td><td style="text-align:right;">!}[+ third_wave_poll_C +]{!</td><td style="text-align:right;">!}[+ third_wave_poll_G +]{!</td><td style="text-align:right;">!}[+ third_wave_poll_D +]{!</td><td style="text-align:right;">!}[+ third_wave_poll_H +]{!</td><td style="text-align:right;">!}[+ third_wave_poll_I +]{!</td></tr>!} ?]
 {!</table>!}
 
 = Results by district

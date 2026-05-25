@@ -44,6 +44,8 @@ Populations (in 10,000s):
 
 {!<tr><td>!}Otherworlder{!</td><td>!} [+ Docks_alien_pop +]{!</td><td>!}[+ Aurora_alien_pop +]{!</td><td>!}[+ Vats_alien_pop +]{!</td><td>!}[+ Railyard_alien_pop +]{!</td><td>!}[+ Pitts_alien_pop +]{!</td><td>!}[+ Limelight_alien_pop +]{!</td><td>!}[+ Deeps_alien_pop +]{!</td></tr>!}    
 
+{!<tr><td>!}3rd Wave{!</td><td>!} [+ Docks_third_wave_pop +]{!</td><td>!}[+ Aurora_third_wave_pop +]{!</td><td>!}[+ Vats_third_wave_pop +]{!</td><td>!}[+ Railyard_third_wave_pop +]{!</td><td>!}[+ Pitts_third_wave_pop +]{!</td><td>!}[+ Limelight_third_wave_pop +]{!</td><td>!}[+ Deeps_third_wave_pop +]{!</td></tr>!}
+
 {!</table>!}
 
 

@@ -1,22 +1,13 @@
-/**
- * Mikasa election model v2 — scaffold
- *
- * - VoterBlock = demographic × district (no IG on the block)
- * - Interest groups allocate IG-determined ballots (the "floor")
- * - Competitive softmax on the remaining population (variable turnout)
- *
- * Corporate IGs: Soylent, Magrail, Brazos (shareholders / drones)
- * Syndicate IGs: Families, Edges, Sharks
- * Guild IGs (guild chamber only): Executive, Gold, White, Blue
- *
- * Run: node scripts/simulate-election.js --v2
- */
+title: Election runtime
+max-visits: 1
+new-page: false
+on-arrival: {!
 
-const {
-    DISTRICT_POPULATIONS,
-    IG_MEMBERSHIP_BY_STRATUM,
-    stratumVector: worldStratumVector,
-} = require('./election-world-data.js')
+// MIKASA_ELECTION_RUNTIME_BEGIN
+
+(function initMikasaElectionV2() {
+
+const VOTE_TO_PARTY = { Dems: "D", Ind: "I", Corp: "C", Gang: "G", Hate: "H" }
 
 const PARTY_KEYS = ['D', 'I', 'C', 'G', 'H']
 const PARTY_LABELS = {
@@ -68,7 +59,10 @@ const EXEC_SEATS = 150
 const GUILD_SEATS = 35
 const DISTRICT_SEATS = 15
 const VOTE_SCALE = 10000
+const EXEC_ELECTION_MONTH = 12
+const GUILD_KEYS = ['Gold', 'White', 'Blue']
 
+/** District council election month (1–12). Order: Docks … Deeps. */
 const DISTRICT_ELECTION_MONTH = {
     Docks: 6,
     Aurora: 4,
@@ -83,6 +77,80 @@ const DISTRICT_ELECTION_MONTH = {
 const DISTRICT_STARTING_PROSPERITY = {
     Docks: 1.5,
     Pitts: 0.5,
+}
+
+/** Population in 10,000s per district × stratum (sync with election-world-data.js). */
+const DISTRICT_POPULATIONS = {
+    Docks: {
+        rich: 17, first: 42, second: 30, coop: 1, drone: 11, alien: 1, deeper: 1,
+        third_wave: 1,
+    },
+    Aurora: {
+        rich: 0, first: 58, second: 57, coop: 1, drone: 2, alien: 9, deeper: 3,
+    },
+    Vats: {
+        rich: 1, first: 8, second: 11, coop: 1, drone: 48, alien: 0, deeper: 1,
+    },
+    Railyard: {
+        rich: 0, first: 12, second: 10, coop: 1, drone: 52, alien: 0, deeper: 1,
+    },
+    Pitts: {
+        rich: 0, first: 28, second: 71, coop: 1, drone: 2, alien: 0, deeper: 1,
+    },
+    Limelight: {
+        rich: 1, first: 19, second: 22, coop: 1, drone: 55, alien: 0, deeper: 1,
+    },
+    Deeps: {
+        rich: 1, first: 24, second: 17, coop: 3, drone: 1, alien: 1, deeper: 166,
+    },
+}
+
+/** National IG membership share per stratum (sync with election-world-data.js). */
+const IG_MEMBERSHIP_BY_STRATUM = {
+    Soylent: {
+        rich: 0.08, first: 0.02, second: 0.01, drone: 0.22,
+    },
+    Magrail: {
+        rich: 0.06, first: 0.02, second: 0.01, drone: 0.18,
+    },
+    Brazos: {
+        rich: 0.07, first: 0.02, second: 0.02, drone: 0.15,
+    },
+    Families: {
+        rich: 0.02, first: 0.04, second: 0.08, coop: 0.01, drone: 0.01,
+    },
+    Edges: {
+        rich: 0.01, first: 0.05, second: 0.07, coop: 0.01, drone: 0.01,
+    },
+    Sharks: {
+        rich: 0.01, first: 0.03, second: 0.1, drone: 0.01,
+    },
+    Executive: {
+        rich: 0.35, first: 0.01, drone: 0.02,
+    },
+    Gold: {
+        rich: 0.15, first: 0.01,
+    },
+    White: {
+        first: 0.12, second: 0.04, coop: 0.01,
+    },
+    Blue: {
+        first: 0.05, second: 0.1, coop: 0.02, drone: 0.08,
+    },
+}
+
+function stratumVector(byStratum) {
+    return STRATUM_IDS.map((id) => Number(byStratum[id]) || 0)
+}
+
+function membershipFromConfig(config) {
+    if (config.membershipByStratum) {
+        return stratumVector(config.membershipByStratum)
+    }
+    if (config.membership) {
+        return config.membership
+    }
+    return STRATUM_IDS.map(() => 0)
 }
 
 // --- utilities ----------------------------------------------------------------
@@ -110,11 +178,86 @@ function assign_percentages(rawByParty, nSeats) {
     return Object.fromEntries(PARTY_KEYS.map((k, i) => [k, Math.round(whole[i])]))
 }
 
+function formatSeatChange(delta) {
+    if (delta > 0) { return '+' + delta }
+    if (delta < 0) { return String(delta) }
+    return '0'
+}
+
+/** Expose district election results as Q qualities for [+ … +] in scene prose (see scheduled_elections). */
+function publishDistrictElectionReport(did, votes, oldSeats, newSeats) {
+    const pct = votesToPollPercents(votes || zeroPartyVotes())
+    Q['election_show_' + did] = 1
+    for (const k of PARTY_KEYS) {
+        Q[did + '_ev_' + k + '_pct'] = pct[k]
+        Q[did + '_ev_' + k + '_seats'] = newSeats[k] || 0
+        Q[did + '_ev_' + k + '_chg'] = formatSeatChange(
+            (newSeats[k] || 0) - (oldSeats[k] || 0)
+        )
+    }
+}
+
+/** One-quarter guild turnover: 3 parts held seats, 1 part current poll (largest remainder). */
+function rotateGuildSeatsQuarter(currentSeats, pollVotes, nSeats) {
+    const rotate = Math.ceil(nSeats / 4)
+    const keep = nSeats - rotate
+    const mass = zeroPartyVotes()
+    for (const k of PARTY_KEYS) {
+        mass[k] = (currentSeats[k] || 0) * keep + (pollVotes[k] || 0) * rotate
+    }
+    return assign_percentages(mass, nSeats)
+}
+
 function softmax(scores, temperature = 1) {
     const keys = PARTY_KEYS
     const exps = keys.map((k) => Math.exp((scores[k] || 0) / temperature))
     const total = sum(exps) || 1
     return Object.fromEntries(keys.map((k, i) => [k, exps[i] / total]))
+}
+
+/** Legacy vote-label appeals (Dems, Corp, …) → competitive logit scale. */
+const APPEAL_TO_SCORE = 0.05
+
+function applyAppealsTo(target, labels, values) {
+    for (let i = 0; i < labels.length; i++) {
+        target[labels[i]] = values[i] || 0
+    }
+}
+
+function voteLabelAppealsToScores(entity) {
+    const scores = zeroPartyVotes()
+    for (const [label, party] of Object.entries(VOTE_TO_PARTY)) {
+        scores[party] = (entity[label] || 0) * APPEAL_TO_SCORE
+    }
+    return scores
+}
+
+function syncVoteAppealsToCompetitive(entity) {
+    const base = entity._baseCompetitiveScores || zeroPartyVotes()
+    const fromAppeals = voteLabelAppealsToScores(entity)
+    entity.competitiveScores = {}
+    for (const k of PARTY_KEYS) {
+        entity.competitiveScores[k] = (base[k] || 0) + (fromAppeals[k] || 0)
+    }
+}
+
+function syncGlobalVoteAppeals(state, labels, shifts) {
+    const base = state._baseGlobalScores || zeroPartyVotes()
+    const row = Object.fromEntries(labels.map((l, i) => [l, shifts[i] || 0]))
+    const fromAppeals = voteLabelAppealsToScores(row)
+    state.global.competitiveScores = {}
+    for (const k of PARTY_KEYS) {
+        state.global.competitiveScores[k] = (base[k] || 0) + (fromAppeals[k] || 0)
+    }
+}
+
+function syncAllVoteAppeals(stratums, state, labels, globalShifts) {
+    for (const s of stratums) {
+        syncVoteAppealsToCompetitive(s)
+    }
+    if (state) {
+        syncGlobalVoteAppeals(state, labels, globalShifts)
+    }
 }
 
 // --- VoterBlock: demographic × district only ----------------------------------
@@ -124,7 +267,7 @@ class VoterBlock {
         this.demographic = demographic
         this.district = district
         this.population = population
-        /** Local economic prosperity (1.0 = baseline). */
+        /** Local economic prosperity (1.0 = baseline; cards/ticks may adjust). */
         this.prosperity = district.startingProsperity ?? 1
         /** Competitive party scores (events modify these). */
         this.competitiveScores = { D: 0, I: 0, C: 0, G: 0, H: 0 }
@@ -140,7 +283,7 @@ class VoterBlock {
 }
 
 class Demographic {
-    constructor(id, config) {
+    constructor(id, config, appeals) {
         this.id = id
         this.blocks = []
         this.competitiveScores = Object.assign(
@@ -151,10 +294,20 @@ class Demographic {
             { D: 1, I: 1, C: 1, G: 1, H: 1 },
             config.competitiveSteepness || {}
         )
+        this._baseCompetitiveScores = Object.assign({}, this.competitiveScores)
         /** Max share of this stratum claimed by all IGs combined (rest = competitive). */
         this.igClaimCap = config.igClaimCap ?? 0.5
         this.executiveWeight = config.executiveWeight ?? 1
+        /** Optional BLOCK_VOTE_RULES key, e.g. 'corp_or_abstain' for drones. */
         this.voteRule = config.voteRule || null
+        if (appeals) {
+            applyAppealsTo(this, Q.vote_labels, appeals)
+            syncVoteAppealsToCompetitive(this)
+        }
+        this.name = this.id
+        Q.stratums.push(this)
+        Q.lookups[this.id] = this
+        Q[this.id] = this
     }
 }
 
@@ -167,11 +320,19 @@ class District {
             { D: 0, I: 0, C: 0, G: 0, H: 0 },
             config.competitiveScores || {}
         )
+        this._baseCompetitiveScores = Object.assign({}, this.competitiveScores)
         this.competitiveTurnoutBonus = config.competitiveTurnoutBonus ?? 0
         this.lowTurnoutGangBonus = config.lowTurnoutGangBonus ?? 0
         this.electionMonth = config.electionMonth ?? 1
         this.startingProsperity =
             config.startingProsperity ?? DISTRICT_STARTING_PROSPERITY[id] ?? 1
+        this.name = this.id
+        for (let i = 0; i < Q.stratum_labels.length; i++) {
+            this[Q.stratum_labels[i]] = populations[i] || 0
+        }
+        Q.regions.push(this)
+        Q.lookups[this.id] = this
+        Q[this.id] = this
     }
 }
 
@@ -205,16 +366,6 @@ class InterestGroup {
 function normalizeShares(shares) {
     const total = sum(PARTY_KEYS.map((k) => shares[k] || 0)) || 1
     return Object.fromEntries(PARTY_KEYS.map((k) => [k, (shares[k] || 0) / total]))
-}
-
-function membershipFromConfig(config) {
-    if (config.membershipByStratum) {
-        return worldStratumVector(config.membershipByStratum, STRATUM_IDS)
-    }
-    if (config.membership) {
-        return config.membership
-    }
-    return STRATUM_IDS.map(() => 0)
 }
 
 // --- chamber config -----------------------------------------------------------
@@ -323,6 +474,17 @@ function buildInterestGroups() {
     ]
 }
 
+const DEMO_APPEALS = {
+    rich: [0, 0, 0, 6, 1, 0, 2],
+    first: [1, 2, 0, 1, -3, 0, 5],
+    second: [2, 1, 0, 0, 2, 0, 6],
+    coop: [2, 0, 20, -3, -3, 0, 6],
+    drone: [3, 0, 0, 3, 2, 0, 2],
+    alien: [2, 0, 0, -6, -3, 0, 9],
+    deeper: [2, 36, -5, 2, -2, 0, 6],
+    third_wave: [3, 1, 0, 0, 1, 0, 4],
+}
+
 function buildDemographics() {
     return STRATUM_IDS.map((id) => {
         const configs = {
@@ -342,7 +504,7 @@ function buildDemographics() {
                 competitiveScores: { D: 0.8, C: -0.8, G: 0.2, H: 0 },
             },
             coop: {
-                igClaimCap: 0.35,
+                igClaimCap: 0.05,
                 competitiveScores: { D: 1, C: -1.5, G: -0.5, H: -0.5 },
             },
             drone: {
@@ -357,7 +519,7 @@ function buildDemographics() {
                 competitiveScores: { D: 1.2, H: -1, G: -0.5, C: -0.5 },
             },
             deeper: {
-                igClaimCap: 0.3,
+                igClaimCap: 0.01,
                 executiveWeight: 0.8,
                 competitiveScores: { D: 1.5, I: 1, C: -1, G: -0.5, H: -0.5 },
             },
@@ -367,7 +529,7 @@ function buildDemographics() {
                 competitiveScores: { D: 1.1, C: -0.6, G: 0.15, H: -0.4, I: 0.2 },
             },
         }
-        return new Demographic(id, configs[id] || {})
+        return new Demographic(id, configs[id] || {}, DEMO_APPEALS[id])
     })
 }
 
@@ -388,7 +550,7 @@ function buildDistricts() {
     }
     return DISTRICT_IDS.map((id) => new District(
         id,
-        worldStratumVector(DISTRICT_POPULATIONS[id], STRATUM_IDS),
+        stratumVector(DISTRICT_POPULATIONS[id]),
         configs[id] || {}
     ))
 }
@@ -577,7 +739,7 @@ function allocateCompetitiveVotes(block, interestGroups, chamber, state) {
     if (competitivePop <= 0) { return votes }
 
     let turnout = competitiveTurnout(block, chamber, state)
-  // Low turnout helps gangs in syndicate turf (Pitts)
+    // Low turnout helps gangs in syndicate turf (Pitts)
     if (block.district.lowTurnoutGangBonus && turnout < 0.45) {
         state._gangLowTurnoutBoost = block.district.lowTurnoutGangBonus
     }
@@ -602,6 +764,7 @@ function allocateCompetitiveVotes(block, interestGroups, chamber, state) {
     return votes
 }
 
+/** Non-Corp ballots abstain (not counted); Corp (C) unchanged. */
 function corpOrAbstainPartyVotes(votes) {
     const out = zeroPartyVotes()
     out.C = votes.C || 0
@@ -616,6 +779,9 @@ function sumPartyVoteObjects(a, b) {
     return out
 }
 
+/** Megacorp drone contracts: competitive and IG splits may only add Corp votes; all else abstains. */
+/** TODO: when the corporations have three different parties, the drones will be restricted for
+their own employer, potentially allowing lower turnout for one corporation then another */
 function applyDroneCorpOrAbstainRule(block, result, state, chamber) {
     if (block.demographic.voteRule !== 'corp_or_abstain') { return result }
     result.ig = corpOrAbstainPartyVotes(result.ig)
@@ -635,22 +801,39 @@ function applyBlockVoteRules(block, result, state, chamber) {
     return result
 }
 
-function tabulateBlock(block, interestGroups, chamber, state) {
+function tabulateBlockWithAbstention(block, interestGroups, chamber, state) {
     const ig = allocateIgVotes(block, interestGroups, chamber, state)
     const comp = allocateCompetitiveVotes(block, interestGroups, chamber, state)
+    const preRule = sumPartyVoteObjects(ig, comp)
     let result = {
         ig,
         comp,
-        total: sumPartyVoteObjects(ig, comp),
+        total: preRule,
     }
     result = applyBlockVoteRules(block, result, state, chamber)
     const weight = chamber.useExecutiveWeight ? block.demographic.executiveWeight : 1
+    let ballotMass = sum(PARTY_KEYS.map((k) => preRule[k] || 0))
+    let countedMass = sum(PARTY_KEYS.map((k) => result.total[k] || 0))
     if (weight !== 1) {
+        ballotMass *= weight
         for (const k of PARTY_KEYS) {
-            result.total[k] *= weight
+            result.total[k] = (result.total[k] || 0) * weight
         }
+        countedMass = sum(PARTY_KEYS.map((k) => result.total[k] || 0))
     }
-    return result
+    return {
+        ig: result.ig,
+        comp: result.comp,
+        total: result.total,
+        ballotMass,
+        countedMass,
+        abstentionMass: Math.max(0, ballotMass - countedMass),
+    }
+}
+
+function tabulateBlock(block, interestGroups, chamber, state) {
+    const t = tabulateBlockWithAbstention(block, interestGroups, chamber, state)
+    return { ig: t.ig, comp: t.comp, total: t.total }
 }
 
 class ElectionEngineV2 {
@@ -754,56 +937,120 @@ class ElectionEngineV2 {
     }
 }
 
-// --- global event modifiers (mutate state.global) -----------------------------
-
-const DEFAULT_GLOBAL = {
-    competitiveTurnout: 1,
-    igTurnoutMult: 1,
-    competitiveTurnoutBonus: 0,
-    competitiveScores: zeroPartyVotes(),
-    softmaxTemperature: 1,
+function votesToPollPercents(votes) {
+    const total = sum(PARTY_KEYS.map((k) => votes[k] || 0))
+    const out = {}
+    for (const k of PARTY_KEYS) {
+        out[k] = total > 0 ? Math.round(((votes[k] || 0) / total) * 1000) / 10 : 0
+    }
+    return out
 }
 
-/** Example scenarios for CLI tuning. */
-const SCENARIOS = {
-    baseline: () => ({}),
-    democratic_awakening: () => ({
-        competitiveTurnout: 1.85,
-        competitiveScores: { D: 1.5, H: -0.3 },
-        competitiveTurnoutBonus: 0.1,
-    }),
-    corp_vote_buying: () => ({
-        igTurnoutMult: 1.15,
-    }),
-    pitts_low_turnout: () => ({
-        competitiveTurnout: 0.55,
-    }),
-}
-
-function applyScenario(state, name) {
-    const fn = SCENARIOS[name]
-    if (!fn) { return }
-    Object.assign(state.global, DEFAULT_GLOBAL, fn())
-    state.scenario = name
-}
-
-// --- init & reporting ---------------------------------------------------------
-
-function qified_pops(Q, state) {
+/** Popular-vote shares for status polls tab (district / general-electorate model). */
+function writePollDisplaysToQ(Q, state, results) {
+    const chamber = CHAMBERS.district
+    const citywide = zeroPartyVotes()
+    for (const did of DISTRICT_IDS) {
+        const run = results.districts[did]
+        if (run && run.byDistrict && run.byDistrict[did]) {
+            for (const k of PARTY_KEYS) {
+                citywide[k] += run.byDistrict[did][k] || 0
+            }
+        }
+    }
+    if (sum(PARTY_KEYS.map((k) => citywide[k])) === 0) {
+        for (const block of state.blocks) {
+            const { total } = tabulateBlock(
+                block, state.interestGroups, chamber, state
+            )
+            for (const k of PARTY_KEYS) {
+                citywide[k] += total[k] || 0
+            }
+        }
+    }
+    const cityPct = votesToPollPercents(citywide)
+    for (const k of PARTY_KEYS) {
+        Q['poll_exec_' + k] = cityPct[k]
+    }
+    const byStratum = {}
+    for (const sid of STRATUM_IDS) {
+        byStratum[sid] = zeroPartyVotes()
+    }
     for (const block of state.blocks) {
-        Q[`${block.district.id}_${block.demographic.id}_pop`] = block.population
+        const { total } = tabulateBlock(
+            block, state.interestGroups, chamber, state
+        )
+        const sid = block.demographic.id
+        for (const k of PARTY_KEYS) {
+            byStratum[sid][k] += total[k] || 0
+        }
+    }
+    for (const sid of STRATUM_IDS) {
+        if (sid === 'drone') { continue }
+        const pct = votesToPollPercents(byStratum[sid] || zeroPartyVotes())
+        for (const k of PARTY_KEYS) {
+            Q[sid + '_poll_' + k] = pct[k]
+        }
+    }
+    let droneBallotMass = 0
+    let droneCorpMass = 0
+    let droneAbstainMass = 0
+    for (const block of state.blocks) {
+        if (block.demographic.id !== 'drone') { continue }
+        const t = tabulateBlockWithAbstention(
+            block, state.interestGroups, chamber, state
+        )
+        droneBallotMass += t.ballotMass
+        droneCorpMass += t.total.C || 0
+        droneAbstainMass += t.abstentionMass
+    }
+    const dronePct = (mass) =>
+        droneBallotMass > 0 ? Math.round((mass / droneBallotMass) * 1000) / 10 : 0
+    Q.drone_poll_C = dronePct(droneCorpMass)
+    Q.drone_poll_abstain = dronePct(droneAbstainMass)
+    for (const k of PARTY_KEYS) {
+        if (k !== 'C') {
+            Q['drone_poll_' + k] = 0
+        }
+    }
+    for (const did of DISTRICT_IDS) {
+        let votes = zeroPartyVotes()
+        const run = results.districts[did]
+        if (run && run.byDistrict && run.byDistrict[did]) {
+            votes = run.byDistrict[did]
+        } else {
+            for (const block of state.blocks) {
+                if (block.district.id !== did) { continue }
+                const { total } = tabulateBlock(
+                    block, state.interestGroups, chamber, state
+                )
+                for (const k of PARTY_KEYS) {
+                    votes[k] += total[k] || 0
+                }
+            }
+        }
+        const pct = votesToPollPercents(votes)
+        for (const k of PARTY_KEYS) {
+            Q[did + '_poll_' + k] = pct[k]
+        }
     }
 }
 
-function qified_block_prosperity(Q, state) {
+function qified_pops(state) {
     for (const block of state.blocks) {
-        Q[`${block.district.id}_${block.demographic.id}_prosperity`] = block.prosperity
+        Q[block.district.id + "_" + block.demographic.id + "_pop"] = block.population
     }
-    syncStratumProsperityAverages(Q, state)
+}
+
+function qified_block_prosperity(state) {
+    for (const block of state.blocks) {
+        Q[block.district.id + "_" + block.demographic.id + "_prosperity"] = block.prosperity
+    }
+    syncStratumProsperityAverages(state)
 }
 
 /** Citywide population-weighted mean prosperity per stratum → Q.prosperity_<id>. */
-function syncStratumProsperityAverages(Q, state) {
+function syncStratumProsperityAverages(state) {
     for (const sid of STRATUM_IDS) {
         let popSum = 0
         let weighted = 0
@@ -815,249 +1062,210 @@ function syncStratumProsperityAverages(Q, state) {
             weighted += pop * (block.prosperity ?? 1)
         }
         const avg = popSum > 0 ? weighted / popSum : 1
-        Q[`prosperity_${sid}`] = Math.round(avg * 100) / 100
+        Q['prosperity_' + sid] = Math.round(avg * 100) / 100
     }
 }
 
-function initElectionV2(Q, options = {}) {
-    Q = Q || {}
-    const demographics = buildDemographics()
-    const districts = buildDistricts()
-    const interestGroups = buildInterestGroups()
-    const blocks = buildVoterBlocks(demographics, districts)
+Q.stratum_labels = STRATUM_IDS.slice()
+Q.vote_labels = ["Dems", "Ind", "Corp", "Gang", "Hate", "Swing", "Apathy"]
+Q.global_shifts = [0, -20, 0, -1, -3, 0, 0]
+Q.lookups = {}
+Q.stratums = []
+Q.regions = []
+Q.interests = []
+Q.voter_blocks = []
 
-    const state = {
-        demographics,
-        districts,
-        interestGroups,
-        blocks,
-        global: Object.assign({}, DEFAULT_GLOBAL),
-        scenario: 'baseline',
-    }
+const demographics = buildDemographics()
+const districts = buildDistricts()
+const interestGroups = buildInterestGroups()
+Q.interest_labels = interestGroups.map((ig) => ig.id)
+const blocks = buildVoterBlocks(demographics, districts)
 
-    applyScenario(state, options.scenario || 'baseline')
+const electionState = {
+    demographics,
+    districts,
+    interestGroups,
+    blocks,
+    global: {
+        competitiveTurnout: 1,
+        igTurnoutMult: 1,
+        competitiveTurnoutBonus: 0,
+        competitiveScores: zeroPartyVotes(),
+        softmaxTemperature: 1,
+    },
+}
+electionState._baseGlobalScores = Object.assign({}, electionState.global.competitiveScores)
 
-    const engine = new ElectionEngineV2(state)
-    const results = engine.runAll({
-        month: options.month ?? 1,
-        allDistricts: options.allDistricts ?? true,
-    })
+const engine = new ElectionEngineV2(electionState)
+
+/** Held council seats (Exec_*, Gold_*, Docks_*, …) — only updated when commitSeats is true. */
+function writeCommittedSeatsToQ(Q, results) {
     engine.writeToQ(Q, results)
+}
 
-    qified_pops(Q, state)
-    qified_block_prosperity(Q, state)
-
-    const igTabOpts = Object.assign({}, options.igTabulation || {}, {
-        includeZeroBlocks: options.includeZeroBlocks === true,
-    })
-    state._igTabOpts = igTabOpts
-    state.igTabulation = {
-        executive: buildIgBlockTabulation(state, 'executive', igTabOpts),
-        district: buildIgBlockTabulation(state, 'district', igTabOpts),
+/** Latest tabulation for election sim / debugging (Proj_*); refreshed every update_projections. */
+function writeProjectionSeatsToQ(Q, results) {
+    const ex = results.executive.seats
+    for (const k of PARTY_KEYS) {
+        Q['Proj_Exec_' + k] = ex[k]
     }
-
-    Q.electionV2 = state
-    Q.electionEngine = engine
-    Q.electionResults = results
-    Q.update_projections = (opts) => {
-        const r = engine.runAll({
-            month: (opts && opts.month) ?? Q.month ?? 1,
-            allDistricts: opts && opts.allDistricts,
-        })
-        engine.writeToQ(Q, r)
-        Q.electionResults = r
-        qified_pops(Q, state)
-        qified_block_prosperity(Q, state)
-        const igTabOpts = state._igTabOpts || {}
-        state.igTabulation = {
-            executive: buildIgBlockTabulation(state, 'executive', igTabOpts),
-            district: buildIgBlockTabulation(state, 'district', igTabOpts),
+    for (const g of ['Gold', 'White', 'Blue']) {
+        const seats = results.guild.seats[g]
+        for (const k of PARTY_KEYS) {
+            Q['Proj_' + g + '_' + k] = seats[k]
         }
-        return r
     }
-
-    Q.stratum_labels = STRATUM_IDS.slice()
-    Q.regions = districts
-    Q.stratums = demographics
-    Q.interests = interestGroups
-    Q.voter_blocks = blocks
-
-    return { Q, state, engine, results }
+    for (const d of DISTRICT_IDS) {
+        const run = results.districts[d]
+        if (!run) { continue }
+        const seats = run.seats[d]
+        for (const k of PARTY_KEYS) {
+            Q['Proj_' + d + '_' + k] = seats[k]
+        }
+    }
 }
 
-function fmtBallots(n) {
-    if (n >= 1e9) { return (n / 1e9).toFixed(2) + 'B' }
-    if (n >= 1e6) { return (n / 1e6).toFixed(2) + 'M' }
-    if (n >= 1e3) { return (n / 1e3).toFixed(1) + 'K' }
-    return String(Math.round(n))
+function runElectionsAndWriteQ(opts) {
+    opts = opts || {}
+    // Appeals first; story-stack modifiers add on top (see post_event applyElectorateModifiers).
+    syncAllVoteAppeals(Q.stratums, electionState, Q.vote_labels, Q.global_shifts)
+    if (typeof Q.applyElectorateModifiers === 'function') {
+        Q.applyElectorateModifiers()
+    }
+    const results = engine.runAll({
+        month: opts.month != null ? opts.month : (Q.month || 1),
+        allDistricts: opts.allDistricts !== false,
+    })
+    if (opts.commitSeats) {
+        writeCommittedSeatsToQ(Q, results)
+    }
+    writeProjectionSeatsToQ(Q, results)
+    writePollDisplaysToQ(Q, electionState, results)
+    qified_pops(electionState)
+    qified_block_prosperity(electionState)
+    Q.electionResults = results
+    return results
 }
 
-function fmtPct(x) {
-    return (x * 100).toFixed(1) + '%'
+Q.stratumDisplay = STRATUM_DISPLAY
+Q.districtDisplay = DISTRICT_DISPLAY
+
+runElectionsAndWriteQ({ allDistricts: true, commitSeats: false })
+
+Q.electionV2 = electionState
+Q.electionEngine = engine
+Q.electorate = engine
+Q.voter_blocks = blocks
+Q.qified_pops = function() { qified_pops(electionState) }
+Q.qified_block_prosperity = function() { qified_block_prosperity(electionState) }
+Q.syncStratumProsperityAverages = function() { syncStratumProsperityAverages(electionState) }
+Q.update_projections = function(opts) {
+    return runElectionsAndWriteQ(Object.assign({ commitSeats: false }, opts || {}))
+}
+Q.assignSeatsFromInitialPolling = function() {
+    return runElectionsAndWriteQ({ month: 1, allDistricts: true, commitSeats: true })
+}
+engine.assign_seats = function(opts) {
+    return runElectionsAndWriteQ(Object.assign({ commitSeats: true }, opts || {}))
 }
 
 /**
- * Text table: which VoterBlocks supply each interest group's IG-determined ballots.
+ * Apply scheduled seat updates after month tick (current polling).
+ * Guild: each month, 1/4 of seats reallocated silently (no election event).
+ * Executive: full refresh in December. Districts: per DISTRICT_ELECTION_MONTH.
  */
-function formatIgBlockTabulation(tabulation, options = {}) {
-    if (!tabulation || !tabulation.byIg) { return '' }
-    const maxRows =
-        options.maxRowsPerIg === Infinity || options.maxRowsPerIg === 'all'
-            ? Infinity
-            : (options.maxRowsPerIg ?? 12)
-    const igFilter = options.igFilter || null
-    const lines = []
-    lines.push('')
-    lines.push(`=== IG vote sources (${tabulation.chamberId} chamber) ===`)
-    lines.push(
-        'IG-determined ballots per VoterBlock (demographic × district). '
-        + 'mem% = effective membership share in that cell after cap scaling.'
-    )
-    lines.push('')
+Q.runScheduledElections = function(opts) {
+    opts = opts || {}
+    const month = opts.month != null ? opts.month : (Q.month || 1)
+    const year = opts.year != null ? opts.year : (Q.year || 2300)
+    const report = {
+        month,
+        year,
+        skipped: false,
+        executive: false,
+        districts: [],
+        any: false,
+        lines: [],
+    }
 
-    const igIds = Object.keys(tabulation.byIg).sort((a, b) => {
-        return tabulation.byIg[b].totalBallots - tabulation.byIg[a].totalBallots
+    if (
+        !opts.force
+        && !Q.elections_allow_same_month_repeat
+        && Q.elections_applied_month === month
+        && Q.elections_applied_year === year
+    ) {
+        report.skipped = true
+        report.any = false
+        for (const did of DISTRICT_IDS) {
+            Q['election_show_' + did] = 0
+        }
+        return report
+    }
+
+    for (const did of DISTRICT_IDS) {
+        Q['election_show_' + did] = 0
+    }
+
+    const results = runElectionsAndWriteQ({
+        month,
+        allDistricts: false,
+        commitSeats: false,
     })
 
-    const showZeroBlocks =
-        options.includeZeroBlocks === true
-        && (maxRows === Infinity || options.listZeroBlocks === true)
-
-    for (const igId of igIds) {
-        if (igFilter && igId !== igFilter) { continue }
-        const bucket = tabulation.byIg[igId]
-        const hasZeros = showZeroBlocks && bucket.zeroBlocks && bucket.zeroBlocks.length > 0
-        if (bucket.totalBallots <= 0 && !hasZeros) { continue }
-
-        const shareStr = PARTY_KEYS.map((k) => k + ':' + fmtPct(bucket.partyShares[k] || 0)).join(' ')
-        lines.push(`${igId} (${bucket.igKind}) — ${fmtBallots(bucket.totalBallots)} IG ballots  [split ${shareStr}]`)
-        lines.push(
-            '  ' + padCols(['VoterBlock', 'pop', 'mem%', 'ballots', ...PARTY_KEYS], [28, 5, 6, 8, 5, 5, 5, 5, 5])
+    for (const g of GUILD_KEYS) {
+        const current = Object.fromEntries(
+            PARTY_KEYS.map((k) => [k, Q[g + '_' + k] || 0])
         )
-
-        const rows =
-            maxRows === Infinity ? bucket.blocks : bucket.blocks.slice(0, maxRows)
-        for (const row of rows) {
-            const label = `${row.district} × ${row.demographicLabel}`
-            const partyCols = PARTY_KEYS.map((k) => fmtBallots(row.votes[k] || 0))
-            lines.push(
-                '  ' + padCols(
-                    [label, String(row.population), fmtPct(row.scaledMembership), fmtBallots(row.ballots), ...partyCols],
-                    [28, 5, 6, 8, 5, 5, 5, 5, 5]
-                )
-            )
-        }
-        const omitted = bucket.blocks.length - rows.length
-        if (omitted > 0) {
-            lines.push(`  … ${omitted} more block(s) with smaller contributions`)
-        }
-        if (hasZeros) {
-            lines.push(`  No IG ballots (${bucket.zeroBlocks.length} VoterBlocks):`)
-            for (const row of bucket.zeroBlocks) {
-                const label = `${row.district} × ${row.demographicLabel}`
-                lines.push(
-                    '    '
-                    + padCols(
-                        [label, 'pop ' + row.population, 'raw mem ' + fmtPct(row.rawMembership)],
-                        [28, 10, 14]
-                    )
-                )
-            }
-        }
-        lines.push('')
-    }
-    return lines.join('\n')
-}
-
-function padCols(cells, widths) {
-    return cells.map((c, i) => String(c).padEnd(widths[i] || 8)).join(' ')
-}
-
-/** Class × district population grid with space-aligned columns. */
-function formatPopulationTable(Q, districtIds, stratumIds) {
-    const headers = ['Class'].concat(districtIds)
-    const rows = stratumIds.map((s) => {
-        const label = STRATUM_DISPLAY[s] || s
-        const cells = districtIds.map((d) => String(Q[`${d}_${s}_pop`] ?? ''))
-        return [label].concat(cells)
-    })
-    const widths = headers.map((h, col) => {
-        let w = h.length
-        for (const row of rows) {
-            w = Math.max(w, row[col].length)
-        }
-        return w + 1
-    })
-    return [padCols(headers, widths)].concat(rows.map((row) => padCols(row, widths)))
-}
-
-function formatElectionReportV2(Q, results, options = {}) {
-    results = results || Q.electionResults
-    const lines = []
-    lines.push(`Election v2${Q.electionV2.scenario ? ' [' + Q.electionV2.scenario + ']' : ''}`)
-    lines.push('')
-    lines.push('Executive Committee:')
-    lines.push('  ' + PARTY_KEYS.map((k) => `${k}: ${Q['Exec_' + k]}`).join('  '))
-    lines.push('')
-    lines.push('Guilds:')
-    for (const g of ['Gold', 'White', 'Blue']) {
-        lines.push(`  ${g}: ${PARTY_KEYS.map((k) => `${k}:${Q[g + '_' + k]}`).join(' ')}`)
-    }
-    lines.push('')
-    lines.push('Populations (in 10,000s):')
-    lines.push(...formatPopulationTable(Q, DISTRICT_IDS, STRATUM_IDS))
-    lines.push('')
-    lines.push('Districts:')
-    for (const d of DISTRICT_IDS) {
-        if (!results.districts[d]) { continue }
-        lines.push(DISTRICT_DISPLAY[d] || d)
-        lines.push('  ' + PARTY_KEYS.map((k) => `${k}: ${Q[d + '_' + k]}`).join('  '))
-        lines.push('')
-    }
-    if (options.includeIgTabulation !== false && Q.electionV2.igTabulation) {
-        lines.push(formatIgBlockTabulation(Q.electionV2.igTabulation.executive, options))
-        if (options.includeDistrictIgTabulation) {
-            lines.push(formatIgBlockTabulation(Q.electionV2.igTabulation.district, options))
+        const pollVotes = results.guild.byGuild[g] || zeroPartyVotes()
+        const newSeats = rotateGuildSeatsQuarter(current, pollVotes, GUILD_SEATS)
+        for (const k of PARTY_KEYS) {
+            Q[g + '_' + k] = newSeats[k]
         }
     }
-    return lines.join('\n')
-}
 
-function electionSnapshotV2(Q, results) {
-    results = results || Q.electionResults
-    const snap = {
-        scenario: Q.electionV2.scenario,
-        executive: Object.fromEntries(PARTY_KEYS.map((k) => [k, Q['Exec_' + k]])),
-        guilds: {},
-        districts: {},
-        global: Q.electionV2.global,
+    if (month === EXEC_ELECTION_MONTH) {
+        const ex = results.executive.seats
+        for (const k of PARTY_KEYS) {
+            Q['Exec_' + k] = ex[k]
+        }
+        report.executive = true
+        report.lines.push('The Executive Council was re-elected for the coming year.')
     }
-    for (const g of ['Gold', 'White', 'Blue']) {
-        snap.guilds[g] = Object.fromEntries(PARTY_KEYS.map((k) => [k, Q[g + '_' + k]]))
-    }
-    for (const d of DISTRICT_IDS) {
-        snap.districts[d] = Object.fromEntries(
-            PARTY_KEYS.map((k) => [k, Q[d + '_' + k]])
+
+    for (const did of DISTRICT_IDS) {
+        if (DISTRICT_ELECTION_MONTH[did] !== month) { continue }
+        const run = results.districts[did]
+        if (!run || !run.seats || !run.seats[did]) { continue }
+        const oldSeats = Object.fromEntries(
+            PARTY_KEYS.map((k) => [k, Q[did + '_' + k] || 0])
         )
+        const ds = run.seats[did]
+        const votes = run.byDistrict[did] || zeroPartyVotes()
+        for (const k of PARTY_KEYS) {
+            Q[did + '_' + k] = ds[k]
+        }
+        report.districts.push(did)
+        publishDistrictElectionReport(did, votes, oldSeats, ds)
     }
-    if (Q.electionV2.igTabulation) {
-        snap.igTabulation = Q.electionV2.igTabulation
+
+    Q.elections_applied_month = month
+    Q.elections_applied_year = year
+
+    report.any = report.executive || report.districts.length > 0
+    if (report.any) {
+        Q.elections_this_month = 1
+        Q.election_report = report.lines.join('\n\n')
+    } else {
+        Q.elections_this_month = 0
+        Q.election_report = ''
     }
-    return snap
+    return report
 }
 
-module.exports = {
-    initElectionV2,
-    applyScenario,
-    formatElectionReportV2,
-    formatIgBlockTabulation,
-    buildIgBlockTabulation,
-    electionSnapshotV2,
-    SCENARIOS,
-    PARTY_KEYS,
-    STRATUM_IDS,
-    DISTRICT_IDS,
-    InterestGroup,
-    VoterBlock,
-    CHAMBERS,
-}
+})()
+// MIKASA_ELECTION_RUNTIME_END
+
+election_runtime_ready = 1
+
+!}
+go-to: root.after_election_runtime

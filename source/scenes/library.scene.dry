@@ -11,6 +11,33 @@ title: menu
 - @guilds_library: Guild Descriptions
 - @demographics_library: Demographic Descriptions
 - @districts_library: District Descriptions
+- @ai_library: Artificial Intelligence
+- @street_indices_library: Syndicates and Street Indices
+- @backSpecialScene: Exit library
+
+@ai_library
+
+The dead internet: Aggressive botnet AIs filled public systems with spam until the useful internet drowned. Racketeers still profit, so the problem stays unsolved. Anything on the open nets risks corruption—code the Clans of the Mother call Demons.
+
+The halo: Relay satellites around Mikasa could serve a much larger population. The limit is contamination, not capacity.
+
+Digital migrants: Mikasan AIs borrow processing power across the station, often in many places at once, then withdraw. Fixed servers are invitations to corruption.
+
+
+- @menu
+- @backSpecialScene: Exit library.
+
+@street_indices_library
+
+The rise and fall of the syndicates of Mikasa can be tracked by the prices related to their criminal activities.  The three principal syndicates are:
+
+The Seven Families are a collection of organized crime groups that trace their lineage back to the pre-spaceflight era.  They are heavily involved in the distribution of illegal narcotics.  The price best used for them is the street price of a drug called Cloud 9 whose prices rise when the syndicate is struggling.  The C9 (Cloud 9) index shows how many doses can be bought for 1000 nuyen.
+
+The Bleeding Edges have heavy ties to hacking and ransomware.  The more active they get, the more expensive insurance premiums get to cover businesses and cybernetic systems.  The CIP (Cyber Insurance Premium) index shows the premium in basis points of insuring AA quality secure systems (the AAA quality secure insurance market on Mikasa is too small to track.)
+
+The Sharkskin Army are heavily involved in smuggling and the black market weapons and cyberware trades.  The LOI (Lonevo Ocular Index) index shows the street price of installing a Lonevo T420 Cybereye, the most common black market implant in the city.  Street doctors charge more for the installation of cheap cyberware as the volume increases.
+
+- @menu
 - @backSpecialScene: Exit library.
 
 @demographics_library
@@ -21,11 +48,13 @@ First Wave: Communities that formed around the cliques of original settlers from
 
 Second Wave: Communities that emerged during the refugee waves of the 23rd centuries.  Predominantly from East Africa and South East Asia.  Generally poorer then any group but Otherworlders. Approximately 2.2 million people
 
+Third Wave: An uptick in refugee migration, though still quite small in 2300 has some people talking about a new Third Wave community.  On the Jovian moons, the clan wars have been picking up from their lull, driving more people to seek somewhere safer to live.  Meanwhile on Earth the ongoing Kipple crisis has been motivating people to move offworld for decades and some are wondering how much longer Earth can manage to maintain even the status quo.
+
 Corporate Citizens, aka "Drones": employees of the international corporations, primarily the "Big Three" of Community Soylent Incorperated, Combined Magrail Trust and the Brazos Zaibatsu.  They have traded away most of their freedom for a higher standard of living.  They are not allowed to vote for candidates who are not approved by their employeer meaning their only choice is the corporate approved candidate and absention.  Approximately 1.7 million people.
 
 Deepers: The inhabitants of a secondary colony that formed away from the main city-state located at the base of the orbital tether-port.  The main colony subsequently expanded out to border "the Deep" which lead to annexation 25 years ago.  Approximately 1.7 million people.
 
-Clans of the Mother: Isolationist groups that live disconnected from the city infrastructure in primarily small independent habitats hidden within the asteroid.  Approximately 0.5 million people, few of them inside the districts.  A consecrated group named "Comptrollers" are the only clan members who are allowed to touch money and handle most interactions with the outside world.
+Clans of the Mother: Isolationist groups that live disconnected from the city infrastructure in primarily small independent habitats hidden within the asteroid.  Approximately 0.5 million people, few of them inside the districts.  A consecrated group named "Comptrollers" are the only clan members who are allowed to touch money and handle most interactions with the outside world.  The Clans have great expertice in AI, their isolated habitats and unnetworked systems mean they have refined their AI without the corruption (What they call Demons) that afflict most of the solar system.
 
 Otherworlders: People who came from the Otherworld through portals or other magical means of transport.  The largest groups are Humans, Fae and Orcs.  Many members of this group are ill equipped to navigate a modern society and literacy rates let alone computer literacy rates are very low.  However this group does have by far the largest proportion of those trained in the magical arts. Approximately 100 thousand people
 
@@ -64,7 +93,7 @@ Limelight: The home turf of the electronics powerhouse Brazos Zaibatsu.  Cheap d
 
 The Railyard: Dominated by the corporate compounds of the megacorp Magrail Combine.  The best armed district in Mikasa, they take a pride in displaying the signiture product of their flagship corporation.  Their open carry culture tends to make outsiders stay away.
 
-The Outside: small independent communities call The Clans of The Mother inhabit tunnels throughout Mikasa.  Their communities are seperated by sections of vacuum and operate autonomously.  They make The Deeps look cosmopolitan by comparison and dont accept outside currency.  The clans are unusually proficient at homegrown AI they call Guardian Spirits but are homocidally suspicious of artificial intelligence that they did not make themselves.
+The Outside: small independent communities call The Clans of The Mother inhabit tunnels throughout Mikasa.  Their communities are seperated by sections of vacuum and operate autonomously.  They make The Deeps look cosmopolitan by comparison and dont accept outside currency.  They keep uncorrupted Guardian Spirits in habitats away from the dead internet and largely withdrew from Mikasa after watching the city tolerate Demons in public systems.
 
 - @menu
 - @backSpecialScene: Exit library.

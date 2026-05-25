@@ -3,7 +3,7 @@ priority: 1
 max-visits: 1
 tags: event
 new-page: true
-view-if: month = 6 and year = 2301 and otherworld_outpost = 1
+view-if: month = 6 and year = 2305 and otherworld_outpost = 1
 
 The Great Protector sent a diplomatic complaint alleging that our Otherworld outpost has been spreading seditious ideas.  This could imperil our friendly relations.
 

@@ -14,6 +14,7 @@ const path = require('path')
 const args = process.argv.slice(2)
 const jsonOut = args.includes('--json')
 const useV2 = args.includes('--v2')
+const fromScene = args.includes('--from-scene')
 const igOnly = args.includes('--ig-tabulation')
 const noIgTab = args.includes('--no-ig-tabulation')
 const igDistrict = args.includes('--ig-tabulation-district')
@@ -31,6 +32,7 @@ if (help) {
 
   (default)     v1 model (source/lib/election-model.js)
   --v2          v2 model: demo×district blocks, corp/syndicate IGs + competitive vote
+  --from-scene  v2 only: load MIKASA_* runtime blocks from election + electorate scenes
   --scenario S  v2 only: ${Object.keys(require(path.join(__dirname, '../source/lib/election-v2.js')).SCENARIOS).join(', ')}
   --json        JSON output
   --ig-tabulation           v2: only IG→VoterBlock source tables (executive chamber)
@@ -44,11 +46,26 @@ if (help) {
 
 if (useV2) {
     const v2 = require(path.join(__dirname, '../source/lib/election-v2.js'))
-    const { Q } = v2.initElectionV2({}, {
-        scenario,
-        allDistricts: true,
-        includeZeroBlocks: igFull,
-    })
+    let Q
+    if (fromScene) {
+        const { loadGameRuntimes } = require(path.join(__dirname, 'extract-scene-js.js'))
+        Q = loadGameRuntimes({
+            refreshProjections: true,
+            commitSeats: true,
+            projectionOpts: { allDistricts: true },
+        })
+        if (scenario !== 'baseline') {
+            v2.applyScenario(Q.electionV2, scenario)
+            Q.update_projections({ allDistricts: true })
+            Q.assignSeatsFromInitialPolling()
+        }
+    } else {
+        ;({ Q } = v2.initElectionV2({}, {
+            scenario,
+            allDistricts: true,
+            includeZeroBlocks: igFull,
+        }))
+    }
     const reportOpts = {
         includeIgTabulation: !noIgTab,
         includeDistrictIgTabulation: igDistrict,

@@ -3,13 +3,34 @@ is-pinned-card: true
 tags: advisor, nerds
 card-image: img/asteroid.jpg
 new-page: true
-view-if: jacobs_advisor > 0
 
 = Jason Jacobs
 
 Jason Jacobs is a software engineer from the Deeps with an obsessive hobby for urban planning.  He was chased out of the Deeps after trying to implement "guerilla urbanism".  He has abundent proposals for how we could streamline our infrastructure, but the deepers will be displeased by us associating with him
  
+- @jacobs_asset_survey: Survey economic holdings
 - @jacobs_renovate_on
+- @jacobs_renovate_off
+- @return
+
+@jacobs_asset_survey
+title: Survey economic holdings
+subtitle: Homes and assets by district and affiliation
+on-arrival: {!
+if (typeof Q.updateJacobsAssetsReport === 'function') {
+    Q.updateJacobsAssetsReport()
+} else {
+    Q.jacobs_assets_report = 'Economic registry is not available yet.'
+}
+!}
+
+= Economic holdings
+
+Jacobs spreads a ward-by-ward register across the table — homes, workshops, corp sites, and whatever the syndicates claim counts as "logistics."
+
+[+ jacobs_assets_report +]
+
+- @return
 
 @jacobs_renovate_on
 title: Streamline infrastructure
@@ -19,9 +40,16 @@ on-arrival: jacobs_on = 1
 
 Jacobs helps streamline our infrastructure maintenance keeping up with the demands of a rising population
 
+- @jacobs_asset_survey: Survey economic holdings
+- @jacobs_renovate_off
+- @return
 
-@jacobs_renovate_of
+@jacobs_renovate_off
 title: Stop streamlining
 subtitle: Placate the deepers
 view-if: jacobs_on = 1
 on-arrival: jacobs_on = 0
+
+- @jacobs_asset_survey: Survey economic holdings
+- @jacobs_renovate_on
+- @return
