@@ -11,6 +11,17 @@ All **game behavior** changes belong in:
 - `source/qdisplays/*.qdisplay.dry`
 - `source/info.dry` (title / author metadata only)
 
+**Do not edit `source/lib/*.js` for gameplay.** Those files are dev/CLI mirrors or stale reference copies. The browser build compiles only `.dry` scenes into `out/html/core.js`. If you change logic in a `.js` lib without updating the matching runtime scene, the live game will not change.
+
+| Playable source (edit here) | Dev mirror (sync manually if CLI tests need it) |
+|-----------------------------|--------------------------------------------------|
+| `election_runtime.scene.dry` | `election-v2.js`, `election-world-data.js` (populations only) |
+| `electorate_runtime.scene.dry` | — |
+| `economic_assets_runtime.scene.dry` | `economic-asset-name-catalog.js` (reference only) |
+| `cards/organizing/organize_phase_tick.scene.dry` | — |
+
+After editing a runtime scene, run `npm run make-html`. Use `npm run simulate-election:v2 -- --from-scene` to test election logic extracted from `election_runtime.scene.dry`, not from `election-v2.js` alone.
+
 The **sole source injection** at build time is `scripts/write-build-stamp.js`, which rewrites `Q.build_time_label` in `root.scene.dry` before compile.
 
 ## Build output (`out/`)
@@ -22,6 +33,16 @@ No custom build injections beyond dendrynexus + stamp:
 - No project `templates/` overrides
 - No post-build patches to `out/html/` for runtime behavior
 - No sidecar loaders (e.g. synchronous `game.json` XHR in `index.html`)
+
+### Frozen HTML shell (May 2026 freeze point)
+
+These files match the live deploy at https://araminty.github.io/mikasa/ and are **preserved** across `make-html` (dendrynexus skips overwrite when they already exist):
+
+- `out/html/index.html` — Library link, tabbed sidebar, options (dark mode, etc.)
+- `out/html/game.js` — `showStats` → `library`, Mikasa UI hooks
+- `out/html/game.css` — Mikasa theme (CSS variables, dark mode, tabs/cards/tooltips)
+
+Do not replace them with stock `default-tabbed-sidebar` output. After `make-html`, only `core.js` (and compiled game data) should change unless you intentionally update the shell.
 
 Dev-only scripts (`lint:dendry`, `simulate-election`, `serve:dev`, `extract-scene-js`) must not affect the playable build.
 

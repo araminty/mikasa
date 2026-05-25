@@ -1,0 +1,68 @@
+title: Setup functions
+new-page: false
+on-arrival: {!
+
+var ELECTION_API = [
+    'update_projections',
+    'assignSeatsFromInitialPolling',
+    'runScheduledElections',
+]
+var ELECTORATE_API = [
+    'applyElectorateModifiers',
+    'ElectorateModifier',
+]
+var ECONOMIC_API = [
+    'initEconomicAssets',
+    'updateJacobsAssetsReport',
+    'ensureEconomicAssets',
+]
+
+function setupApiMissing(names) {
+    for (var i = 0; i < names.length; i++) {
+        if (typeof Q[names[i]] !== 'function') { return true }
+    }
+    return false
+}
+
+Q.setup_need_election = 0
+Q.setup_need_electorate = 0
+Q.setup_need_economic = 0
+
+if (setupApiMissing(ELECTION_API) || !Q.electionV2 || !Q.electionV2.blocks) {
+    Q.setup_need_election = 1
+    Q.election_runtime_ready = 0
+}
+if (setupApiMissing(ELECTORATE_API)) {
+    Q.setup_need_electorate = 1
+    Q.electorate_runtime_ready = 0
+}
+if (setupApiMissing(ECONOMIC_API)) {
+    Q.setup_need_economic = 1
+    Q.economic_assets_runtime_ready = 0
+}
+
+Q.setup_complete = (
+    Q.setup_need_election === 0
+    && Q.setup_need_electorate === 0
+    && Q.setup_need_economic === 0
+) ? 1 : 0
+
+Q.setup_boot_jump = 0
+this.state.jumpSceneId = 'setup_functions'
+
+if (Q.setup_complete) {
+    if (Q.economic_assets_bootstrap_return = 2 && typeof Q.assignSeatsFromInitialPolling === 'function') {
+        Q.assignSeatsFromInitialPolling()
+    }
+    if (Q.economic_assets_bootstrap_return = 2) {
+        this.state.jumpSceneId = 'root.2300_main_continue'
+    } else if (Q.setup_goto_main = 1) {
+        this.state.jumpSceneId = 'main'
+    } else {
+        this.state.jumpSceneId = 'post_event'
+    }
+    Q.setup_boot_jump = 1
+}
+
+!}
+go-to: jumpScene if setup_boot_jump = 1; election_runtime if setup_need_election = 1; electorate_runtime if setup_need_electorate = 1; economic_assets_runtime if setup_need_economic = 1; jumpScene

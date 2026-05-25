@@ -1,14 +1,17 @@
 title: Root Scene
 new-page: true
-go-to: start_menu if started = 0; to_election_runtime if started = 1
+go-to: start_menu if started = 0; to_setup_functions if started = 1
 on-arrival: {!
 
 // MIKASA_BUILD_STAMP
-Q.build_time_label = '0000-00-00 00:00:00 local';
+Q.build_time_label = '2026-05-25 12:52:09 local';
 // /MIKASA_BUILD_STAMP
 
 if (Q.started && !Q.economic_assets_runtime_ready) {
     Q.economic_assets_bootstrap_return = 1
+}
+if (Q.started) {
+    Q.setup_goto_main = 1
 }
 
 !}
@@ -16,6 +19,7 @@ if (Q.started && !Q.economic_assets_runtime_ready) {
 
 @start_menu
 new-page: true
+on-arrival: started = 0
 go-to: start_menu_2
 
 = Mikasa Democracy: A Future History
@@ -40,34 +44,23 @@ Q.parochialism = 25;
 Q.parochial_radicalism = 0.65; // moderate radicalism → ~35% clawed back to Dems, rest stays on H
 Q.third_wave_on_society = 0;
 
-Q.prosperity_soylent = 1;
-Q.prosperity_magrail = 1;
-Q.prosperity_brazos = 1;
-Q.prosperity_families = 1;
-Q.prosperity_edges = 1;
-Q.prosperity_sharks = 1;
+Q.prosperity_soylent = 10;
+Q.prosperity_magrail = 10;
+Q.prosperity_brazos = 10;
+Q.prosperity_families = 8;
+Q.prosperity_edges = 8;
+Q.prosperity_sharks = 8;
 Q.stock_soylent = 142;
 Q.stock_magrail = 98;
 Q.stock_brazos = 201;
 Q.cloud_9_street_price = 34;
 Q.edges_cyber_insurance_premium = 280;
-Q.ocular_index = 8900;
+Q.ocular_index = 89;
 
 Q.elections_applied_month = 0;
 Q.elections_applied_year = 0;
 Q.elections_allow_same_month_repeat = 0;
-Q.difficulty = 0;
 Q.use_decimals = 0;
-
-Q.stacy_advisor = 1;
-
-Q.soylent_magrail_rel = -50
-Q.soylent_brazos_rel = 10
-Q.magrail_brazos_rel = 20
-
-Q.soylent_anger = 0.05;
-Q.magrail_anger = 0.05;
-Q.brazos_anger = 0.05;
 
 Q.martyrs = [];
 
@@ -87,6 +80,18 @@ Q.brazos_families_rel = 10;
 Q.brazos_edges_rel = -50;
 Q.brazos_sharks_rel = 50;
 
+Q.election_runtime_ready = 0;
+Q.electorate_runtime_ready = 0;
+Q.economic_assets_runtime_ready = 0;
+Q.economicNameCatalogReady = 0;
+Q.economicAssetsHomesSeeded = 0;
+Q.corpDroneHousingSeeded = 0;
+Q.economicAssetsStarterSeeded = 0;
+Q.economicAssets = [];
+Q.setup_complete = 0;
+Q.setup_boot_jump = 0;
+Q.setup_goto_main = 0;
+
 !}
 set-bg: img/solar_system.jpg
 new-page: true
@@ -101,52 +106,26 @@ new-page: true
 
 This is a game of future history. While historical accuracy is a major concern, scrying is an inexact science so large amounts of guesswork and interpolation were required.
 
-- @2300_main: Begin (normal difficulty)
+- @2300_main: Begin
 
 
 @2300_main
 new-page: true
-on-arrival: {! Q.economic_assets_bootstrap_return = 2 !}
-go-to: to_election_runtime
+on-arrival: {!
+Q.economic_assets_bootstrap_return = 2
+Q.setup_goto_main = 1
+!}
+go-to: to_setup_functions
+
+@to_setup_functions
+new-page: false
+go-to: setup_functions
 
 @2300_main_continue
-go-to: main if difficulty >= 0; main.main_easy if difficulty < 0
+go-to: main
 
 = 2300 
 
 It is a dark time for humanity.  Earth is mired in endless national conflicts while the off planet colonies are torn by violence between lawless corporations.
 
 As the corporations of the interplanetary waystation Mikasa become too distracted fighting each other, real power has started to fall into the hands of the city government for the first time in decades.  Now our task is to somehow maintain this newfound autonomy while beating back corruption.  Perhaps Mikasa might one day control the corporations instead of the other way around.
-
-@to_election_runtime
-new-page: false
-go-to: election_runtime if election_runtime_ready = 0; after_election_runtime
-
-@after_election_runtime
-new-page: false
-go-to: to_electorate_runtime if electorate_runtime_ready = 0; to_economic_assets_runtime if economic_assets_runtime_ready = 0; finish_bootstrap
-
-@to_electorate_runtime
-new-page: false
-go-to: electorate_runtime if electorate_runtime_ready = 0; after_electorate_runtime
-
-@after_electorate_runtime
-new-page: false
-go-to: to_economic_assets_runtime if economic_assets_runtime_ready = 0; finish_bootstrap
-
-@to_economic_assets_runtime
-new-page: false
-go-to: economic_assets_runtime if economic_assets_runtime_ready = 0; after_economic_assets_runtime
-
-@after_economic_assets_runtime
-new-page: false
-go-to: finish_bootstrap
-
-@finish_bootstrap
-new-page: false
-on-arrival: {!
-if (Q.economic_assets_bootstrap_return = 2 && typeof Q.assignSeatsFromInitialPolling === 'function') {
-    Q.assignSeatsFromInitialPolling()
-}
-!}
-go-to: post_event if economic_assets_bootstrap_return = 1; 2300_main_continue if economic_assets_bootstrap_return = 2; post_event

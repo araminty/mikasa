@@ -1,13 +1,15 @@
 /**
- * Mikasa election model v2 — scaffold
+ * DEV / CLI ONLY — not compiled into the playable game.
+ *
+ * Parallel election v2 implementation for Node. Authoritative logic:
+ *   source/scenes/election_runtime.scene.dry (MIKASA_ELECTION_RUNTIME_* block)
+ *
+ * Prefer: npm run simulate-election:v2 -- --from-scene
+ * (extract-scene-js loads the scene, not this file, when --from-scene is set)
  *
  * - VoterBlock = demographic × district (no IG on the block)
  * - Interest groups allocate IG-determined ballots (the "floor")
  * - Competitive softmax on the remaining population (variable turnout)
- *
- * Corporate IGs: Soylent, Magrail, Brazos (shareholders / drones)
- * Syndicate IGs: Families, Edges, Sharks
- * Guild IGs (guild chamber only): Executive, Gold, White, Blue
  *
  * Run: node scripts/simulate-election.js --v2
  */

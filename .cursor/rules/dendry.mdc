@@ -12,9 +12,10 @@ Dendry (`.dry`) is compiled by [dendrynexus](https://github.com/aucchen/dendryne
 
 | Path | Role |
 |------|------|
-| `source/scenes/**/*.scene.dry` | Scenes, cards, events, advisors |
+| `source/scenes/**/*.scene.dry` | Scenes, cards, events, advisors — **authoritative game logic** |
 | `source/qdisplays/*.qdisplay.dry` | Qualities: numeric ranges → labels |
 | `source/info.dry` | Game title / author metadata |
+| `source/lib/*.js` | Dev/CLI mirrors only — not compiled into the playable build |
 | `out/` | Generated HTML/JS — do not edit |
 
 ## Electorate modifier catalog
@@ -84,7 +85,7 @@ Choice body text.
 
 ```dry
 go-to: post_event.events_choice
-go-to: main if difficulty >= 0; main.main_easy if difficulty < 0
+go-to: main
 go-to: organize_phase_tick.scene.dry
 go-to: events_choice if has_event = 1; main if has_event = 0
 ```
@@ -120,7 +121,7 @@ Party letter colors: **C** corp `#44b88f`, **G** gang `#cf6e19`, **D** dem `#110
 ## JavaScript blocks
 
 - Wrap logic in `{! … !}` (multiline OK).
-- **`Q`** — primary game state namespace (`Q.month`, `Q.update_projections()`, classes on `Q` in `root.scene.dry`).
+- **`Q`** — primary game state namespace (`Q.month`, `Q.update_projections()`, etc.). Runtime APIs are defined in silent setup scenes (`election_runtime`, `electorate_runtime`, `economic_assets_runtime`, `organize_phase_tick`, …), not in `source/lib/*.js`.
 - Top-level assignments in `on-arrival` often omit `let`/`const` (Dendrynexus global scope).
 - **`on-arrival:` without braces** — semicolon-separated stat updates: `on-arrival: patriot_meme_strength += 1;`
 - Runtime APIs appear in advanced scenes: `this.game.scenes`, `this._compileChoices`, `this.ui` (`post_event.scene.dry`).
@@ -154,9 +155,9 @@ Used via `[+ month : month +]` — second name is the qdisplay id (usually filen
 ## Game flow (this project)
 
 1. **`root.scene.dry`** — start menu, new-game stat init, build stamp. Bootstraps runtime scenes.
-2. **`election_runtime.scene.dry`** — election v2 (voter blocks, IGs, competitive softmax). CLI mirror: `source/lib/election-v2.js`.
+2. **`election_runtime.scene.dry`** — **source of truth** for election v2 (voter blocks, IGs, `DISTRICT_POPULATIONS`, tabulation). `source/lib/election-v2.js` is for Node CLI only.
 3. **`electorate_runtime.scene.dry`** — `ElectorateModifier` catalog and `Q.applyElectorateModifiers`.
-4. **`economic_assets_runtime.scene.dry`** — homes/assets API, Jacobs report helpers.
+4. **`economic_assets_runtime.scene.dry`** — homes/assets API, Jacobs report helpers (not `source/lib/economic-asset-name-catalog.js`).
 5. **`main.scene.dry`** — decks: Party Affairs, Government Affairs, pinned shuffle/advance.
 6. **`advance.scene.dry`** — month tick → `post_event`.
 7. **`post_event.scene.dry`** — month-end tick (`update_projections`, scheduled elections, event queue) or return to main.
@@ -180,4 +181,4 @@ cp source/robots.txt out/html/robots.txt   # crawler / AI-training opt-out (see 
 - Prefer matching existing spelling in the same file (`view-if` vs `view_if`, `choose-if` vs `chose-if`).
 - New events: copy a dated event (e.g. `september_convention.scene.dry`), set `view-if`, `tags: event`, add to event pool via `#event` if needed.
 - New qualities: add qdisplay file + reference in prose with `[+ name : qdisplay_id +]`.
-- Simulation / balance logic: runtime scenes (`election_runtime`, `electorate_runtime`, `organize_phase_tick`), `npm run simulate-election:v2 -- --from-scene` (extracts `MIKASA_*_BEGIN`/`END` blocks).
+- Simulation / balance logic: edit runtime scenes (`election_runtime`, `electorate_runtime`, `economic_assets_runtime`, `organize_phase_tick`). CLI: `npm run simulate-election:v2 -- --from-scene` (extracts `MIKASA_*_BEGIN`/`END` from `.dry`, not from editing `source/lib/*.js`).

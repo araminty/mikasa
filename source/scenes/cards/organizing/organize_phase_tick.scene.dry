@@ -267,18 +267,18 @@ Q.ProsperityConnectionModifier = ProsperityConnectionModifier
 
 // id | from | to | coefficient — basis/self_feedback/stackId in opts; tune in economic_tick_planning.md
 Q.prosperityConnectionCatalog = [
-    // Stratum self-decay: 2% of local level per month (fixed point at 1.0)
-    new ProsperityConnectionModifier('decay_rich', 'stratum', 'rich', 'stratum', 'rich', -0.02, { self_feedback: true }),
-    new ProsperityConnectionModifier('decay_first', 'stratum', 'first', 'stratum', 'first', -0.02, { self_feedback: true }),
-    new ProsperityConnectionModifier('decay_second', 'stratum', 'second', 'stratum', 'second', -0.02, { self_feedback: true }),
-    new ProsperityConnectionModifier('decay_coop', 'stratum', 'coop', 'stratum', 'coop', -0.02, { self_feedback: true }),
+    // Stratum self-decay: 2% of local level per month
+    new ProsperityConnectionModifier('decay_rich', 'stratum', 'rich', 'stratum', 'rich', -0.05, { self_feedback: true }),
+    new ProsperityConnectionModifier('decay_first', 'stratum', 'first', 'stratum', 'first', -0.05, { self_feedback: true }),
+    new ProsperityConnectionModifier('decay_second', 'stratum', 'second', 'stratum', 'second', -0.105, { self_feedback: true }),
+    new ProsperityConnectionModifier('decay_coop', 'stratum', 'coop', 'stratum', 'coop', -0.25, { self_feedback: true }),
     new ProsperityConnectionModifier('decay_drone', 'stratum', 'drone', 'stratum', 'drone', -0.02, { self_feedback: true }),
     new ProsperityConnectionModifier('decay_alien', 'stratum', 'alien', 'stratum', 'alien', -0.02, { self_feedback: true }),
     new ProsperityConnectionModifier('decay_deeper', 'stratum', 'deeper', 'stratum', 'deeper', -0.02, { self_feedback: true }),
-    new ProsperityConnectionModifier('decay_third_wave', 'stratum', 'third_wave', 'stratum', 'third_wave', -0.02, { self_feedback: true }),
-    new ProsperityConnectionModifier('decay_soylent', 'ig', 'Soylent', 'ig', 'Soylent', -0.02, { self_feedback: true }),
-    new ProsperityConnectionModifier('decay_magrail', 'ig', 'Magrail', 'ig', 'Magrail', -0.02, { self_feedback: true }),
-    new ProsperityConnectionModifier('decay_brazos', 'ig', 'Brazos', 'ig', 'Brazos', -0.02, { self_feedback: true }),
+    new ProsperityConnectionModifier('decay_third_wave', 'stratum', 'third_wave', 'stratum', 'third_wave', -0.05, { self_feedback: true }),
+    new ProsperityConnectionModifier('decay_soylent', 'ig', 'Soylent', 'ig', 'Soylent', -0.30, { self_feedback: true }),
+    new ProsperityConnectionModifier('decay_magrail', 'ig', 'Magrail', 'ig', 'Magrail', -0.30, { self_feedback: true }),
+    new ProsperityConnectionModifier('decay_brazos', 'ig', 'Brazos', 'ig', 'Brazos', -0.30, { self_feedback: true }),
     new ProsperityConnectionModifier('decay_families', 'ig', 'Families', 'ig', 'Families', -0.02, { self_feedback: true }),
     new ProsperityConnectionModifier('decay_edges', 'ig', 'Edges', 'ig', 'Edges', -0.02, { self_feedback: true }),
     new ProsperityConnectionModifier('decay_sharks', 'ig', 'Sharks', 'ig', 'Sharks', -0.02, { self_feedback: true }),
@@ -388,7 +388,16 @@ function monthly_tick_phase1() {
     trade_level_tick()
     economy_tick()
     applyStratumProsperityBumps()
+    if (typeof Q.applyEconomicAssetProsperity === 'function') {
+        Q.applyEconomicAssetProsperity()
+    }
+    if (typeof Q.applyHousingShortfallProsperity === 'function') {
+        Q.applyHousingShortfallProsperity()
+    }
     applyProsperityConnections()
+    if (typeof Q.topUpStratumHomesToTarget === 'function') {
+        Q.topUpStratumHomesToTarget()
+    }
     syncProsperityDisplays()
 }
 

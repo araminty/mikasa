@@ -323,4 +323,4 @@ Q.applyElectorateModifiers = function() {
 electorate_runtime_ready = 1
 
 !}
-go-to: root.after_electorate_runtime
+go-to: jumpScene

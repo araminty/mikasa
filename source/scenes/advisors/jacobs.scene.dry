@@ -15,12 +15,19 @@ Jason Jacobs is a software engineer from the Deeps with an obsessive hobby for u
 
 @jacobs_asset_survey
 title: Survey economic holdings
-subtitle: Homes and assets by district and affiliation
+subtitle: Home and asset counts by affiliation
 on-arrival: {!
 if (typeof Q.updateJacobsAssetsReport === 'function') {
     Q.updateJacobsAssetsReport()
 } else {
-    Q.jacobs_assets_report = 'Economic registry is not available yet.'
+    Q.economic_assets_runtime_ready = 0
+    this.state.jumpSceneId = 'jacobs.jacobs_asset_survey'
+    this.goToScene('economic_assets_runtime')
+}
+!}
+on-display: {!
+if (typeof Q.renderEconomicAssetsReport === 'function') {
+    Q.renderEconomicAssetsReport()
 }
 !}
 
@@ -28,7 +35,7 @@ if (typeof Q.updateJacobsAssetsReport === 'function') {
 
 Jacobs spreads a ward-by-ward register across the table — homes, workshops, corp sites, and whatever the syndicates claim counts as "logistics."
 
-[+ jacobs_assets_report +]
+{!<div class="jacobs-assets-report"></div>!}
 
 - @return
 

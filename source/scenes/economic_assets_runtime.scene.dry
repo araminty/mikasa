@@ -3,7 +3,7 @@ max-visits: 1
 new-page: false
 on-arrival: {!
 
-// BEGIN economic-name-catalog (edit in place; source/lib/economic-asset-name-catalog.js is reference only)
+// BEGIN economic-name-catalog (authoritative; source/lib/economic-asset-name-catalog.js is dev reference only)
 function installEconomicNameCatalog(q) {
     const CATALOG = {
         first_wave: {
@@ -438,6 +438,52 @@ function ensureEconomicAssets() {
     if (!Q.economicAssets) { Q.economicAssets = [] }
 }
 
+/** Monthly prosperity bump per site (homes do not contribute). */
+var ECONOMIC_PROSPERITY_HOME_DELTA = 0
+var ECONOMIC_PROSPERITY_ASSET_DELTA = 0.1
+var ECONOMIC_PROSPERITY_BLOCK_CLAMP_MIN = 0.5
+var ECONOMIC_PROSPERITY_BLOCK_CLAMP_MAX = 1.5
+
+/** Home turf per corp / syndicate (election weights + prosperity connection districts). */
+var IG_HOME_DISTRICT = {
+    Soylent: 'Vats',
+    Magrail: 'Railyard',
+    Brazos: 'Limelight',
+    Families: 'Pitts',
+    Edges: 'Railyard',
+    Sharks: 'Deeps',
+}
+
+var STARTER_ECONOMIC_ASSET_BATCHES = [
+    { ownerType: 'ig', owner: 'Brazos', district: IG_HOME_DISTRICT.Brazos, count: 25 },
+    { ownerType: 'ig', owner: 'Magrail', district: IG_HOME_DISTRICT.Magrail, count: 27 },
+    { ownerType: 'ig', owner: 'Soylent', district: IG_HOME_DISTRICT.Soylent, count: 28 },
+    { ownerType: 'ig', owner: 'Families', district: IG_HOME_DISTRICT.Families, count: 9 },
+    { ownerType: 'ig', owner: 'Edges', district: IG_HOME_DISTRICT.Edges, count: 7 },
+    { ownerType: 'ig', owner: 'Sharks', district: IG_HOME_DISTRICT.Sharks, count: 7 },
+    { ownerType: 'stratum', owner: 'coop', district: 'Aurora', count: 20 },
+    { ownerType: 'stratum', owner: 'rich', district: 'Docks', count: 6 },
+    { ownerType: 'stratum', owner: 'first', district: 'Aurora', count: 5 },
+    { ownerType: 'stratum', owner: 'second', district: 'Aurora', count: 3 },
+    { ownerType: 'stratum', owner: 'alien', district: 'Aurora', count: 1 },
+]
+
+function clampEconomicBlockProsperity(value) {
+    return Math.max(
+        ECONOMIC_PROSPERITY_BLOCK_CLAMP_MIN,
+        Math.min(ECONOMIC_PROSPERITY_BLOCK_CLAMP_MAX, value)
+    )
+}
+
+function economicProsperityDeltaForEntry(entry) {
+    if (entry.prosperityDelta != null) {
+        return Number(entry.prosperityDelta)
+    }
+    return entry.countsAsHome
+        ? ECONOMIC_PROSPERITY_HOME_DELTA
+        : ECONOMIC_PROSPERITY_ASSET_DELTA
+}
+
 function addEconomicRecord(rec) {
     ensureEconomicAssets()
     var entry = {
@@ -457,6 +503,11 @@ function addEconomicRecord(rec) {
         if (!entry.infraWeight || entry.infraWeight === 0.8) { entry.infraWeight = 1.2 }
     } else if (!entry.kind) {
         entry.kind = 'office'
+    }
+    if (entry.prosperityDelta == null) {
+        entry.prosperityDelta = entry.countsAsHome
+            ? ECONOMIC_PROSPERITY_HOME_DELTA
+            : ECONOMIC_PROSPERITY_ASSET_DELTA
     }
     if (!entry.id) {
         entry.id = entry.owner + '_' + entry.district + '_' + Q.economicAssets.length
@@ -488,12 +539,582 @@ var ECONOMIC_HOME_STRATA = [
     'rich', 'first', 'second', 'coop', 'third_wave', 'alien', 'deeper',
 ]
 
-/** Target homes = floor(required × 1.2) where required = ceil(pop / 10). */
-function homesTargetForPopulation(popInTenThousands) {
+/** Minimum working homes for population (pop in 10,000s → 1 home per 100k people). */
+function homesRequiredForPopulation(popInTenThousands) {
     var pop = Number(popInTenThousands)
     if (isNaN(pop) || pop <= 0) { return 0 }
-    var required = Math.ceil(pop / 10)
+    return Math.ceil(pop / 10)
+}
+
+/**
+ * Init seed target = floor(required × 1.2) — ~20% headroom at new game.
+ * Mikasa's population is still recovering from its nadir, so the housing stock
+ * seeded at start runs above today's headcount (monthly top-up uses 105% instead).
+ * Penalty uses required only (operational homes vs ceil(pop/10)).
+ */
+function homesTargetForPopulation(popInTenThousands) {
+    var required = homesRequiredForPopulation(popInTenThousands)
+    if (required <= 0) { return 0 }
     return Math.floor(required * 1.2)
+}
+
+/** Monthly top-up cap = 105% of required homes (rounded up). */
+function homesTopUpCapForPopulation(popInTenThousands) {
+    var required = homesRequiredForPopulation(popInTenThousands)
+    if (required <= 0) { return 0 }
+    return Math.ceil(required * 1.05)
+}
+
+var HOUSING_SHORTFALL_PENALTY_PER_MISSING_FRACTION = 2.0
+/** Penalty runs only if operational gap is > 2, or gap > 0 with 2+ destroyed homes. */
+var HOUSING_SHORTFALL_APPLY_ABOVE = 2
+var HOUSING_SHORTFALL_DESTROYED_THRESHOLD = 2
+
+/** Deficit blocks filled in district order; phase-3 lenders use this stratum order. */
+var HOUSING_BORROW_DISTRICT_ORDER = [
+    'Docks', 'Aurora', 'Vats', 'Railyard', 'Pitts', 'Limelight', 'Deeps',
+]
+var HOUSING_BORROW_STRATUM_PRIORITY = [
+    'rich', 'coop', 'first', 'second', 'deeper', 'drone', 'third_wave', 'alien',
+]
+
+/** Big Three dormitory stock for drone VoterBlocks (not stratum-owned housing). */
+var CORP_DRONE_HOUSING_IGS = ['Soylent', 'Magrail', 'Brazos']
+
+function isEconomicHomeOperational(entry) {
+    if (!entry || !entry.countsAsHome) { return false }
+    if (entry.health == null) { return true }
+    return Number(entry.health) >= 1
+}
+
+function economicHomeServesStratum(entry, stratumId) {
+    if (!entry || !entry.countsAsHome) { return false }
+    if (isCorpDroneHousing(entry)) { return false }
+    if (entry.ownerType === 'stratum' && entry.owner === stratumId) {
+        return true
+    }
+    if (entry.ownerType === 'public' && entry.housingFor === stratumId) {
+        return true
+    }
+    return false
+}
+
+function isCorpDroneHousing(entry) {
+    return !!(
+        entry
+        && entry.countsAsHome
+        && entry.ownerType === 'ig'
+        && entry.housingFor === 'drone'
+        && CORP_DRONE_HOUSING_IGS.indexOf(entry.owner) >= 0
+    )
+}
+
+function countCorpDroneHousingInDistrict(assets, corp, districtId) {
+    var operational = 0
+    var destroyed = 0
+    for (var i = 0; i < assets.length; i++) {
+        var e = assets[i]
+        if (!isCorpDroneHousing(e)) { continue }
+        if (e.owner !== corp || e.district !== districtId) { continue }
+        if (isEconomicHomeOperational(e)) {
+            operational += 1
+        } else {
+            destroyed += 1
+        }
+    }
+    return { operational: operational, destroyed: destroyed }
+}
+
+function nextCorpDroneHomeId(corp, district) {
+    var i = 0
+    while (hasEconomicAssetId('corp_drone_' + corp + '_' + district + '_' + i)) {
+        i += 1
+    }
+    return 'corp_drone_' + corp + '_' + district + '_' + i
+}
+
+function addCorpDroneHome(corp, district, id) {
+    var name = corp + ' dormitory'
+    if (typeof Q.pickOwnerDisplayName === 'function') {
+        name = Q.pickOwnerDisplayName({
+            ownerType: 'ig',
+            owner: corp,
+            district: district,
+            id: id,
+            isHome: true,
+        })
+    }
+    return addHome({
+        id: id,
+        name: name,
+        district: district,
+        ownerType: 'ig',
+        owner: corp,
+        housingFor: 'drone',
+        major: false,
+    })
+}
+
+function ensureCorpDroneHomesInDistrict(corp, district, targetOperational) {
+    ensureEconomicAssets()
+    var housing = countCorpDroneHousingInDistrict(Q.economicAssets, corp, district)
+    var toPlace = targetOperational - housing.operational
+    if (toPlace <= 0) { return 0 }
+    var placed = 0
+    for (var n = 0; n < toPlace; n++) {
+        var homeId = nextCorpDroneHomeId(corp, district)
+        addCorpDroneHome(corp, district, homeId)
+        placed += 1
+    }
+    return placed
+}
+
+function buildDroneDistrictPopulations(state) {
+    var byDistrict = {}
+    if (!state || !state.blocks) { return byDistrict }
+    for (var bi = 0; bi < state.blocks.length; bi++) {
+        var block = state.blocks[bi]
+        if (block.demographic.id !== 'drone') { continue }
+        var did = block.district.id
+        byDistrict[did] = (byDistrict[did] || 0) + block.population
+    }
+    return byDistrict
+}
+
+/** Home district: full drone need; elsewhere: one dorm per corp per district. */
+function seedCorpDroneHousing(state) {
+    if (Q.corpDroneHousingSeeded) { return }
+    if (!state || !state.blocks || typeof Q.pickOwnerDisplayName !== 'function') {
+        return
+    }
+    ensureEconomicAssets()
+    var droneByDistrict = buildDroneDistrictPopulations(state)
+
+    for (var ci = 0; ci < CORP_DRONE_HOUSING_IGS.length; ci++) {
+        var corp = CORP_DRONE_HOUSING_IGS[ci]
+        var homeDist = IG_HOME_DISTRICT[corp]
+        var homeNeed = homesRequiredForPopulation(droneByDistrict[homeDist] || 0)
+        ensureCorpDroneHomesInDistrict(corp, homeDist, homeNeed)
+
+        for (var di = 0; di < HOUSING_BORROW_DISTRICT_ORDER.length; di++) {
+            var dist = HOUSING_BORROW_DISTRICT_ORDER[di]
+            if (dist === homeDist) { continue }
+            var id = 'corp_drone_' + corp + '_' + dist + '_0'
+            if (!hasEconomicAssetId(id)) {
+                addCorpDroneHome(corp, dist, id)
+            }
+        }
+    }
+
+    Q.corpDroneHousingSeeded = 1
+}
+
+function corpDronePoolLendRoom(pool) {
+    return Math.max(0, pool.operational - pool.lent)
+}
+
+function buildCorpDroneHousingPools(assets) {
+    var pools = []
+    for (var ci = 0; ci < CORP_DRONE_HOUSING_IGS.length; ci++) {
+        var corp = CORP_DRONE_HOUSING_IGS[ci]
+        for (var di = 0; di < HOUSING_BORROW_DISTRICT_ORDER.length; di++) {
+            var dist = HOUSING_BORROW_DISTRICT_ORDER[di]
+            var h = countCorpDroneHousingInDistrict(assets, corp, dist)
+            if (h.operational <= 0) { continue }
+            pools.push({
+                corp: corp,
+                district: dist,
+                operational: h.operational,
+                lent: 0,
+            })
+        }
+    }
+    return pools
+}
+
+/** Corps lend all operational drone dorm surplus in-district before block-to-block borrow. */
+function lendCorpDroneHousingFirst(entries) {
+    ensureEconomicAssets()
+    var assets = Q.economicAssets || []
+    var pools = buildCorpDroneHousingPools(assets)
+    if (!pools.length || !entries.length) { return }
+
+    var droneBorrowers = []
+    for (var i = 0; i < entries.length; i++) {
+        var entry = entries[i]
+        if (entry.stratum !== 'drone') { continue }
+        if (blockHousingDeficit(entry) <= 0) { continue }
+        droneBorrowers.push(entry)
+    }
+    if (!droneBorrowers.length) { return }
+
+    droneBorrowers.sort(function(a, b) {
+        var da = housingBorrowDistrictSortKey(a.district)
+        var db = housingBorrowDistrictSortKey(b.district)
+        if (da !== db) { return da - db }
+        return 0
+    })
+
+    for (var bi = 0; bi < droneBorrowers.length; bi++) {
+        var borrower = droneBorrowers[bi]
+        var need = blockHousingDeficit(borrower)
+        for (var pi = 0; pi < pools.length && need > 0; pi++) {
+            var pool = pools[pi]
+            if (pool.district !== borrower.district) { continue }
+            var room = corpDronePoolLendRoom(pool)
+            if (room <= 0) { continue }
+            var n = Math.min(need, room)
+            pool.lent += n
+            borrower.borrowed += n
+            need -= n
+        }
+    }
+}
+
+function countStratumHousing(assets, stratumId) {
+    var total = 0
+    var operational = 0
+    var destroyed = 0
+    for (var i = 0; i < assets.length; i++) {
+        var e = assets[i]
+        if (!economicHomeServesStratum(e, stratumId)) { continue }
+        total += 1
+        if (isEconomicHomeOperational(e)) {
+            operational += 1
+        } else {
+            destroyed += 1
+        }
+    }
+    return { total: total, operational: operational, destroyed: destroyed }
+}
+
+function housingShortfallRuleApplies(operationalShortfall, destroyedHomes) {
+    if (operationalShortfall <= 0) { return false }
+    if (operationalShortfall > HOUSING_SHORTFALL_APPLY_ABOVE) { return true }
+    return destroyedHomes >= HOUSING_SHORTFALL_DESTROYED_THRESHOLD
+}
+
+function nextStratumHomeId(stratum, district) {
+    var i = 0
+    while (hasEconomicAssetId('home_' + stratum + '_' + district + '_' + i)) {
+        i += 1
+    }
+    return 'home_' + stratum + '_' + district + '_' + i
+}
+
+/** Place up to `count` new operational homes for one stratum (district share by population). */
+function placeStratumHomesInDistricts(stratum, districtPops, count) {
+    if (count <= 0 || typeof Q.pickOwnerDisplayName !== 'function') { return 0 }
+    var totalPop = 0
+    for (var dk in districtPops) {
+        if (Object.prototype.hasOwnProperty.call(districtPops, dk)) {
+            totalPop += districtPops[dk]
+        }
+    }
+    if (totalPop <= 0) { return 0 }
+
+    var districtRows = []
+    for (var distId in districtPops) {
+        if (!Object.prototype.hasOwnProperty.call(districtPops, distId)) { continue }
+        var share = districtPops[distId] / totalPop
+        var exact = count * share
+        districtRows.push({
+            id: distId,
+            base: Math.floor(exact),
+            frac: exact - Math.floor(exact),
+        })
+    }
+
+    var assigned = 0
+    for (var dr = 0; dr < districtRows.length; dr++) {
+        assigned += districtRows[dr].base
+    }
+    var remainder = count - assigned
+    districtRows.sort(function(a, b) { return b.frac - a.frac })
+    for (var rr = 0; rr < remainder && rr < districtRows.length; rr++) {
+        districtRows[rr].base += 1
+    }
+
+    var placed = 0
+    for (var dj = 0; dj < districtRows.length; dj++) {
+        var row = districtRows[dj]
+        for (var hi = 0; hi < row.base; hi++) {
+            var homeId = nextStratumHomeId(stratum, row.id)
+            addHome({
+                id: homeId,
+                name: Q.pickOwnerDisplayName({
+                    ownerType: 'stratum',
+                    owner: stratum,
+                    district: row.id,
+                    id: homeId,
+                    isHome: true,
+                }),
+                district: row.id,
+                ownerType: 'stratum',
+                owner: stratum,
+                major: false,
+            })
+            placed += 1
+        }
+    }
+    return placed
+}
+
+/** Init seed: operational homes toward 120% of required (recovery-era oversupply). */
+function ensureStratumHomesAtTarget(stratum, districtPops) {
+    var totalPop = 0
+    for (var dk in districtPops) {
+        if (Object.prototype.hasOwnProperty.call(districtPops, dk)) {
+            totalPop += districtPops[dk]
+        }
+    }
+    if (totalPop <= 0) { return 0 }
+
+    ensureEconomicAssets()
+    var target = homesTargetForPopulation(totalPop)
+    var housing = countStratumHousing(Q.economicAssets, stratum)
+    var toPlace = target - housing.operational
+    if (toPlace <= 0) { return 0 }
+    return placeStratumHomesInDistricts(stratum, districtPops, toPlace)
+}
+
+function buildStratumDistrictPopulations(state) {
+    var byStratumDistrict = {}
+    if (!state || !state.blocks) { return byStratumDistrict }
+    for (var bi = 0; bi < state.blocks.length; bi++) {
+        var block = state.blocks[bi]
+        var sid = block.demographic.id
+        if (ECONOMIC_HOME_STRATA.indexOf(sid) < 0) { continue }
+        var did = block.district.id
+        if (!byStratumDistrict[sid]) { byStratumDistrict[sid] = {} }
+        byStratumDistrict[sid][did] = (byStratumDistrict[sid][did] || 0) + block.population
+    }
+    return byStratumDistrict
+}
+
+/**
+ * Monthly top-up (after prosperity): add ceil(half the gap to 105% cap).
+ * gap = homesTopUpCap − operational; new homes = ceil(gap / 2).
+ */
+function topUpStratumHomesMonthly(stratum, districtPops) {
+    var totalPop = 0
+    for (var dk in districtPops) {
+        if (Object.prototype.hasOwnProperty.call(districtPops, dk)) {
+            totalPop += districtPops[dk]
+        }
+    }
+    if (totalPop <= 0) { return 0 }
+
+    ensureEconomicAssets()
+    var cap = homesTopUpCapForPopulation(totalPop)
+    var housing = countStratumHousing(Q.economicAssets, stratum)
+    var gap = cap - housing.operational
+    if (gap <= 0) { return 0 }
+    var toPlace = Math.ceil(gap / 2)
+    if (toPlace <= 0) { return 0 }
+    return placeStratumHomesInDistricts(stratum, districtPops, toPlace)
+}
+
+/** Monthly: partial home build after all prosperity steps. */
+function topUpStratumHomesToTarget() {
+    var state = Q.electionV2
+    if (!state || !state.blocks) { return false }
+    var byStratumDistrict = buildStratumDistrictPopulations(state)
+    var changed = false
+    for (var si = 0; si < ECONOMIC_HOME_STRATA.length; si++) {
+        var stratum = ECONOMIC_HOME_STRATA[si]
+        var districtPops = byStratumDistrict[stratum]
+        if (!districtPops) { continue }
+        if (topUpStratumHomesMonthly(stratum, districtPops) > 0) {
+            changed = true
+        }
+    }
+    return changed
+}
+
+function countBlockHousing(assets, districtId, stratumId) {
+    var operational = 0
+    var destroyed = 0
+    for (var i = 0; i < assets.length; i++) {
+        var e = assets[i]
+        if (e.district !== districtId) { continue }
+        if (!economicHomeServesStratum(e, stratumId)) { continue }
+        if (isEconomicHomeOperational(e)) {
+            operational += 1
+        } else {
+            destroyed += 1
+        }
+    }
+    return { operational: operational, destroyed: destroyed }
+}
+
+function blockHousingDeficit(entry) {
+    var covered = entry.operational + entry.borrowed
+    return Math.max(0, entry.required - covered)
+}
+
+/** Max homes this block can still lend (up to half its un-lent surplus). */
+function blockHousingLendRoom(entry) {
+    var surplus = entry.operational - entry.required
+    if (surplus <= 0) { return 0 }
+    var cap = Math.floor(surplus / 2)
+    return Math.max(0, cap - entry.lent)
+}
+
+function housingBorrowDistrictSortKey(districtId) {
+    var idx = HOUSING_BORROW_DISTRICT_ORDER.indexOf(districtId)
+    return idx < 0 ? HOUSING_BORROW_DISTRICT_ORDER.length : idx
+}
+
+function buildBlockHousingLedger(state) {
+    ensureEconomicAssets()
+    var assets = Q.economicAssets || []
+    var entries = []
+    for (var b = 0; b < state.blocks.length; b++) {
+        var block = state.blocks[b]
+        var pop = block.population
+        if (!pop || pop <= 0) { continue }
+        var sid = block.demographic.id
+        var did = block.district.id
+        var housing = countBlockHousing(assets, did, sid)
+        var required = homesRequiredForPopulation(pop)
+        entries.push({
+            blockId: block.id,
+            district: did,
+            stratum: sid,
+            required: required,
+            operational: housing.operational,
+            destroyed: housing.destroyed,
+            borrowed: 0,
+            lent: 0,
+        })
+    }
+    return entries
+}
+
+function transferBlockHousing(lender, borrower, amount) {
+    if (amount <= 0 || lender.blockId === borrower.blockId) { return 0 }
+    var room = blockHousingLendRoom(lender)
+    var need = blockHousingDeficit(borrower)
+    var n = Math.min(amount, room, need)
+    if (n <= 0) { return 0 }
+    lender.lent += n
+    borrower.borrowed += n
+    return n
+}
+
+/** Lenders: same class elsewhere, then same district, then other strata (priority × district order). */
+function lendHousingFrom(entries, borrower, need, lenderFilter) {
+    var total = 0
+    for (var i = 0; i < entries.length; i++) {
+        var lender = entries[i]
+        if (lender.blockId === borrower.blockId) { continue }
+        if (!lenderFilter(lender)) { continue }
+        var n = transferBlockHousing(lender, borrower, need - total)
+        total += n
+        if (total >= need) { break }
+    }
+    return total
+}
+
+/**
+ * Surplus blocks lend up to half their excess homes to deficit blocks (per VoterBlock).
+ * Borrowers processed in district order (Docks first).
+ */
+function redistributeBlockHousingSurplus(state) {
+    if (!state || !state.blocks) { return null }
+    var entries = buildBlockHousingLedger(state)
+    if (!entries.length) { return entries }
+
+    lendCorpDroneHousingFirst(entries)
+
+    var deficitBlocks = []
+    for (var i = 0; i < entries.length; i++) {
+        if (blockHousingDeficit(entries[i]) > 0) {
+            deficitBlocks.push(entries[i])
+        }
+    }
+    deficitBlocks.sort(function(a, b) {
+        var da = housingBorrowDistrictSortKey(a.district)
+        var db = housingBorrowDistrictSortKey(b.district)
+        if (da !== db) { return da - db }
+        if (a.stratum < b.stratum) { return -1 }
+        if (a.stratum > b.stratum) { return 1 }
+        return 0
+    })
+
+    for (var di = 0; di < deficitBlocks.length; di++) {
+        var borrower = deficitBlocks[di]
+        var need = blockHousingDeficit(borrower)
+        if (need <= 0) { continue }
+
+        need -= lendHousingFrom(entries, borrower, need, function(lender) {
+            return lender.stratum === borrower.stratum
+                && lender.district !== borrower.district
+        })
+        if (need <= 0) { continue }
+
+        need -= lendHousingFrom(entries, borrower, need, function(lender) {
+            return lender.district === borrower.district
+                && lender.stratum !== borrower.stratum
+        })
+        if (need <= 0) { continue }
+
+        for (var si = 0; si < HOUSING_BORROW_STRATUM_PRIORITY.length && need > 0; si++) {
+            var lendStratum = HOUSING_BORROW_STRATUM_PRIORITY[si]
+            if (lendStratum === borrower.stratum) { continue }
+            for (var dj = 0; dj < HOUSING_BORROW_DISTRICT_ORDER.length && need > 0; dj++) {
+                var lendDistrict = HOUSING_BORROW_DISTRICT_ORDER[dj]
+                need -= lendHousingFrom(entries, borrower, need, function(lender) {
+                    return lender.stratum === lendStratum
+                        && lender.district === lendDistrict
+                })
+            }
+        }
+    }
+    return entries
+}
+
+/**
+ * Per VoterBlock: borrow surplus first, then prosperity −= 2 × (fraction missing).
+ * Applies only when gap > 2 operational homes, or gap > 0 with ≥ 2 destroyed homes (block).
+ */
+function applyHousingShortfallProsperity() {
+    var state = Q.electionV2
+    if (!state || !state.blocks) { return false }
+    ensureEconomicAssets()
+    var ledger = redistributeBlockHousingSurplus(state)
+    if (!ledger || !ledger.length) { return false }
+
+    var byBlockId = {}
+    for (var i = 0; i < ledger.length; i++) {
+        byBlockId[ledger[i].blockId] = ledger[i]
+    }
+
+    var changed = false
+    for (var b = 0; b < state.blocks.length; b++) {
+        var block = state.blocks[b]
+        var entry = byBlockId[block.id]
+        if (!entry || entry.required <= 0) { continue }
+
+        var operationalShortfall = blockHousingDeficit(entry)
+        if (!housingShortfallRuleApplies(operationalShortfall, entry.destroyed)) {
+            continue
+        }
+
+        var fractionMissing = operationalShortfall / entry.required
+        if (fractionMissing > 1) { fractionMissing = 1 }
+        var penalty = -HOUSING_SHORTFALL_PENALTY_PER_MISSING_FRACTION * fractionMissing
+        block.prosperity = clampEconomicBlockProsperity(
+            (block.prosperity ?? 1) + penalty
+        )
+        changed = true
+    }
+
+    if (changed && typeof Q.qified_block_prosperity === 'function') {
+        Q.qified_block_prosperity()
+    }
+    return changed
 }
 
 function hasEconomicAssetId(id) {
@@ -504,12 +1125,104 @@ function hasEconomicAssetId(id) {
     return false
 }
 
-/** Seed homes once at start — ~20% above quota (post–population-decline recovery). */
+/** One-time starter assets (Big Three home districts + Aurora strata sites). */
+function seedStarterEconomicAssets() {
+    if (Q.economicAssetsStarterSeeded) { return }
+    ensureEconomicAssets()
+
+    for (var bi = 0; bi < STARTER_ECONOMIC_ASSET_BATCHES.length; bi++) {
+        var batch = STARTER_ECONOMIC_ASSET_BATCHES[bi]
+        for (var i = 0; i < batch.count; i++) {
+            var id = 'starter_asset_' + batch.owner + '_' + batch.district + '_' + i
+            if (hasEconomicAssetId(id)) { continue }
+            var name = batch.owner + ' site ' + (i + 1)
+            if (typeof Q.pickOwnerDisplayName === 'function') {
+                name = Q.pickOwnerDisplayName({
+                    ownerType: batch.ownerType,
+                    owner: batch.owner,
+                    district: batch.district,
+                    id: id,
+                })
+            }
+            addAsset({
+                id: id,
+                name: name,
+                district: batch.district,
+                ownerType: batch.ownerType,
+                owner: batch.owner,
+            })
+        }
+    }
+    Q.economicAssetsStarterSeeded = 1
+}
+
+/**
+ * Apply registered homes/assets to prosperity (monthly, before connection bleed).
+ * Homes: 0; assets: +0.1 each to owner IG or matching district×stratum blocks.
+ */
+function applyEconomicAssetProsperity() {
+    var state = Q.electionV2
+    if (!state || !state.blocks) { return false }
+    ensureEconomicAssets()
+
+    var assets = Q.economicAssets || []
+    var blockDeltas = {}
+    var igDeltas = {}
+    var changed = false
+
+    for (var ai = 0; ai < assets.length; ai++) {
+        var entry = assets[ai]
+        var delta = economicProsperityDeltaForEntry(entry)
+        if (!delta || isNaN(delta)) { continue }
+
+        if (entry.ownerType === 'ig') {
+            var igKey = 'prosperity_' + String(entry.owner).toLowerCase()
+            igDeltas[igKey] = (igDeltas[igKey] || 0) + delta
+            continue
+        }
+
+        if (entry.ownerType === 'stratum') {
+            for (var b = 0; b < state.blocks.length; b++) {
+                var block = state.blocks[b]
+                if (
+                    block.demographic.id === entry.owner
+                    && block.district.id === entry.district
+                ) {
+                    blockDeltas[block.id] = (blockDeltas[block.id] || 0) + delta
+                }
+            }
+        }
+    }
+
+    for (var b = 0; b < state.blocks.length; b++) {
+        var block = state.blocks[b]
+        var bd = blockDeltas[block.id]
+        if (!bd) { continue }
+        block.prosperity = clampEconomicBlockProsperity(
+            (block.prosperity ?? 1) + bd
+        )
+        changed = true
+    }
+
+    for (var igKey in igDeltas) {
+        if (!Object.prototype.hasOwnProperty.call(igDeltas, igKey)) { continue }
+        var igVal = Q[igKey]
+        if (igVal == null) { igVal = 1 }
+        Q[igKey] = igVal + igDeltas[igKey]
+        changed = true
+    }
+
+    if (changed && typeof Q.qified_block_prosperity === 'function') {
+        Q.qified_block_prosperity()
+    }
+    return changed
+}
+
+/** Seed homes once at start — 120% of need; population still recovering from its nadir. */
 function initEconomicAssets() {
-    if (Q.economicAssetsInitialized) { return }
-    Q.economicAssetsInitialized = 1
-    if (typeof installEconomicNameCatalog === 'function') {
+    if (typeof installEconomicNameCatalog === 'function' && !Q.economicNameCatalogReady) {
         installEconomicNameCatalog(Q)
+        Q.economicNameCatalogReady = 1
     }
     ensureEconomicAssets()
 
@@ -524,91 +1237,24 @@ function initEconomicAssets() {
         })
     }
 
+    if (!Q.economicAssetsHomesSeeded) {
     var state = Q.electionV2
     if (!state || !state.blocks || typeof Q.pickOwnerDisplayName !== 'function') {
+        seedStarterEconomicAssets()
         return
     }
 
-    var byStratumDistrict = {}
-    for (var bi = 0; bi < state.blocks.length; bi++) {
-        var block = state.blocks[bi]
-        var sid = block.demographic.id
-        if (ECONOMIC_HOME_STRATA.indexOf(sid) < 0) { continue }
-        var did = block.district.id
-        if (!byStratumDistrict[sid]) { byStratumDistrict[sid] = {} }
-        byStratumDistrict[sid][did] = (byStratumDistrict[sid][did] || 0) + block.population
-    }
-
+    var byStratumDistrict = buildStratumDistrictPopulations(state)
     for (var si = 0; si < ECONOMIC_HOME_STRATA.length; si++) {
         var stratum = ECONOMIC_HOME_STRATA[si]
         var districtPops = byStratumDistrict[stratum]
         if (!districtPops) { continue }
-
-        var totalPop = 0
-        for (var dk in districtPops) {
-            if (Object.prototype.hasOwnProperty.call(districtPops, dk)) {
-                totalPop += districtPops[dk]
-            }
-        }
-        if (totalPop <= 0) { continue }
-
-        var target = homesTargetForPopulation(totalPop)
-        if (target <= 0) { continue }
-
-        var skillInPitts = (
-            stratum === 'rich' && hasEconomicAssetId('pitts_skill_issue_heights')
-        )
-        var alreadyPlaced = skillInPitts ? 1 : 0
-        var toPlace = target - alreadyPlaced
-        if (toPlace <= 0) { continue }
-
-        var districtRows = []
-        for (var distId in districtPops) {
-            if (!Object.prototype.hasOwnProperty.call(districtPops, distId)) { continue }
-            var share = districtPops[distId] / totalPop
-            var exact = toPlace * share
-            districtRows.push({
-                id: distId,
-                base: Math.floor(exact),
-                frac: exact - Math.floor(exact),
-            })
-        }
-
-        var assigned = 0
-        for (var dr = 0; dr < districtRows.length; dr++) {
-            assigned += districtRows[dr].base
-        }
-        var remainder = toPlace - assigned
-        districtRows.sort(function(a, b) { return b.frac - a.frac })
-        for (var rr = 0; rr < remainder && rr < districtRows.length; rr++) {
-            districtRows[rr].base += 1
-        }
-
-        for (var dj = 0; dj < districtRows.length; dj++) {
-            var row = districtRows[dj]
-            for (var hi = 0; hi < row.base; hi++) {
-                if (skillInPitts && row.id === 'Pitts' && hi === 0) {
-                    continue
-                }
-                var homeId = 'home_' + stratum + '_' + row.id + '_' + hi
-                if (hasEconomicAssetId(homeId)) { continue }
-                addHome({
-                    id: homeId,
-                    name: Q.pickOwnerDisplayName({
-                        ownerType: 'stratum',
-                        owner: stratum,
-                        district: row.id,
-                        id: homeId,
-                        isHome: true,
-                    }),
-                    district: row.id,
-                    ownerType: 'stratum',
-                    owner: stratum,
-                    major: false,
-                })
-            }
-        }
+        ensureStratumHomesAtTarget(stratum, districtPops)
     }
+    seedCorpDroneHousing(state)
+    Q.economicAssetsHomesSeeded = 1
+    }
+    seedStarterEconomicAssets()
 }
 
 var ECONOMIC_STRATUM_LABELS = {
@@ -622,32 +1268,6 @@ var ECONOMIC_STRATUM_LABELS = {
     third_wave: '3rd Wave',
 }
 
-function sortedEconomicAssets() {
-    ensureEconomicAssets()
-    var assets = Q.economicAssets || []
-    return assets.slice().sort(function(a, b) {
-        if (a.district !== b.district) {
-            return a.district < b.district ? -1 : 1
-        }
-        if (!!a.countsAsHome !== !!b.countsAsHome) {
-            return a.countsAsHome ? -1 : 1
-        }
-        var an = a.name || a.id
-        var bn = b.name || b.id
-        return an < bn ? -1 : (an > bn ? 1 : 0)
-    })
-}
-
-function economicAssetTypeLabel(entry) {
-    var typeLabel = entry.countsAsHome ? 'Home' : 'Asset'
-    if (entry.kind) { typeLabel += ' (' + entry.kind + ')' }
-    return typeLabel
-}
-
-function economicAssetStatusLabel(entry) {
-    return (entry.health == null || Number(entry.health) >= 1) ? 'Operational' : 'Offline'
-}
-
 function affiliationTextPlain(entry) {
     if (entry.ownerType === 'ig') {
         var tag = 'Corp'
@@ -657,6 +1277,9 @@ function affiliationTextPlain(entry) {
             || entry.owner === 'Sharks'
         ) {
             tag = 'Syndicate'
+        }
+        if (entry.housingFor === 'drone') {
+            return entry.owner + ' (' + tag + ', drone housing)'
         }
         return entry.owner + ' (' + tag + ')'
     }
@@ -669,34 +1292,252 @@ function affiliationTextPlain(entry) {
     return (ECONOMIC_STRATUM_LABELS[entry.owner] || entry.owner) + ' (stratum)'
 }
 
-/** Plain-text holdings register (see scheduled_elections election_report pattern). */
+function economicAffiliationGroupKey(entry) {
+    if (entry.ownerType === 'ig') {
+        return 'ig:' + entry.owner
+    }
+    if (entry.ownerType === 'public') {
+        return 'public:' + (entry.housingFor || 'general')
+    }
+    return 'stratum:' + (entry.owner || '')
+}
+
+/** Count homes and assets per affiliation group (not per site). */
+function aggregateEconomicAssetsByGroup() {
+    ensureEconomicAssets()
+    var assets = Q.economicAssets || []
+    var buckets = {}
+    var order = []
+
+    for (var i = 0; i < assets.length; i++) {
+        var e = assets[i]
+        var key = economicAffiliationGroupKey(e)
+        if (!buckets[key]) {
+            buckets[key] = {
+                label: affiliationTextPlain(e),
+                homes: 0,
+                assets: 0,
+            }
+            order.push(key)
+        }
+        if (e.countsAsHome) {
+            buckets[key].homes += 1
+        } else {
+            buckets[key].assets += 1
+        }
+    }
+
+    var rows = []
+    for (var j = 0; j < order.length; j++) {
+        rows.push(buckets[order[j]])
+    }
+    rows.sort(function(a, b) {
+        var ta = a.homes + a.assets
+        var tb = b.homes + b.assets
+        if (tb !== ta) { return tb - ta }
+        return a.label < b.label ? -1 : (a.label > b.label ? 1 : 0)
+    })
+    return rows
+}
+
+function economicAssetsReportTotals(groupRows) {
+    var totalHomes = 0
+    var totalAssets = 0
+    for (var i = 0; i < groupRows.length; i++) {
+        totalHomes += groupRows[i].homes
+        totalAssets += groupRows[i].assets
+    }
+    return { homes: totalHomes, assets: totalAssets, sites: totalHomes + totalAssets }
+}
+
+/** Plain-text holdings summary (see scheduled_elections election_report pattern). */
 function formatEconomicAssetsReportText() {
     if (typeof ensureEconomicAssets !== 'function') {
         return 'Economic registry is not available yet.'
     }
-    var rows = sortedEconomicAssets()
-    if (!rows.length) {
+    var groups = aggregateEconomicAssetsByGroup()
+    if (!groups.length) {
         return 'No registered homes or economic assets yet.'
     }
 
+    var labelWidth = 10
+    for (var gi = 0; gi < groups.length; gi++) {
+        if (groups[gi].label.length > labelWidth) {
+            labelWidth = groups[gi].label.length
+        }
+    }
+
     var lines = []
-    for (var i = 0; i < rows.length; i++) {
-        var e = rows[i]
+    lines.push(
+        padEconomicReportField('Demographic', labelWidth)
+        + '  Housing  Assets'
+    )
+    for (var i = 0; i < groups.length; i++) {
+        var g = groups[i]
         lines.push(
-            (e.name || e.id)
-            + ' — '
-            + economicAssetTypeLabel(e)
-            + ', '
-            + (e.district || '')
-            + ', '
-            + affiliationTextPlain(e)
-            + ', '
-            + economicAssetStatusLabel(e)
+            padEconomicReportField(g.label, labelWidth)
+            + '  '
+            + padEconomicReportField(String(g.homes), 5)
+            + '  '
+            + String(g.assets)
         )
     }
+    var totals = economicAssetsReportTotals(groups)
     lines.push('')
-    lines.push(rows.length + ' sites registered.')
+    lines.push(
+        totals.homes
+        + ' homes, '
+        + totals.assets
+        + ' assets ('
+        + totals.sites
+        + ' sites registered).'
+    )
     return lines.join('\n')
+}
+
+function padEconomicReportField(text, width) {
+    var s = String(text)
+    while (s.length < width) { s += ' ' }
+    return s
+}
+
+function formatEconomicAssetsReportHtml() {
+    if (typeof ensureEconomicAssets !== 'function') {
+        return '<p><em>Economic registry is not available yet.</em></p>'
+    }
+    var groups = aggregateEconomicAssetsByGroup()
+    if (!groups.length) {
+        return '<p><em>No registered homes or economic assets yet.</em></p>'
+    }
+
+    var html = '<table style="width:100%;border-collapse:collapse;font-size:0.85em;margin:0.25em 0;">'
+    html += '<tr><th style="text-align:left;font-weight:normal;">Demographic</th>'
+    html += '<th style="text-align:right;font-weight:normal;">Housing</th>'
+    html += '<th style="text-align:right;font-weight:normal;">Assets</th></tr>'
+
+    for (var i = 0; i < groups.length; i++) {
+        var g = groups[i]
+        html += '<tr><td style="text-align:left;">' + g.label + '</td>'
+        html += '<td style="text-align:right;">' + g.homes + '</td>'
+        html += '<td style="text-align:right;">' + g.assets + '</td></tr>'
+    }
+
+    var totals = economicAssetsReportTotals(groups)
+    html += '</table>'
+    html += '<p style="font-size:0.85em;margin:0.35em 0 0 0;">'
+    html += totals.homes + ' homes, ' + totals.assets + ' assets ('
+    html += totals.sites + ' sites registered).</p>'
+    return html
+}
+
+function appendEconomicReportCell(tr, text, tagName) {
+    var cell = document.createElement(tagName || 'td')
+    cell.style.textAlign = 'left'
+    if (tagName === 'th') {
+        cell.style.fontWeight = 'normal'
+    }
+    cell.textContent = text
+    tr.appendChild(cell)
+}
+
+/** Latest report placeholder (revisiting the survey appends another div). */
+function findEconomicReportRoot() {
+    var nodes = document.getElementsByClassName('jacobs-assets-report')
+    if (!nodes.length) { return null }
+    return nodes[nodes.length - 1]
+}
+
+/** DOM report: fill .jacobs-assets-report (call from scene on-display after content is shown). */
+function renderEconomicAssetsReport() {
+    if (typeof Q.initEconomicAssets === 'function') { Q.initEconomicAssets() }
+    var attempts = 0
+    var maxAttempts = 12
+
+    function paint() {
+        var root = findEconomicReportRoot()
+        if (!root) { return false }
+        root.innerHTML = ''
+
+        if (typeof ensureEconomicAssets !== 'function') {
+            var missing = document.createElement('p')
+            var em = document.createElement('em')
+            em.textContent = 'Economic registry is not available yet.'
+            missing.appendChild(em)
+            root.appendChild(missing)
+            return true
+        }
+
+        var groups = aggregateEconomicAssetsByGroup()
+        if (!groups.length) {
+            var empty = document.createElement('p')
+            var emptyEm = document.createElement('em')
+            emptyEm.textContent = 'No registered homes or economic assets yet.'
+            empty.appendChild(emptyEm)
+            root.appendChild(empty)
+            return true
+        }
+
+        var table = document.createElement('table')
+        table.style.width = '100%'
+        table.style.borderCollapse = 'collapse'
+        table.style.fontSize = '0.85em'
+        table.style.margin = '0.25em 0'
+
+        var header = document.createElement('tr')
+        appendEconomicReportCell(header, 'Demographic', 'th')
+        var housingTh = document.createElement('th')
+        housingTh.style.textAlign = 'right'
+        housingTh.style.fontWeight = 'normal'
+        housingTh.textContent = 'Housing'
+        header.appendChild(housingTh)
+        var assetsTh = document.createElement('th')
+        assetsTh.style.textAlign = 'right'
+        assetsTh.style.fontWeight = 'normal'
+        assetsTh.textContent = 'Assets'
+        header.appendChild(assetsTh)
+        table.appendChild(header)
+
+        for (var i = 0; i < groups.length; i++) {
+            var g = groups[i]
+            var tr = document.createElement('tr')
+            appendEconomicReportCell(tr, g.label)
+            var homesTd = document.createElement('td')
+            homesTd.style.textAlign = 'right'
+            homesTd.textContent = String(g.homes)
+            tr.appendChild(homesTd)
+            var assetsTd = document.createElement('td')
+            assetsTd.style.textAlign = 'right'
+            assetsTd.textContent = String(g.assets)
+            tr.appendChild(assetsTd)
+            table.appendChild(tr)
+        }
+
+        root.appendChild(table)
+
+        var totals = economicAssetsReportTotals(groups)
+        var foot = document.createElement('p')
+        foot.style.fontSize = '0.85em'
+        foot.style.margin = '0.35em 0 0 0'
+        foot.textContent = (
+            totals.homes
+            + ' homes, '
+            + totals.assets
+            + ' assets ('
+            + totals.sites
+            + ' sites registered).'
+        )
+        root.appendChild(foot)
+        return true
+    }
+
+    function tryPaint() {
+        if (paint()) { return }
+        attempts += 1
+        if (attempts < maxAttempts) {
+            setTimeout(tryPaint, 0)
+        }
+    }
+    tryPaint()
 }
 
 function updateJacobsAssetsReport() {
@@ -704,168 +1545,23 @@ function updateJacobsAssetsReport() {
     Q.jacobs_assets_report = formatEconomicAssetsReportText()
 }
 
-function appendEconomicReportCell(tr, text, tagName) {
-    var cell = document.createElement(tagName || 'td')
-    cell.style.textAlign = 'left'
-    cell.style.padding = '0.15em 0.35em 0.15em 0'
-    if (tagName === 'th') {
-        cell.style.fontWeight = 'normal'
-    }
-    cell.textContent = text
-    tr.appendChild(cell)
-    return cell
-}
-
-function appendEconomicAffiliationCell(tr, entry) {
-    var td = document.createElement('td')
-    td.style.textAlign = 'left'
-    td.style.padding = '0.15em 0.35em 0.15em 0'
-
-    if (entry.ownerType === 'ig') {
-        var color = '#44b88f'
-        var tag = 'Corp'
-        if (
-            entry.owner === 'Families'
-            || entry.owner === 'Edges'
-            || entry.owner === 'Sharks'
-        ) {
-            color = '#cf6e19'
-            tag = 'Syndicate'
-        }
-        var span = document.createElement('span')
-        span.style.color = color
-        span.textContent = entry.owner
-        td.appendChild(span)
-        td.appendChild(document.createTextNode(' (' + tag + ')'))
-    } else if (entry.ownerType === 'public') {
-        var forLabel = entry.housingFor
-            ? (ECONOMIC_STRATUM_LABELS[entry.housingFor] || entry.housingFor)
-            : 'general'
-        td.textContent = 'City (' + forLabel + ' housing)'
-    } else {
-        var stratumName = ECONOMIC_STRATUM_LABELS[entry.owner] || entry.owner
-        td.textContent = stratumName + ' (stratum)'
-    }
-
-    tr.appendChild(td)
-}
-
-/** DOM report (see mod_loader.scene.dry): fill a placeholder div from on-display. */
-function renderEconomicAssetsReport(containerId) {
-    var root = document.getElementById(containerId || 'jacobs_assets_report')
-    if (!root) { return }
-    root.innerHTML = ''
-
-    if (typeof ensureEconomicAssets !== 'function') {
-        var missing = document.createElement('p')
-        var em = document.createElement('em')
-        em.textContent = 'Economic registry is not available yet.'
-        missing.appendChild(em)
-        root.appendChild(missing)
-        return
-    }
-
-    var rows = sortedEconomicAssets()
-    if (!rows.length) {
-        var empty = document.createElement('p')
-        var emptyEm = document.createElement('em')
-        emptyEm.textContent = 'No registered homes or economic assets yet.'
-        empty.appendChild(emptyEm)
-        root.appendChild(empty)
-        return
-    }
-
-    var table = document.createElement('table')
-    table.style.width = '100%'
-    table.style.borderCollapse = 'collapse'
-    table.style.fontSize = '0.85em'
-    table.style.margin = '0.25em 0'
-
-    var header = document.createElement('tr')
-    appendEconomicReportCell(header, 'Site', 'th')
-    appendEconomicReportCell(header, 'Type', 'th')
-    appendEconomicReportCell(header, 'District', 'th')
-    appendEconomicReportCell(header, 'Affiliation', 'th')
-    appendEconomicReportCell(header, 'Status', 'th')
-    table.appendChild(header)
-
-    for (var i = 0; i < rows.length; i++) {
-        var e = rows[i]
-        var tr = document.createElement('tr')
-        appendEconomicReportCell(tr, e.name || e.id)
-        appendEconomicReportCell(tr, economicAssetTypeLabel(e))
-        appendEconomicReportCell(tr, e.district || '')
-        appendEconomicAffiliationCell(tr, e)
-        appendEconomicReportCell(tr, economicAssetStatusLabel(e))
-        table.appendChild(tr)
-    }
-
-    root.appendChild(table)
-
-    var foot = document.createElement('p')
-    foot.style.fontSize = '0.85em'
-    foot.style.margin = '0.35em 0 0 0'
-    foot.textContent = rows.length + ' sites registered.'
-    root.appendChild(foot)
-}
-
-function formatEconomicAssetsReportHtml() {
-    var rows = sortedEconomicAssets()
-    if (!rows.length) {
-        return '<p><em>No registered homes or economic assets yet.</em></p>'
-    }
-
-    var html = '<table style="width:100%;border-collapse:collapse;font-size:0.85em;margin:0.25em 0;">'
-    html += '<tr><th style="text-align:left;font-weight:normal;">Site</th>'
-    html += '<th style="text-align:left;font-weight:normal;">Type</th>'
-    html += '<th style="text-align:left;font-weight:normal;">District</th>'
-    html += '<th style="text-align:left;font-weight:normal;">Affiliation</th>'
-    html += '<th style="text-align:left;font-weight:normal;">Status</th></tr>'
-
-    for (var i = 0; i < rows.length; i++) {
-        var e = rows[i]
-        html += '<tr><td style="text-align:left;">' + (e.name || e.id) + '</td>'
-        html += '<td style="text-align:left;">' + economicAssetTypeLabel(e) + '</td>'
-        html += '<td style="text-align:left;">' + (e.district || '') + '</td>'
-        html += '<td style="text-align:left;">'
-        if (e.ownerType === 'ig') {
-            var color = '#44b88f'
-            var tag = 'Corp'
-            if (
-                e.owner === 'Families' || e.owner === 'Edges' || e.owner === 'Sharks'
-            ) {
-                color = '#cf6e19'
-                tag = 'Syndicate'
-            }
-            html += '<span style="color:' + color + ';">' + e.owner + '</span> (' + tag + ')'
-        } else if (e.ownerType === 'public') {
-            var forLabel = e.housingFor
-                ? (ECONOMIC_STRATUM_LABELS[e.housingFor] || e.housingFor)
-                : 'general'
-            html += 'City (' + forLabel + ' housing)'
-        } else {
-            html += (ECONOMIC_STRATUM_LABELS[e.owner] || e.owner) + ' (stratum)'
-        }
-        html += '</td><td style="text-align:left;">' + economicAssetStatusLabel(e) + '</td></tr>'
-    }
-
-    html += '</table>'
-    html += '<p style="font-size:0.85em;margin:0.35em 0 0 0;">'
-    html += rows.length + ' sites registered.</p>'
-    return html
-}
-
 Q.ensureEconomicAssets = ensureEconomicAssets
 Q.addAsset = addAsset
 Q.addHome = addHome
 Q.initEconomicAssets = initEconomicAssets
-Q.formatEconomicAssetsReportHtml = formatEconomicAssetsReportHtml
 Q.formatEconomicAssetsReportText = formatEconomicAssetsReportText
-Q.updateJacobsAssetsReport = updateJacobsAssetsReport
+Q.formatEconomicAssetsReportHtml = formatEconomicAssetsReportHtml
 Q.renderEconomicAssetsReport = renderEconomicAssetsReport
+Q.updateJacobsAssetsReport = updateJacobsAssetsReport
+Q.applyEconomicAssetProsperity = applyEconomicAssetProsperity
+Q.topUpStratumHomesToTarget = topUpStratumHomesToTarget
+Q.applyHousingShortfallProsperity = applyHousingShortfallProsperity
+Q.redistributeBlockHousingSurplus = redistributeBlockHousingSurplus
+Q.seedStarterEconomicAssets = seedStarterEconomicAssets
 
 if (typeof Q.initEconomicAssets === 'function') { Q.initEconomicAssets() }
+if (typeof updateJacobsAssetsReport === 'function') { updateJacobsAssetsReport() }
 economic_assets_runtime_ready = 1
 
 !}
-go-to: root.after_economic_assets_runtime
+go-to: jumpScene

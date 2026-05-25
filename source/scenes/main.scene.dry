@@ -1,6 +1,7 @@
 title: Main
 set-bg: img/solar_system.jpg
 is-hand: true
+new-page: true
 max-cards: 3
 
 #Here, the main deck will be displayed. Clicking on the deck draws a card into your hand. Clicking on a card activates that card.
@@ -9,21 +10,6 @@ max-cards: 3
 - @govt
 - @advance
 - #advisor
-
-
-@main_easy
-set-bg: img/solar_system.jpg
-is-hand: true
-max-cards: 4
-
-#Here, the main deck will be displayed. Clicking on the deck draws a card into your hand. Clicking on a card activates that card.
-
-- @party
-- @govt
-- @advance
-- #advisor
-
-
 
 @party
 title: Party Affairs

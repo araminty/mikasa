@@ -5,8 +5,11 @@
  * Usage:
  *   node scripts/simulate-election.js              # v1 (legacy voter-block model)
  *   node scripts/simulate-election.js --v2       # v2 (IG floor + competitive)
+ *   node scripts/simulate-election.js --v2 --from-scene  # load election_runtime.scene.dry (preferred)
  *   node scripts/simulate-election.js --v2 --scenario democratic_awakening
  *   node scripts/simulate-election.js --json
+ *
+ * Game logic edits belong in source/scenes/*.scene.dry, not source/lib/*.js.
  */
 
 const path = require('path')

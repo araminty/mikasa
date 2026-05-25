@@ -79,33 +79,33 @@ const DISTRICT_STARTING_PROSPERITY = {
     Pitts: 0.5,
 }
 
-/** Population in 10,000s per district × stratum (sync with election-world-data.js). */
+/** Population in 10,000s per district × stratum (authoritative; mirror to election-world-data.js for Node CLI). */
 const DISTRICT_POPULATIONS = {
     Docks: {
-        rich: 17, first: 42, second: 30, coop: 1, drone: 11, alien: 1, deeper: 1,
+        rich: 17, first: 42, second: 30, coop: 3, drone: 11, alien: 1, deeper: 1,
         third_wave: 1,
     },
     Aurora: {
-        rich: 0, first: 58, second: 57, coop: 1, drone: 2, alien: 9, deeper: 3,
+        rich: 0, first: 58, second: 57, coop: 61, drone: 2, alien: 9, deeper: 3,
     },
     Vats: {
-        rich: 1, first: 8, second: 11, coop: 1, drone: 48, alien: 0, deeper: 1,
+        rich: 1, first: 8, second: 11, coop: 11, drone: 48, alien: 0, deeper: 1,
     },
     Railyard: {
-        rich: 0, first: 12, second: 10, coop: 1, drone: 52, alien: 0, deeper: 1,
+        rich: 0, first: 12, second: 10, coop: 12, drone: 52, alien: 0, deeper: 1,
     },
     Pitts: {
-        rich: 0, first: 28, second: 71, coop: 1, drone: 2, alien: 0, deeper: 1,
+        rich: 0, first: 28, second: 71, coop: 15, drone: 2, alien: 0, deeper: 1,
     },
     Limelight: {
-        rich: 1, first: 19, second: 22, coop: 1, drone: 55, alien: 0, deeper: 1,
+        rich: 1, first: 19, second: 22, coop: 11, drone: 55, alien: 0, deeper: 1,
     },
     Deeps: {
         rich: 1, first: 24, second: 17, coop: 3, drone: 1, alien: 1, deeper: 166,
     },
 }
 
-/** National IG membership share per stratum (sync with election-world-data.js). */
+/** National IG membership share per stratum (authoritative; mirror to election-world-data.js for Node CLI). */
 const IG_MEMBERSHIP_BY_STRATUM = {
     Soylent: {
         rich: 0.08, first: 0.02, second: 0.01, drone: 0.22,
@@ -1268,4 +1268,4 @@ Q.runScheduledElections = function(opts) {
 election_runtime_ready = 1
 
 !}
-go-to: root.after_election_runtime
+go-to: jumpScene
