@@ -2,12 +2,12 @@ title: The political situation
 priority: 1
 max-visits: 1
 tags: event
-view-if: year >=2300 and month > 3
 on-arrival: organizing_unlock = 1; phase = 1;
-go-to: organize_phase_tick
 
-The city government in Mikasa only holds substantial power in one district: the Aurora district.  The "big 3" corporations run their home districts as fiefs.  The ganglands of the old mine district are run by the syndicates to the extent they are run at all.  The wealth Docks are controlled by a patchwork of private security forces. And finally the isolationist Deepers are intent on keeping the government out of the Deeps.
+The city government in Mikasa only holds substantial power in one section of the city: the Aurora district.  The "big 3" corporations run their home districts as fiefs.  The ganglands of the Pitts (the original mining district) are run by the syndicates to the extent they are run at all.  The wealthy Docks are controlled by a patchwork of private security forces. And finally the isolationist Deepers are stubbornly resistant to keep any and all influences of the city out.
 
 The Aurora district holds the old capital building from which the Aurora Bank used to run Mikasa before it's sudden disappearance.  It's still nominally the government of the whole city but it's half abandoned due to both lack of funds and lack of need.  If we want to bring real democracy to Mikasa, we need to find cultivate a power base.
 
 The local Aurora district council operates out of the same building and has elements of genuine democratic power.
+
+- @return

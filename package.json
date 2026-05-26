@@ -10,7 +10,8 @@
     "serve:dev": "node scripts/serve-dev.js",
     "lint:dendry": "node scripts/lint-dendry.js",
     "simulate-election": "node scripts/simulate-election.js",
-    "simulate-election:v2": "node scripts/simulate-election.js --v2"
+    "simulate-election:v2": "node scripts/simulate-election.js --v2",
+    "simulate-prosperity": "node scripts/simulate-prosperity-months.js"
   },
   "repository": {
     "type": "git",

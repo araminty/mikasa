@@ -16,6 +16,10 @@ var ECONOMIC_API = [
     'updateJacobsAssetsReport',
     'ensureEconomicAssets',
 ]
+var ATTITUDE_API = [
+    'attitude',
+    'syncIgAttitudes',
+]
 
 function setupApiMissing(names) {
     for (var i = 0; i < names.length; i++) {
@@ -27,6 +31,7 @@ function setupApiMissing(names) {
 Q.setup_need_election = 0
 Q.setup_need_electorate = 0
 Q.setup_need_economic = 0
+Q.setup_need_attitude = 0
 
 if (setupApiMissing(ELECTION_API) || !Q.electionV2 || !Q.electionV2.blocks) {
     Q.setup_need_election = 1
@@ -40,11 +45,16 @@ if (setupApiMissing(ECONOMIC_API)) {
     Q.setup_need_economic = 1
     Q.economic_assets_runtime_ready = 0
 }
+if (setupApiMissing(ATTITUDE_API)) {
+    Q.setup_need_attitude = 1
+    Q.attitude_runtime_ready = 0
+}
 
 Q.setup_complete = (
     Q.setup_need_election === 0
     && Q.setup_need_electorate === 0
     && Q.setup_need_economic === 0
+    && Q.setup_need_attitude === 0
 ) ? 1 : 0
 
 Q.setup_boot_jump = 0
@@ -65,4 +75,4 @@ if (Q.setup_complete) {
 }
 
 !}
-go-to: jumpScene if setup_boot_jump = 1; election_runtime if setup_need_election = 1; electorate_runtime if setup_need_electorate = 1; economic_assets_runtime if setup_need_economic = 1; jumpScene
+go-to: jumpScene if setup_boot_jump = 1; election_runtime if setup_need_election = 1; electorate_runtime if setup_need_electorate = 1; economic_assets_runtime if setup_need_economic = 1; attitude_runtime if setup_need_attitude = 1; jumpScene

@@ -1,0 +1,62 @@
+title: Attitude runtime
+max-visits: 1
+new-page: false
+on-arrival: {!
+
+// MIKASA_ATTITUDE_RUNTIME_BEGIN
+
+var IG_ATTITUDE_IDS = ['brazos', 'magrail', 'soylent', 'families', 'edges', 'sharks']
+
+var ATTITUDE_CODE = {
+    contempt: 0,
+    wary: 1,
+    transactional: 2,
+    tolerating: 3,
+    hostile: 4,
+    captive: 5,
+    furious: 6,
+}
+
+/** Leverage vs reprisal → relationship label (see img/leverage_reprisal.webp). */
+function attitude(leverage, reprisal) {
+    var L = Number(leverage)
+    var R = Number(reprisal)
+    if (isNaN(L)) { L = 0 }
+    if (isNaN(R)) { R = 0 }
+    if (L + R < 3) { return 'contempt' }
+    if (L > R) {
+        if (L > 18) { return 'captive' }
+        if (L + R > 18) { return 'tolerating' }
+        return 'transactional'
+    }
+    if (R > 18) { return 'furious' }
+    if (L + R > 18) { return 'hostile' }
+    return 'wary'
+}
+
+function attitudeCode(leverage, reprisal) {
+    var label = attitude(leverage, reprisal)
+    var code = ATTITUDE_CODE[label]
+    if (code == null) { return 0 }
+    return code
+}
+
+function syncIgAttitudes() {
+    if (typeof attitude !== 'function') { return }
+    for (var i = 0; i < IG_ATTITUDE_IDS.length; i++) {
+        var ig = IG_ATTITUDE_IDS[i]
+        var L = Q[ig + '_leverage']
+        var R = Q[ig + '_reprisal']
+        Q['attitude_' + ig] = attitudeCode(L, R)
+    }
+}
+
+Q.attitude = attitude
+Q.syncIgAttitudes = syncIgAttitudes
+
+// MIKASA_ATTITUDE_RUNTIME_END
+
+attitude_runtime_ready = 1
+
+!}
+go-to: jumpScene

@@ -12,9 +12,21 @@ Q.poor_money = 1000
 Q.coop_money = 1500
 Q.coop_capital = 10000
 
-const PROSPERITY_BASELINE = 1.0
-const PROSPERITY_CLAMP_MIN = 0.5
-const PROSPERITY_CLAMP_MAX = 1.5
+/** Voter-block prosperity index (election_runtime MIKASA_BLOCK_PROSPERITY_BASE). */
+const PROSPERITY_BLOCK_BASELINE = 6
+/** Corp/syndicate Q.prosperity_* at new game (root @start). */
+const PROSPERITY_IG_START = {
+    Soylent: 10,
+    Magrail: 10,
+    Brazos: 10,
+    Families: 8,
+    Edges: 8,
+    Sharks: 8,
+}
+/** Display scale for stock / syndicate indices (prosperity 10 → baseline ticker). */
+const PROSPERITY_IG_DISPLAY_BASE = 10
+const PROSPERITY_CLAMP_MIN = 0
+const PROSPERITY_CLAMP_MAX = 20
 /**
  * Monthly prosperity bleed between voter blocks (and corps/syndicates on Q).
  * Mirrors ElectorateModifier: catalog rows, optional stackId on Q for card-driven links.
@@ -23,7 +35,7 @@ const PROSPERITY_CLAMP_MAX = 1.5
  *   new ProsperityConnectionModifier(rowId, fromScope, fromTarget, toScope, toTarget, coefficient [, opts])
  * Object: { id, fromScope, fromTarget, toScope, toTarget, coefficient, basis?, self_feedback?, stackId?, activeIf? }
  *
- * basis: 'level' (default) | 'excess' (prosperity − 1.0)
+ * basis: 'level' (default) | 'excess' (prosperity − block baseline, usually 6)
  * self_feedback: true → each destination uses its own prosperity as the source (stratum self-decay)
  * quality scope: fromTarget is a Q quality (e.g. trade_level); signal uses (value − 1) when basis is excess
  */
@@ -70,8 +82,13 @@ class ProsperityConnectionModifier {
 
     basisAmount(value) {
         var v = Number(value)
-        if (isNaN(v)) { v = PROSPERITY_BASELINE }
-        if (this.basis === 'excess') { return v - PROSPERITY_BASELINE }
+        if (isNaN(v)) { v = defaultProsperityForConnection(this) }
+        if (this.basis === 'excess') {
+            if (this.fromScope === 'quality') {
+                return v - 1
+            }
+            return v - PROSPERITY_BLOCK_BASELINE
+        }
         return v
     }
 
@@ -101,21 +118,21 @@ class ProsperityConnectionModifier {
             var pop = b.population
             if (pop <= 0) { continue }
             popSum += pop
-            weighted += pop * (b.prosperity ?? PROSPERITY_BASELINE)
+            weighted += pop * (b.prosperity ?? PROSPERITY_BLOCK_BASELINE)
         }
-        return popSum > 0 ? weighted / popSum : PROSPERITY_BASELINE
+        return popSum > 0 ? weighted / popSum : PROSPERITY_BLOCK_BASELINE
     }
 
     readBroadcastSource(state, q) {
         if (this.fromScope === 'quality') {
             var raw = Number(q[this.fromTarget])
-            if (isNaN(raw)) { raw = PROSPERITY_BASELINE }
+            if (isNaN(raw)) { raw = 1 }
             return this.basisAmount(raw)
         }
         if (this.fromScope === 'ig') {
             var key = this.igProsperityKey(this.fromTarget)
             var igVal = q[key]
-            if (igVal == null) { igVal = PROSPERITY_BASELINE }
+            if (igVal == null) { igVal = igProsperityDefault(this.fromTarget) }
             return this.basisAmount(igVal)
         }
         var blocks = this.blocksMatching(state, this.fromScope, this.fromTarget)
@@ -153,7 +170,7 @@ class ProsperityConnectionModifier {
         if (this.toScope === 'ig') {
             var igKey = this.igProsperityKey(this.toTarget)
             var igVal = q[igKey]
-            if (igVal == null) { igVal = PROSPERITY_BASELINE }
+            if (igVal == null) { igVal = igProsperityDefault(this.toTarget) }
             var igTransfer = this.coefficient * this.basisAmount(igVal) * mult
             if (igTransfer !== 0) {
                 igDeltas[igKey] = (igDeltas[igKey] || 0) + igTransfer
@@ -182,7 +199,330 @@ class ProsperityConnectionModifier {
 }
 
 function clampProsperity(value) {
-    return Math.max(PROSPERITY_CLAMP_MIN, Math.min(PROSPERITY_CLAMP_MAX, value))
+    var lo = Q.prosperityClampMin != null ? Q.prosperityClampMin : PROSPERITY_CLAMP_MIN
+    var hi = Q.prosperityClampMax != null ? Q.prosperityClampMax : PROSPERITY_CLAMP_MAX
+    return Math.max(lo, Math.min(hi, value))
+}
+
+function igProsperityDefault(igId) {
+    if (igId && PROSPERITY_IG_START[igId] != null) {
+        return PROSPERITY_IG_START[igId]
+    }
+    return PROSPERITY_IG_DISPLAY_BASE
+}
+
+function igIdFromProsperityKey(igKey) {
+    var slug = String(igKey || '').replace(/^prosperity_/, '').toLowerCase()
+    for (var name in PROSPERITY_IG_START) {
+        if (!Object.prototype.hasOwnProperty.call(PROSPERITY_IG_START, name)) {
+            continue
+        }
+        if (name.toLowerCase() === slug) { return name }
+    }
+    return null
+}
+
+function defaultProsperityForConnection(mod) {
+    if (!mod) { return PROSPERITY_BLOCK_BASELINE }
+    if (mod.fromScope === 'ig') {
+        return igProsperityDefault(mod.fromTarget)
+    }
+    if (mod.toScope === 'ig') {
+        return igProsperityDefault(mod.toTarget)
+    }
+    return PROSPERITY_BLOCK_BASELINE
+}
+
+function economyQualityExcess(q, qualityKey) {
+    var raw = Number(q[qualityKey])
+    if (isNaN(raw)) { raw = 1 }
+    return raw - 1
+}
+
+/** 2·sourcePop / (sourcePop + targetPop); IG sources use effective pop below. */
+function prosperityTransferMultiplier(sourcePop, targetPop) {
+    var a = Number(sourcePop)
+    var b = Number(targetPop)
+    if (isNaN(a) || isNaN(b) || a <= 0 || b <= 0) { return 0 }
+    return (2 * a) / (a + b)
+}
+
+function prosperityBlocksInDistrict(state, districtId) {
+    if (!state || !state.blocks) { return [] }
+    return state.blocks.filter(function(b) {
+        return b.district.id === districtId && b.population > 0
+    })
+}
+
+function prosperityDistrictTotalPop(state, districtId) {
+    var blocks = prosperityBlocksInDistrict(state, districtId)
+    var sum = 0
+    for (var i = 0; i < blocks.length; i++) {
+        sum += blocks[i].population
+    }
+    return sum
+}
+
+function prosperityIntraMeshCoeff(matrix, fromSid, toSid) {
+    if (!matrix || !fromSid || !toSid || fromSid === toSid) { return 0 }
+    var row = matrix[fromSid]
+    if (!row) { return 0 }
+    var c = row[toSid]
+    if (c == null || c === 0) { return 0 }
+    return Number(c)
+}
+
+
+/** Fixed footprint for corp/syndicate prosperity spill (not district pop). */
+var PROSPERITY_IG_EFFECTIVE_POP = {
+    Soylent: 152,
+    Magrail: 148,
+    Brazos: 146,
+    Families: 44,
+    Edges: 42,
+    Sharks: 41,
+}
+
+var PROSPERITY_DISTRICT_IDS = [
+    'Docks', 'Aurora', 'Vats', 'Railyard', 'Pitts', 'Limelight', 'Deeps',
+]
+
+/**
+ * Within-district: every stratum block → every other stratum block in that district.
+ * Sparse coeffs; missing pair = 0. Same default matrix in all districts unless
+ * Q.prosperityIntraDistrictMesh[districtId] overrides.
+ */
+var PROSPERITY_INTRA_DISTRICT_DEFAULT = {
+    rich: {
+        first: 0.0005, second: 0.0015, coop: 0.0004, drone: 0, alien: 0,
+        deeper: 0, third_wave: 0,
+    },
+    first: {
+        rich: 0.0003, second: 0.002, coop: 0.001, drone: 0.0004, alien: 0,
+        deeper: 0, third_wave: 0,
+    },
+    second: {
+        rich: 0.0004, first: 0.002, coop: 0.0012, drone: 0.0005, alien: 0,
+        deeper: 0, third_wave: 0,
+    },
+    coop: {
+        rich: 0.0003, first: 0.001, second: 0.001, drone: 0.0006, alien: 0,
+        deeper: 0, third_wave: 0,
+    },
+    drone: {
+        rich: 0, first: 0.0003, second: 0.0004, coop: 0.0008, alien: 0,
+        deeper: 0, third_wave: 0,
+    },
+    alien: {
+        rich: 0, first: 0, second: 0, coop: 0, drone: 0, deeper: 0.0004,
+        third_wave: 0,
+    },
+    deeper: {
+        rich: 0, first: 0, second: 0, coop: 0, drone: 0, alien: 0.0004,
+        third_wave: 0,
+    },
+    third_wave: {
+        rich: 0, first: 0.0004, second: 0.0006, coop: 0.0004, drone: 0,
+        alien: 0, deeper: 0,
+    },
+}
+
+/**
+ * IG prosperity → each stratum block in that IG's home district only.
+ * Listed strata with 0 still wired ( no transfer).
+ */
+var PROSPERITY_IG_HOME_DISTRICT_LINKS = [
+    {
+        ig: 'Soylent',
+        district: 'Vats',
+        toStrata: {
+            rich: 0.001, first: 0.001, second: 0.0015, coop: 0.002,
+            drone: 0.009, alien: 0, deeper: 0.0005, third_wave: 0,
+        },
+    },
+    {
+        ig: 'Magrail',
+        district: 'Railyard',
+        toStrata: {
+            rich: 0.001, first: 0.0012, second: 0.001, coop: 0.0035,
+            drone: 0.008, alien: 0, deeper: 0.0005, third_wave: 0,
+        },
+    },
+    {
+        ig: 'Brazos',
+        district: 'Limelight',
+        toStrata: {
+            rich: 0.0012, first: 0.004, second: 0.0015, coop: 0.002,
+            drone: 0.008, alien: 0, deeper: 0.0005, third_wave: 0,
+        },
+    },
+    {
+        ig: 'Families',
+        district: 'Pitts',
+        toStrata: {
+            rich: 0, first: 0.002, second: 0.004, coop: 0.002,
+            drone: 0, alien: 0, deeper: 0.0008, third_wave: 0,
+        },
+    },
+    {
+        ig: 'Edges',
+        district: 'Railyard',
+        toStrata: {
+            rich: 0.0008, first: 0.0025, second: 0.003, coop: 0.0015,
+            drone: 0.0025, alien: 0, deeper: 0.0005, third_wave: 0,
+        },
+    },
+    {
+        ig: 'Sharks',
+        district: 'Deeps',
+        toStrata: {
+            rich: 0.0006, first: 0.001, second: 0.001, coop: 0.0008,
+            drone: 0, alien: 0.003, deeper: 0.005, third_wave: 0,
+        },
+    },
+]
+
+/** All strata wired in Docks trade spill (per-stratum multiplier × base coeff). */
+var PROSPERITY_DOCKS_TRADE_STRATA = {
+    rich: 1.2, first: 1, second: 1, coop: 0.9, drone: 0.8,
+    alien: 0.7, deeper: 0.7, third_wave: 0.8,
+}
+
+/** trade_level excess → every block in Docks (basis: value − 1). */
+var PROSPERITY_DOCKS_TRADE = {
+    district: 'Docks',
+    quality: 'trade_level',
+    coefficient: 0.01,
+    strata: PROSPERITY_DOCKS_TRADE_STRATA,
+}
+
+/** crime_level excess → listed strata in Pitts only. */
+var PROSPERITY_PITTS_CRIME = {
+    district: 'Pitts',
+    quality: 'crime_level',
+    coefficient: -0.012,
+    strata: {
+        first: 1, second: 1, third_wave: 1, coop: 1, deeper: 1, alien: 1,
+    },
+}
+
+function applyDistrictIntraProsperityMesh(state, blockDeltas) {
+    var districts = Q.prosperityDistrictIds || PROSPERITY_DISTRICT_IDS
+    var defaultMesh = Q.prosperityIntraDistrictMeshDefault || PROSPERITY_INTRA_DISTRICT_DEFAULT
+    var perDistrict = Q.prosperityIntraDistrictMesh || null
+
+    for (var d = 0; d < districts.length; d++) {
+        var districtId = districts[d]
+        var matrix = (perDistrict && perDistrict[districtId])
+            ? perDistrict[districtId]
+            : defaultMesh
+        var blocks = prosperityBlocksInDistrict(state, districtId)
+        if (blocks.length < 2) { continue }
+
+        for (var si = 0; si < blocks.length; si++) {
+            var source = blocks[si]
+            var fromSid = source.demographic.id
+            var signal = source.prosperity ?? PROSPERITY_BLOCK_BASELINE
+            for (var ti = 0; ti < blocks.length; ti++) {
+                var target = blocks[ti]
+                if (source.id === target.id) { continue }
+                var coeff = prosperityIntraMeshCoeff(
+                    matrix,
+                    fromSid,
+                    target.demographic.id
+                )
+                if (coeff === 0) { continue }
+                var weight = prosperityTransferMultiplier(
+                    source.population,
+                    target.population
+                )
+                var transfer = coeff * signal * weight
+                if (transfer === 0) { continue }
+                blockDeltas[target.id] = (blockDeltas[target.id] || 0) + transfer
+            }
+        }
+    }
+}
+
+function applyIgHomeDistrictProsperityLinks(state, q, blockDeltas) {
+    var links = Q.prosperityIgHomeDistrictLinks || PROSPERITY_IG_HOME_DISTRICT_LINKS
+    for (var li = 0; li < links.length; li++) {
+        var row = links[li]
+        var igKey = 'prosperity_' + String(row.ig).toLowerCase()
+        var igVal = q[igKey]
+        if (igVal == null) { igVal = igProsperityDefault(row.ig) }
+        var signal = Number(igVal)
+        if (isNaN(signal)) { signal = igProsperityDefault(row.ig) }
+        var sourcePop = PROSPERITY_IG_EFFECTIVE_POP[row.ig]
+        if (sourcePop == null) { sourcePop = 20 }
+        var blocks = prosperityBlocksInDistrict(state, row.district)
+        var toStrata = row.toStrata || {}
+
+        for (var bi = 0; bi < blocks.length; bi++) {
+            var block = blocks[bi]
+            var sid = block.demographic.id
+            if (!Object.prototype.hasOwnProperty.call(toStrata, sid)) {
+                continue
+            }
+            var coeff = Number(toStrata[sid])
+            if (isNaN(coeff) || coeff === 0) { continue }
+            var weight = prosperityTransferMultiplier(sourcePop, block.population)
+            var transfer = coeff * signal * weight
+            if (transfer === 0) { continue }
+            blockDeltas[block.id] = (blockDeltas[block.id] || 0) + transfer
+        }
+    }
+}
+
+function applyDocksTradeProsperityLinks(state, q, blockDeltas) {
+    var spec = Q.prosperityDocksTrade || PROSPERITY_DOCKS_TRADE
+    var excess = economyQualityExcess(q, spec.quality)
+    if (excess === 0) { return }
+    var sourcePop = prosperityDistrictTotalPop(state, spec.district)
+    if (sourcePop <= 0) { return }
+    var blocks = prosperityBlocksInDistrict(state, spec.district)
+    var strataCoeffs = spec.strata || {}
+
+    for (var bi = 0; bi < blocks.length; bi++) {
+        var block = blocks[bi]
+        var sid = block.demographic.id
+        if (!Object.prototype.hasOwnProperty.call(strataCoeffs, sid)) {
+            continue
+        }
+        var strataMult = Number(strataCoeffs[sid])
+        if (isNaN(strataMult) || strataMult === 0) { continue }
+        var coeff = Number(spec.coefficient) * strataMult
+        if (isNaN(coeff) || coeff === 0) { continue }
+        var weight = prosperityTransferMultiplier(sourcePop, block.population)
+        var transfer = coeff * excess * weight
+        if (transfer === 0) { continue }
+        blockDeltas[block.id] = (blockDeltas[block.id] || 0) + transfer
+    }
+}
+
+function applyPittsCrimeProsperityLinks(state, q, blockDeltas) {
+    var spec = Q.prosperityPittsCrime || PROSPERITY_PITTS_CRIME
+    var excess = economyQualityExcess(q, spec.quality)
+    if (excess === 0) { return }
+    var sourcePop = prosperityDistrictTotalPop(state, spec.district)
+    if (sourcePop <= 0) { return }
+    var blocks = prosperityBlocksInDistrict(state, spec.district)
+    var strataCoeffs = spec.strata || {}
+    var baseCoeff = Number(spec.coefficient)
+    if (isNaN(baseCoeff)) { baseCoeff = 0 }
+
+    for (var bi = 0; bi < blocks.length; bi++) {
+        var block = blocks[bi]
+        var sid = block.demographic.id
+        if (!Object.prototype.hasOwnProperty.call(strataCoeffs, sid)) { continue }
+        var strataMult = Number(strataCoeffs[sid])
+        if (isNaN(strataMult) || strataMult === 0) { continue }
+        var coeff = baseCoeff * strataMult
+        var weight = prosperityTransferMultiplier(sourcePop, block.population)
+        var transfer = coeff * excess * weight
+        if (transfer === 0) { continue }
+        blockDeltas[block.id] = (blockDeltas[block.id] || 0) + transfer
+    }
 }
 
 /**
@@ -217,7 +557,7 @@ function applyStratumProsperityBumps() {
             var block = state.blocks[i]
             if (block.demographic.id !== sid) { continue }
             block.prosperity = clampProsperity(
-                (block.prosperity ?? PROSPERITY_BASELINE) + bump
+                (block.prosperity ?? PROSPERITY_BLOCK_BASELINE) + bump
             )
         }
         changed = true
@@ -243,18 +583,27 @@ function applyProsperityConnections() {
         catalog[i].accumulate(state, Q, blockDeltas, igDeltas)
     }
 
+    applyDistrictIntraProsperityMesh(state, blockDeltas)
+    applyIgHomeDistrictProsperityLinks(state, Q, blockDeltas)
+    applyDocksTradeProsperityLinks(state, Q, blockDeltas)
+    applyPittsCrimeProsperityLinks(state, Q, blockDeltas)
+
     for (var b = 0; b < state.blocks.length; b++) {
         var block = state.blocks[b]
         var delta = blockDeltas[block.id]
         if (delta) {
-            block.prosperity = clampProsperity((block.prosperity ?? PROSPERITY_BASELINE) + delta)
+            block.prosperity = clampProsperity(
+                (block.prosperity ?? PROSPERITY_BLOCK_BASELINE) + delta
+            )
         }
     }
 
     for (var igKey in igDeltas) {
         if (!Object.prototype.hasOwnProperty.call(igDeltas, igKey)) { continue }
         var igVal = Q[igKey]
-        if (igVal == null) { igVal = PROSPERITY_BASELINE }
+        if (igVal == null) {
+            igVal = igProsperityDefault(igIdFromProsperityKey(igKey))
+        }
         Q[igKey] = clampProsperity(igVal + igDeltas[igKey])
     }
 
@@ -265,9 +614,8 @@ function applyProsperityConnections() {
 
 Q.ProsperityConnectionModifier = ProsperityConnectionModifier
 
-// id | from | to | coefficient — basis/self_feedback/stackId in opts; tune in economic_tick_planning.md
+// Legacy rows (decay, card stacks). District mesh + home IG + Docks/Pitts: constants above.
 Q.prosperityConnectionCatalog = [
-    // Stratum self-decay: 2% of local level per month
     new ProsperityConnectionModifier('decay_rich', 'stratum', 'rich', 'stratum', 'rich', -0.05, { self_feedback: true }),
     new ProsperityConnectionModifier('decay_first', 'stratum', 'first', 'stratum', 'first', -0.05, { self_feedback: true }),
     new ProsperityConnectionModifier('decay_second', 'stratum', 'second', 'stratum', 'second', -0.105, { self_feedback: true }),
@@ -282,42 +630,69 @@ Q.prosperityConnectionCatalog = [
     new ProsperityConnectionModifier('decay_families', 'ig', 'Families', 'ig', 'Families', -0.02, { self_feedback: true }),
     new ProsperityConnectionModifier('decay_edges', 'ig', 'Edges', 'ig', 'Edges', -0.02, { self_feedback: true }),
     new ProsperityConnectionModifier('decay_sharks', 'ig', 'Sharks', 'ig', 'Sharks', -0.02, { self_feedback: true }),
-    // Corps → strata (broadcast from IG prosperity)
-    new ProsperityConnectionModifier('soylent_to_drone', 'ig', 'Soylent', 'stratum', 'drone', 0.004),
-    new ProsperityConnectionModifier('soylent_to_rich', 'ig', 'Soylent', 'stratum', 'rich', 0.003),
-    new ProsperityConnectionModifier('magrail_to_coop', 'ig', 'Magrail', 'stratum', 'coop', 0.003),
-    new ProsperityConnectionModifier('brazos_to_first', 'ig', 'Brazos', 'stratum', 'first', 0.003),
-    // Syndicate turf → district blocks
-    new ProsperityConnectionModifier('families_to_pitts', 'ig', 'Families', 'district', 'Pitts', 0.008),
-    new ProsperityConnectionModifier('edges_to_railyard', 'ig', 'Edges', 'district', 'Railyard', 0.006),
-    new ProsperityConnectionModifier('sharks_to_deeps', 'ig', 'Sharks', 'district', 'Deeps', 0.006),
-    // Trade lifts Docks; crime drags Pitts (quality → district; excess = value − 1)
-    new ProsperityConnectionModifier('trade_to_docks', 'quality', 'trade_level', 'district', 'Docks', 0.012, { basis: 'excess' }),
-    new ProsperityConnectionModifier('crime_from_pitts', 'quality', 'crime_level', 'district', 'Pitts', -0.01, { basis: 'excess' }),
-    // Modest trickle rich → second (stack-driven cards can add rows with stackId)
-    new ProsperityConnectionModifier('rich_to_second', 'stratum', 'rich', 'stratum', 'second', 0.002),
 ]
 
-/** Internal prosperity (1.0 = baseline). Cards/ticks adjust these; displays derived below. */
+Q.prosperityIntraDistrictMeshDefault = PROSPERITY_INTRA_DISTRICT_DEFAULT
+Q.prosperityIgHomeDistrictLinks = PROSPERITY_IG_HOME_DISTRICT_LINKS
+Q.prosperityDocksTrade = PROSPERITY_DOCKS_TRADE
+Q.prosperityPittsCrime = PROSPERITY_PITTS_CRIME
+Q.prosperityDistrictIds = PROSPERITY_DISTRICT_IDS
+Q.prosperityIgEffectivePop = PROSPERITY_IG_EFFECTIVE_POP
+Q.prosperityBlockBaseline = PROSPERITY_BLOCK_BASELINE
+Q.prosperityIgStart = PROSPERITY_IG_START
+Q.prosperityClampMin = PROSPERITY_CLAMP_MIN
+Q.prosperityClampMax = PROSPERITY_CLAMP_MAX
+
+/** IG prosperity defaults (root @start); block baseline lives in election_runtime. */
 function initEconomyProsperity() {
-    if (Q.prosperity_soylent !== undefined) { return }
-    Q.prosperity_soylent = 1
-    Q.prosperity_magrail = 1
-    Q.prosperity_brazos = 1
-    Q.prosperity_families = 1
-    Q.prosperity_edges = 1
-    Q.prosperity_sharks = 1
+    if (Q.prosperity_soylent == null) {
+        Q.prosperity_soylent = PROSPERITY_IG_START.Soylent
+    }
+    if (Q.prosperity_magrail == null) {
+        Q.prosperity_magrail = PROSPERITY_IG_START.Magrail
+    }
+    if (Q.prosperity_brazos == null) {
+        Q.prosperity_brazos = PROSPERITY_IG_START.Brazos
+    }
+    if (Q.prosperity_families == null) {
+        Q.prosperity_families = PROSPERITY_IG_START.Families
+    }
+    if (Q.prosperity_edges == null) {
+        Q.prosperity_edges = PROSPERITY_IG_START.Edges
+    }
+    if (Q.prosperity_sharks == null) {
+        Q.prosperity_sharks = PROSPERITY_IG_START.Sharks
+    }
 }
 
-/** Map prosperity → Status / Society tab indicators (see economic_tick_planning.md). */
+/** Map IG prosperity → Status tickers (scaled so index 10 ≈ opening quotes). */
 function syncProsperityDisplays() {
     initEconomyProsperity()
-    Q.stock_soylent = Math.round(142.9 * Q.prosperity_soylent * 10) / 10
-    Q.stock_magrail = Math.round(98.8 * Q.prosperity_magrail * 10) / 10
-    Q.stock_brazos = Math.round(201.3 * Q.prosperity_brazos * 10) / 10
-    Q.cloud_9_street_price = Math.round(34.3 * Q.prosperity_families * 10) / 10
-    Q.edges_cyber_insurance_premium = Math.round(280.7 * Q.prosperity_edges * 10) / 10
-    Q.ocular_index = Math.round(89.6 * Q.prosperity_sharks)
+    var scale = PROSPERITY_IG_DISPLAY_BASE
+    var ps = Number(Q.prosperity_soylent)
+    if (!isNaN(ps)) {
+        Q.stock_soylent = Math.round(142.9 * ps / scale * 10) / 10
+    }
+    var pm = Number(Q.prosperity_magrail)
+    if (!isNaN(pm)) {
+        Q.stock_magrail = Math.round(98.8 * pm / scale * 10) / 10
+    }
+    var pb = Number(Q.prosperity_brazos)
+    if (!isNaN(pb)) {
+        Q.stock_brazos = Math.round(201.3 * pb / scale * 10) / 10
+    }
+    var pf = Number(Q.prosperity_families)
+    if (!isNaN(pf)) {
+        Q.cloud_9_street_price = Math.round(34.3 * pf / scale * 10) / 10
+    }
+    var pe = Number(Q.prosperity_edges)
+    if (!isNaN(pe)) {
+        Q.edges_cyber_insurance_premium = Math.round(280.7 * pe / scale * 10) / 10
+    }
+    var pk = Number(Q.prosperity_sharks)
+    if (!isNaN(pk)) {
+        Q.ocular_index = Math.round(89.6 * pk / scale)
+    }
 }
 
 // might want to put some spending inertia into this system later on
@@ -391,12 +766,9 @@ function monthly_tick_phase1() {
     if (typeof Q.applyEconomicAssetProsperity === 'function') {
         Q.applyEconomicAssetProsperity()
     }
-    if (typeof Q.applyHousingShortfallProsperity === 'function') {
-        Q.applyHousingShortfallProsperity()
-    }
     applyProsperityConnections()
-    if (typeof Q.topUpStratumHomesToTarget === 'function') {
-        Q.topUpStratumHomesToTarget()
+    if (typeof Q.processMonthlyHousing === 'function') {
+        Q.processMonthlyHousing()
     }
     syncProsperityDisplays()
 }
@@ -409,5 +781,7 @@ Q.syncProsperityDisplays = syncProsperityDisplays
 initEconomyProsperity()
 if (typeof Q.initEconomicAssets === 'function') { Q.initEconomicAssets() }
 syncProsperityDisplays()
+
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
 
 !}

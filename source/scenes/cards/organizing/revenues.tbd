@@ -1,0 +1,25 @@
+
+City revenue (TBD)
+------------------
+
+Municipal income sources to implement alongside assets, homes, and infrastructure capacity.
+
+Asset taxes
+    Non-exempt owners pay tax on productive assets (offices, factories, workshops, etc.).
+    Tax scales with asset level and monthly output — not a separate upkeep line item.
+
+    When infrastructure demand exceeds Q.infrastructure_capacity, taxed assets stop
+    paying: owners in overloaded districts (or citywide, if demand is aggregated) lose
+    that revenue stream until capacity catches up. Rubble / offline assets already
+    pay nothing.
+
+    The Big Three megacorps are mostly tax-exempt on their holdings; syndicates,
+    cooperatives, first/second-wave neighborhoods, and (eventually) shareholder-rich
+    local capital bear the brunt. That gives the player a reason to prioritize
+    infrastructure in less corporate districts — Aurora, Pitts, Deeps — where asset
+    taxes actually fund the budget.
+
+Other revenue (sketch)
+    Longshore and tourism (see economic_tick_planning.md)
+    Fines, permits, seized assets
+    Refusal-to-pay during infra deficit as a visible budget shock in Status

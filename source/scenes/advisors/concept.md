@@ -1,4 +1,6 @@
-instead of advisor actions, advisors serve as a way to check in on various status.  They each have a toggle condition that will do something beneficial over time at a cost.
+Design sketch — not all passives are implemented. See `source/scenes/advisors/*.scene.dry` for current cards.
+
+Advisors are primarily a way to check in on status. Several have a toggle that applies a passive over time at a cost.
 
 Callista
 Info: AI corruption
@@ -9,8 +11,8 @@ Info: radicalism
 Passive: increase radicalism, alienate corporates
 
 Jacobs
-Info: infrastructure burden
-Passive: economize infrastructure, alienate deepers
+Info: economic holdings (Jacobs survey / holdings report)
+Passive (planned): economize infrastructure, alienate deepers
 
 Sage
 Info: ?

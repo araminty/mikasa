@@ -81,10 +81,12 @@ const DISTRICT_ELECTION_MONTH = {
     Deeps: 8,
 }
 
-/** Starting prosperity for every voter block in the district (1.0 = Mikasa average). */
+/** Starting prosperity for every voter block in the district (6 = Mikasa average). */
+const MIKASA_BLOCK_PROSPERITY_BASE = 6
 const DISTRICT_STARTING_PROSPERITY = {
-    Docks: 1.5,
-    Pitts: 0.5,
+    Docks: 8,
+    Aurora: 7,
+    Pitts: 4,
 }
 
 // --- utilities ----------------------------------------------------------------
@@ -127,7 +129,7 @@ class VoterBlock {
         this.district = district
         this.population = population
         /** Local economic prosperity (1.0 = baseline). */
-        this.prosperity = district.startingProsperity ?? 1
+        this.prosperity = district.startingProsperity ?? MIKASA_BLOCK_PROSPERITY_BASE
         /** Competitive party scores (events modify these). */
         this.competitiveScores = { D: 0, I: 0, C: 0, G: 0, H: 0 }
         /** Fringe=low steepness, mainstream=high. */
@@ -173,7 +175,9 @@ class District {
         this.lowTurnoutGangBonus = config.lowTurnoutGangBonus ?? 0
         this.electionMonth = config.electionMonth ?? 1
         this.startingProsperity =
-            config.startingProsperity ?? DISTRICT_STARTING_PROSPERITY[id] ?? 1
+            config.startingProsperity
+            ?? DISTRICT_STARTING_PROSPERITY[id]
+            ?? MIKASA_BLOCK_PROSPERITY_BASE
     }
 }
 
@@ -814,9 +818,9 @@ function syncStratumProsperityAverages(Q, state) {
             const pop = block.population
             if (pop <= 0) { continue }
             popSum += pop
-            weighted += pop * (block.prosperity ?? 1)
+            weighted += pop * (block.prosperity ?? MIKASA_BLOCK_PROSPERITY_BASE)
         }
-        const avg = popSum > 0 ? weighted / popSum : 1
+        const avg = popSum > 0 ? weighted / popSum : MIKASA_BLOCK_PROSPERITY_BASE
         Q[`prosperity_${sid}`] = Math.round(avg * 100) / 100
     }
 }

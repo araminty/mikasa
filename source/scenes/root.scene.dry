@@ -4,7 +4,7 @@ go-to: start_menu if started = 0; to_setup_functions if started = 1
 on-arrival: {!
 
 // MIKASA_BUILD_STAMP
-Q.build_time_label = '2026-05-25 12:52:09 local';
+Q.build_time_label = '2026-05-26 17:39:07 local';
 // /MIKASA_BUILD_STAMP
 
 if (Q.started && !Q.economic_assets_runtime_ready) {
@@ -64,30 +64,35 @@ Q.use_decimals = 0;
 
 Q.martyrs = [];
 
-Q.government_families_rel = -75;
-Q.government_edges_rel = 10;
-Q.government_sharks_rel = 20;
+Q.soylent_leverage = 1;
+Q.soylent_reprisal = 1;
 
-Q.soylent_families_rel = 20;
-Q.soylent_edges_rel = 0;
-Q.soylent_sharks_rel = 0;
+Q.brazos_leverage = 1;
+Q.brazos_reprisal = 1;
 
-Q.magrail_families_rel = 10;
-Q.magrail_edges_rel = 10;
-Q.magrail_sharks_rel = 10;
+Q.magrail_leverage = 1;
+Q.magrail_reprisal = 1;
 
-Q.brazos_families_rel = 10;
-Q.brazos_edges_rel = -50;
-Q.brazos_sharks_rel = 50;
+Q.families_leverage = 1;
+Q.families_reprisal = 0; // they dont like the gangwar between the others escalating
+
+Q.edges_leverage = 0; // loose canons
+Q.edges_reprisal = 2;
+
+Q.sharks_leverage = 0; // on the warpath
+Q.sharks_reprisal = 0; // busy
 
 Q.election_runtime_ready = 0;
 Q.electorate_runtime_ready = 0;
 Q.economic_assets_runtime_ready = 0;
+Q.attitude_runtime_ready = 0;
 Q.economicNameCatalogReady = 0;
 Q.economicAssetsHomesSeeded = 0;
 Q.corpDroneHousingSeeded = 0;
+Q.housingSlackSeeded = 0;
 Q.economicAssetsStarterSeeded = 0;
 Q.economicAssets = [];
+Q.economicHousingInventory = [];
 Q.setup_complete = 0;
 Q.setup_boot_jump = 0;
 Q.setup_goto_main = 0;
@@ -122,7 +127,7 @@ new-page: false
 go-to: setup_functions
 
 @2300_main_continue
-go-to: main
+go-to: organize_phase_start
 
 = 2300 
 

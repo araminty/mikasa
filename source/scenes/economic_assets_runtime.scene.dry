@@ -6,18 +6,228 @@ on-arrival: {!
 // BEGIN economic-name-catalog (authoritative; source/lib/economic-asset-name-catalog.js is dev reference only)
 function installEconomicNameCatalog(q) {
     const CATALOG = {
+    homes: {
+        first_wave: {
+            japanese: [
+                'Hoshino Lane Flats',
+                'Nishikawa Commons',
+                'Sakuragi Row Apartments',
+                'Tanabe Gravity Tower',
+                'Misaki Row Housing',
+                'Kawaguchi Mutual Hall',
+                'Amano Street Block',
+                'Ishikura Cook Block',
+                'Fujimori Family Housing',
+                'Yamashita Transit Loft',
+                'Okada Court',
+                'Morita Family Block',
+            ],
+            french: [
+                'Belleville Housing Block',
+                'Quai du Nord Apartments',
+                'Montmartre Row Flats',
+                'Saint-Cloud Family Annex',
+                'Rue Lafayette Commons',
+            ],
+            german: [
+                'Neuhausen Row Housing',
+                'Bergmann Lane Collective',
+                'Weissmart Workers Block',
+                'Hafenstraße Tenement Hall',
+            ],
+            italian: [
+                'Via Roma Housing',
+                'Trastevere Row Flats',
+                'Porto Vecchio Family Block',
+                'San Marco Mutual Yard',
+            ],
+            english: [
+                'Station Point Commons',
+                'Pioneer Row Housing',
+                'Cedar Wharf Flats',
+                'North Harbor Family Block',
+            ],
+        },
+
+        second_wave: {
+            swahili: [
+                'Umoja Tower',
+                'Kilimani Cook Commons',
+                'Mtoni Housing Block',
+                'Maji Mazuri Commons',
+                'Amani Block',
+                'Mwangaza Housing Annex',
+            ],
+            south_asian: [
+                'Shanti Row Megaplex',
+                'Bengal Quarter Towers',
+                'Chennai Cook Commons',
+                'Kerala Mutual Hall',
+                'Sundarban Housing Block',
+            ],
+        },
+
+        brazos: {
+            tejano: [
+                'Alamo Row Housing',
+                'Rio Grande Family Flats',
+                'Tejano Norte Rest Court',
+                'Lone Star Workers Block',
+                'Mission Trail Flats',
+                'Gulf Coast Tenement Hall',
+                'San Antonio Row Tower',
+                'El Paso Border Housing',
+                'Corpus Christi Family Block',
+                'Big Bend Relay Court',
+                'Maverick Row Flats',
+                'Lone Star Grande Housing',
+                'Chaparral Rest Hall',
+                'Brazos Bend Workers Block',
+                'Norteño Row Court',
+            ],
+            corporate: [
+                'Limelight Staff Housing Block',
+                'Brazos Employee Rest Center',
+                'Zaibatsu Contract Row',
+                'Omniview Dormitory Node',
+                'Hyperstream Bunk Annex',
+                'TotalShare Sleep Vault',
+                'BrandLoyalty Immersion Dorm',
+                'ConsumerJoy Compliance Barracks',
+                'Brazos Synergy Housing Pavilion',
+                'SponsoredReality Rest Wing',
+                'AdNauseam Workers Block',
+                'ClickHarvest Housing Hub',
+            ],
+        },
+
+        soylent: [
+            'NutriSmile Hub',
+            'Wellness Valley Annex',
+            'Community Grin Facility',
+            'Togetherness Protein Yard',
+            'Friendly Fields Annex',
+            'VitalHarmony Commons',
+            'NurtureNest Commons',
+            'WelcomeHome Protein Center',
+            'WarmHearth Meal Commons',
+            'JoyfulYield Cultivation Block',
+            'OpenArms Meal Forge',
+            'HappyPath Cultivation Vault',
+            'ShareJoy Nutrient Annex',
+            'PureTrust Agrinutrient Hub',
+            'ComfortCrate Refillery',
+        ],
+
+        magrail: [
+            "Heavy Industry Company Housing Block A",
+            "Municipal Rail Executives' Rest Block B",
+            "Rolling Stock Personnel Wash Facility",
+            "Junior Executive Maglev Training Annex",
+            "Executive Wellness Retreat Near the Yards",
+            "Night Shift Canteen and Locker Building",
+            "Temporary Housing for Surplus Contract Labor",
+            "Rail Executives' Country Club Meeting Hall",
+        ],
+
+        deeper: [
+            'Piss Off Valley',
+            'Get Lost Ravine',
+            'Buzz Off Commons',
+            'Clear Out Cut',
+            'Fart in Your Face Boulevard',
+            'Stinky Sock Tunnel',
+            'Yo Mamma Ravine',
+            'Nyah Nyah Gorge',
+            'Loser Town Block',
+            'Nobody Asked You Commons',
+            'We Were Here First Valley',
+            'Eat My Dust Hollow',
+            'Booger Lane Works',
+            'Buttface Heights',
+            'Dégage Gorge',
+            'Hau Ab Works',
+            'Dummkopf Hollow',
+            'Levati Block',
+            'Têtes de Linotte Cut',
+            'Vete Ravine',
+            'Largo Valley',
+            'Sai Fora Gallery',
+            'Rot Op Cut',
+            'Tonto Valley',
+            'Baka Baka Block',
+            'Deteke Gorge',
+            'Nenda Hollow',
+            'Pumbavu Ravine',
+            'Jao Jao Commons',
+            'Wypad Valley',
+            'Stick Your Nose In It Tunnel',
+            'Stupidhead Basin',
+            'Chewy Shoe Substation',
+            'Dingus Valley',
+            'Go Suck an Egg Ravine',
+            'Talk to the Hand Commons',
+            'Tourists Go Home Cut',
+            'Mind Your Own Business Tunnel',
+            'Not In My Tunnel Block',
+            'Smell Ya Later Hollow',
+            'Cry About It Ravine',
+            'Schwachkopf Cut',
+            'Depp Tunnel',
+            'Vollpfosten Ravine',
+            'Hohlkopf Works',
+            'Trottel Commons',
+            'Crétin Canyon',
+            'Balourd Hollow',
+            'Nigaud Valley',
+            'Andouille Gorge',
+            'Nuls des Tunnels Block',
+            'Cretino Works',
+            'Buffone Cut',
+            'Stupido Block',
+            'Fuori dai Piedi Ravine',
+            'Testa di Rapa Hollow',
+            'Gil Valley',
+            'Idiota Hollow',
+            'Maleducado Cut',
+            'Otário Ravine',
+            'Babaca Block',
+            'Zopenco Cut',
+            'Oen Tunnel',
+            'Idioot Cut',
+            'Tåpe Block',
+            'Fjutt Tunnel',
+            'Głupku Valley',
+            'Wynocha Cut',
+            'Debil Commons',
+            'Aho Aho Commons',
+            'Baka Yaro Cut',
+            'Babo Block',
+            'Mjinga Hollow',
+            'Buddhu Ravine',
+            'Ullu ka Pattha Works',
+            'Aptal Valley',
+            'Ilithios Cut',
+            'Durak Hollow',
+            '165-Degree Flip Housing',
+            'Annex This Cut',
+            'Wrong Way Gravity Plaza',
+        ],
+    },
+
+    assets: {
         first_wave: {
             japanese: [
                 'Hoshino Lane Workshop',
-                'Nishikawa Commons',
+                'Nishikawa Maker Annex',
                 'Sakuragi Repair Annex',
                 'Tanabe Gravity Works',
                 'Misaki Row Atelier',
-                'Kawaguchi Mutual Hall',
+                'Kawaguchi Tool Hall',
                 'Amano Street Foundry',
-                'Ishikura Cook Block',
+                'Ishikura Fabrication Block',
                 'Fujimori Tool Collective',
-                'Yamashita Transit Loft',
+                'Yamashita Transit Works',
                 'Okada Maker Yard',
                 'Morita Family Works',
             ],
@@ -32,53 +242,42 @@ function installEconomicNameCatalog(q) {
                 'Weissmart Forge',
                 'Hafenstraße Works',
                 'Neuhausen Tool House',
-                'Bergmann Lane Collective',
+                'Bergmann Lane Machine Shop',
             ],
             italian: [
                 'Via Roma Workshop',
                 'Trastevere Repair Loft',
                 'Porto Vecchio Maker Hall',
-                'San Marco Mutual Yard',
+                'San Marco Fabrication Yard',
             ],
             english: [
                 'Cedar Wharf Studios',
                 'North Harbor Works',
                 'Pioneer Row Atelier',
-                'Station Point Commons',
+                'Station Point Machine Shop',
             ],
         },
-    
+
         second_wave: {
             swahili: [
-                'Umoja Tower',
-                'Kilimani Cook Commons',
-                'Mtoni Housing Block',
                 'Harambee Maker Yard',
                 'Bahari Street Workshop',
                 'Kijito Repair Hall',
                 'Safari Row Collective',
-                'Maji Mazuri Commons',
                 'Twende Lane Works',
-                'Amani Block',
                 'Jua Kali Foundry',
-                'Mwangaza Housing Annex',
             ],
             south_asian: [
                 'Anand Yard',
-                'Shanti Row Megaplex',
                 'Ganesh Industrial Annex',
-                'Bengal Quarter Towers',
-                'Chennai Cook Commons',
                 'Delhi Gate Workshop',
-                'Kerala Mutual Hall',
                 'Lahore Street Works',
                 'Mumbai Lane Repair Loft',
-                'Sundarban Housing Block',
                 'Tamil Square Atelier',
                 'Vijayanagar Maker Collective',
             ],
         },
-    
+
         brazos: {
             tejano: [
                 'Alamo HouseDraft Pavilion',
@@ -120,174 +319,60 @@ function installEconomicNameCatalog(q) {
                 'Zaibatsu Optics Laboratory',
             ],
         },
-    
+
         soylent: [
-            'NutriSmile Hub',
-            'Wellness Valley Annex',
             'Harmony Acres Processing',
-            'Community Grin Facility',
             'FreshStart Silo Complex',
-            'Togetherness Protein Yard',
             'BrightBowl Catering Vault',
             'Wholesome Reach Center',
             'CareCircle Nutrient Works',
             'Sunrise Assurance Plant',
-            'Friendly Fields Annex',
-            'VitalHarmony Commons',
             'KindBite Distribution Center',
             'WeCare Protein Annex',
             'TogetherToday Silo Complex',
             'SmileSync Nutrient Works',
             'Heartfelt Harvest Facility',
             'GentleGrain Assurance Plant',
-            'NurtureNest Commons',
-            'HappyPath Cultivation Vault',
-            'OpenArms Meal Forge',
-            'PureTrust Agrinutrient Hub',
             'BloomTogether Processing Yard',
-            'ComfortCrate Refillery',
             'ThriveMate Catering Complex',
-            'ShareJoy Nutrient Annex',
-            'WelcomeHome Protein Center',
             'TrustBite Assurance Silo',
-            'WarmHearth Meal Commons',
-            'JoyfulYield Cultivation Block',
         ],
-    
+
         magrail: [
-            "Heavy Industry Company Housing Block A",
-            "Freight Consolidation Point No. 4",
-            "Municipal Rail Executives' Rest Block B",
-            "Privatized Grain Transfer Elevator",
-            "District Utility Relay Substation",
-            "Corporate Unity Marshalling Hall",
-            "Fiscal Year-End Brake Testing Facility",
-            "Tether Approach Sorting Shed",
-            "Block 7 Refrigerated Siding Complex",
-            "Rolling Stock Personnel Wash Facility",
-            "Junior Executive Maglev Training Annex",
-            "Board of Directors Siding Office",
-            "Cold Storage Transfer Depot",
-            "Track Maintenance Contractor Equipment Shed",
-            "Inter-District Freight Accounting Center",
-            "Executive Wellness Retreat Near the Yards",
-            "Agribusiness Produce Loading Ramp",
-            "Manifest Verification Office",
-            "Building 12 Gauge Conversion Workshop",
-            "Night Shift Canteen and Locker Building",
-            "Authorized Personnel Only Crossing Gate",
-            "Hump Yard Operations Bunker",
-            "Capitalist Competition Scoreboard Pavilion",
-            "Rail Executives' Country Club Meeting Hall",
-            "Temporary Housing for Surplus Contract Labor",
-            "Intermodal Transfer Platform No. 2",
-            "Corporate Security Freight Inspection Booth",
-            "Mandatory Productivity Overtime Assembly Point",
-            "Executive Committee Supply Distribution Shed",
-            "Brake Van Repair Subsidiary No. 3",
+            'Freight Consolidation Point No. 4',
+            'Privatized Grain Transfer Elevator',
+            'District Utility Relay Substation',
+            'Corporate Unity Marshalling Hall',
+            'Fiscal Year-End Brake Testing Facility',
+            'Tether Approach Sorting Shed',
+            'Block 7 Refrigerated Siding Complex',
+            'Board of Directors Siding Office',
+            'Cold Storage Transfer Depot',
+            'Track Maintenance Contractor Equipment Shed',
+            'Inter-District Freight Accounting Center',
+            'Agribusiness Produce Loading Ramp',
+            'Manifest Verification Office',
+            'Building 12 Gauge Conversion Workshop',
+            'Authorized Personnel Only Crossing Gate',
+            'Hump Yard Operations Bunker',
+            'Capitalist Competition Scoreboard Pavilion',
+            'Intermodal Transfer Platform No. 2',
+            'Corporate Security Freight Inspection Booth',
+            'Mandatory Productivity Overtime Assembly Point',
+            'Executive Committee Supply Distribution Shed',
+            'Brake Van Repair Subsidiary No. 3',
         ],
-    
+
         deeper: [
-            // English — dismissive
-            'Piss Off Valley',
-            'Get Lost Ravine',
-            'Buzz Off Commons',
-            'Clear Out Cut',
-            // English — childish / gross / mocking
-            'Fart in Your Face Boulevard',
-            'Stinky Sock Tunnel',
-            'Yo Mamma Ravine',
-            'Nyah Nyah Gorge',
-            'Loser Town Block',
-            'Nobody Asked You Commons',
-            'We Were Here First Valley',
-            'Eat My Dust Hollow',
-            'Booger Lane Works',
-            'Buttface Heights',
-            // French / German / Italian
-            'Dégage Gorge',
-            'Hau Ab Works',
-            'Dummkopf Hollow',
-            'Levati Block',
-            'Têtes de Linotte Cut',
-            // Spanish / Portuguese / Dutch
-            'Vete Ravine',
-            'Largo Valley',
-            'Sai Fora Gallery',
-            'Rot Op Cut',
-            'Tonto Valley',
-            // Japanese / Swahili / Hindi (romanized)
-            'Baka Baka Block',
-            'Deteke Gorge',
-            'Nenda Hollow',
-            'Pumbavu Ravine',
-            'Jao Jao Commons',
-            // Polish / absurdist
-            'Wypad Valley',
-            'Stick Your Nose In It Tunnel',
-            // More English childish
-            'Stupidhead Basin',
-            'Chewy Shoe Substation',
-            'Dingus Valley',
-            'Go Suck an Egg Ravine',
-            'Talk to the Hand Commons',
-            'Tourists Go Home Cut',
-            'Mind Your Own Business Tunnel',
-            'Not In My Tunnel Block',
-            'Smell Ya Later Hollow',
-            'Cry About It Ravine',
-            // German
-            'Schwachkopf Cut',
-            'Depp Tunnel',
-            'Vollpfosten Ravine',
-            'Hohlkopf Works',
-            'Trottel Commons',
-            // French
-            'Crétin Canyon',
-            'Balourd Hollow',
-            'Nigaud Valley',
-            'Andouille Gorge',
-            'Nuls des Tunnels Block',
-            // Italian
-            'Cretino Works',
-            'Buffone Cut',
-            'Stupido Block',
-            'Fuori dai Piedi Ravine',
-            'Testa di Rapa Hollow',
-            // Spanish / Portuguese
-            'Gil Valley',
-            'Idiota Hollow',
-            'Maleducado Cut',
-            'Otário Ravine',
-            'Babaca Block',
-            'Zopenco Cut',
-            // Dutch / Scandinavian
-            'Oen Tunnel',
-            'Idioot Cut',
-            'Tåpe Block',
-            'Fjutt Tunnel',
-            // Polish / Czech-ish
-            'Głupku Valley',
-            'Wynocha Cut',
-            'Debil Commons',
-            // Japanese / Korean / Swahili / Hindi
-            'Aho Aho Commons',
-            'Baka Yaro Cut',
-            'Babo Block',
-            'Mjinga Hollow',
-            'Buddhu Ravine',
-            'Ullu ka Pattha Works',
-            // Turkish / Greek / Russian (romanized)
-            'Aptal Valley',
-            'Ilithios Cut',
-            'Durak Hollow',
-            // Deeps lore
-            '165-Degree Flip Housing',
-            'Annex This Cut',
-            'Wrong Way Gravity Plaza',
+            'Ty Malá Opice Inc.',
+            'Nobody Cares Workshop',
+            'Go Away Fabrication Shed',
+            'Mind Yer Business Yard',
+            'Cul Collective'
         ],
-    }
-    
+    },
+}
+
     /** @type {Record<string, number>} */
     const FIRST_WAVE_WEIGHTS = {
         japanese: 50,
@@ -296,7 +381,11 @@ function installEconomicNameCatalog(q) {
         italian: 12,
         english: 12,
     }
-    
+
+    function catalogKind(isHome) {
+        return isHome ? 'homes' : 'assets'
+    }
+
     function hashSeed(seed) {
         var s = String(seed == null ? '' : seed)
         var h = 0
@@ -306,13 +395,13 @@ function installEconomicNameCatalog(q) {
         }
         return Math.abs(h)
     }
-    
+
     function pick(pool, seed) {
         if (!pool || !pool.length) { return '' }
         var idx = hashSeed(seed) % pool.length
         return pool[idx]
     }
-    
+
     function pickWeighted(buckets, seed) {
         var total = 0
         for (var i = 0; i < buckets.length; i++) {
@@ -328,107 +417,109 @@ function installEconomicNameCatalog(q) {
         }
         return pick(buckets[buckets.length - 1].pool, seed)
     }
-    
-    function pickFirstWave(seed) {
+
+    function pickFirstWave(seed, isHome) {
+        var wave = CATALOG[catalogKind(isHome)].first_wave
         var buckets = []
         for (var key in FIRST_WAVE_WEIGHTS) {
             if (!Object.prototype.hasOwnProperty.call(FIRST_WAVE_WEIGHTS, key)) { continue }
             buckets.push({
                 weight: FIRST_WAVE_WEIGHTS[key],
-                pool: CATALOG.first_wave[key],
+                pool: wave[key],
             })
         }
         return pickWeighted(buckets, 'first:' + seed)
     }
-    
-    function pickSecondWave(seed) {
+
+    function pickSecondWave(seed, isHome) {
+        var wave = CATALOG[catalogKind(isHome)].second_wave
         return pickWeighted([
-            { weight: 50, pool: CATALOG.second_wave.swahili },
-            { weight: 50, pool: CATALOG.second_wave.south_asian },
+            { weight: 50, pool: wave.swahili },
+            { weight: 50, pool: wave.south_asian },
         ], 'second:' + seed)
     }
-    
-    /** Cooperatives: even mix of first-wave and second-wave naming. */
-    function pickCoop(seed) {
+
+    function pickCoop(seed, isHome) {
         if (hashSeed('coop-branch:' + seed) % 2 === 0) {
-            return pickFirstWave('coop:' + seed)
+            return pickFirstWave('coop:' + seed, isHome)
         }
-        return pickSecondWave('coop:' + seed)
+        return pickSecondWave('coop:' + seed, isHome)
     }
-    
-    function pickBrazos(seed) {
+
+    function pickBrazos(seed, isHome) {
+        var b = CATALOG[catalogKind(isHome)].brazos
         return pickWeighted([
-            { weight: 45, pool: CATALOG.brazos.tejano },
-            { weight: 55, pool: CATALOG.brazos.corporate },
+            { weight: 45, pool: b.tejano },
+            { weight: 55, pool: b.corporate },
         ], 'brazos:' + seed)
     }
-    
-    function pickSoylent(seed) {
-        return pick(CATALOG.soylent, 'soylent:' + seed)
+
+    function pickSoylent(seed, isHome) {
+        return pick(CATALOG[catalogKind(isHome)].soylent, 'soylent:' + seed)
     }
-    
-    function pickMagrail(seed) {
-        return pick(CATALOG.magrail, 'magrail:' + seed)
+
+    function pickMagrail(seed, isHome) {
+        return pick(CATALOG[catalogKind(isHome)].magrail, 'magrail:' + seed)
     }
-    
-    function pickDeeper(seed) {
-        return pick(CATALOG.deeper, 'deeper:' + seed)
+
+    function pickDeeper(seed, isHome) {
+        var pool = CATALOG[catalogKind(isHome)].deeper
+        var name = pick(pool, 'deeper:' + seed)
+        if (!name && !isHome) {
+            return pick(CATALOG.homes.deeper, 'deeper:' + seed)
+        }
+        return name
     }
-    
-    /** Third wave: migrant mix of first + second (+ smatter of corp utilitarian). */
-    function pickThirdWave(seed) {
+
+    function pickThirdWave(seed, isHome) {
+        var kind = catalogKind(isHome)
+        var fw = CATALOG[kind].first_wave
+        var sw = CATALOG[kind].second_wave
         return pickWeighted([
-            { weight: 28, pool: CATALOG.first_wave.japanese },
-            { weight: 8, pool: CATALOG.first_wave.french },
-            { weight: 8, pool: CATALOG.first_wave.german },
-            { weight: 7, pool: CATALOG.first_wave.italian },
-            { weight: 7, pool: CATALOG.first_wave.english },
-            { weight: 22, pool: CATALOG.second_wave.swahili },
-            { weight: 15, pool: CATALOG.second_wave.south_asian },
-            { weight: 5, pool: CATALOG.magrail },
+            { weight: 28, pool: fw.japanese },
+            { weight: 8, pool: fw.french },
+            { weight: 8, pool: fw.german },
+            { weight: 7, pool: fw.italian },
+            { weight: 7, pool: fw.english },
+            { weight: 22, pool: sw.swahili },
+            { weight: 15, pool: sw.south_asian },
+            { weight: 5, pool: CATALOG[kind].magrail },
         ], 'third:' + seed)
     }
-    
-    /** Rich / shareholder local capital: megacorp naming tones blended. */
-    function pickRich(seed) {
+
+    function pickRich(seed, isHome) {
+        var kind = catalogKind(isHome)
         return pickWeighted([
-            { weight: 30, pool: CATALOG.soylent },
-            { weight: 30, pool: CATALOG.brazos.corporate },
-            { weight: 25, pool: CATALOG.magrail },
-            { weight: 15, pool: CATALOG.brazos.tejano },
+            { weight: 30, pool: CATALOG[kind].soylent },
+            { weight: 30, pool: CATALOG[kind].brazos.corporate },
+            { weight: 25, pool: CATALOG[kind].magrail },
+            { weight: 15, pool: CATALOG[kind].brazos.tejano },
         ], 'rich:' + seed)
     }
-    
-    /**
-     * Pick a display name for an owner.
-     * @param {object} opts
-     * @param {'ig'|'stratum'|'public'} opts.ownerType
-     * @param {string} opts.owner — Soylent | Magrail | Brazos | first | second | third_wave | rich | …
-     * @param {string} [opts.id] — stable id for seeding
-     * @param {boolean} [opts.isHome]
-     */
+
     function pickOwnerDisplayName(opts) {
         opts = opts || {}
         var owner = String(opts.owner || '')
-        var seed = opts.id || (owner + '_' + (opts.district || '') + '_' + (opts.isHome ? 'home' : 'asset'))
-    
+        var isHome = !!opts.isHome
+        var seed = opts.id || (owner + '_' + (opts.district || '') + '_' + (isHome ? 'home' : 'asset'))
+
         if (opts.ownerType === 'ig') {
-            if (owner === 'Soylent') { return pickSoylent(seed) }
-            if (owner === 'Magrail') { return pickMagrail(seed) }
-            if (owner === 'Brazos') { return pickBrazos(seed) }
+            if (owner === 'Soylent') { return pickSoylent(seed, isHome) }
+            if (owner === 'Magrail') { return pickMagrail(seed, isHome) }
+            if (owner === 'Brazos') { return pickBrazos(seed, isHome) }
             return pick(owner.toLowerCase(), seed) || owner + ' Facility'
         }
-    
-        if (owner === 'first') { return pickFirstWave(seed) }
-        if (owner === 'second') { return pickSecondWave(seed) }
-        if (owner === 'third_wave') { return pickThirdWave(seed) }
-        if (owner === 'rich') { return pickRich(seed) }
-        if (owner === 'deeper') { return pickDeeper(seed) }
-        if (owner === 'coop') { return pickCoop(seed) }
-    
-        return pickThirdWave(seed)
+
+        if (owner === 'first') { return pickFirstWave(seed, isHome) }
+        if (owner === 'second') { return pickSecondWave(seed, isHome) }
+        if (owner === 'third_wave') { return pickThirdWave(seed, isHome) }
+        if (owner === 'rich') { return pickRich(seed, isHome) }
+        if (owner === 'deeper') { return pickDeeper(seed, isHome) }
+        if (owner === 'coop') { return pickCoop(seed, isHome) }
+
+        return pickThirdWave(seed, isHome)
     }
-    
+
     q.pickOwnerDisplayName = pickOwnerDisplayName
 }
 // END economic-name-catalog
@@ -441,8 +532,8 @@ function ensureEconomicAssets() {
 /** Monthly prosperity bump per site (homes do not contribute). */
 var ECONOMIC_PROSPERITY_HOME_DELTA = 0
 var ECONOMIC_PROSPERITY_ASSET_DELTA = 0.1
-var ECONOMIC_PROSPERITY_BLOCK_CLAMP_MIN = 0.5
-var ECONOMIC_PROSPERITY_BLOCK_CLAMP_MAX = 1.5
+var ECONOMIC_PROSPERITY_BLOCK_CLAMP_MIN = 0
+var ECONOMIC_PROSPERITY_BLOCK_CLAMP_MAX = 20
 
 /** Home turf per corp / syndicate (election weights + prosperity connection districts). */
 var IG_HOME_DISTRICT = {
@@ -469,10 +560,13 @@ var STARTER_ECONOMIC_ASSET_BATCHES = [
 ]
 
 function clampEconomicBlockProsperity(value) {
-    return Math.max(
-        ECONOMIC_PROSPERITY_BLOCK_CLAMP_MIN,
-        Math.min(ECONOMIC_PROSPERITY_BLOCK_CLAMP_MAX, value)
-    )
+    var lo = Q.prosperityClampMin != null
+        ? Q.prosperityClampMin
+        : ECONOMIC_PROSPERITY_BLOCK_CLAMP_MIN
+    var hi = Q.prosperityClampMax != null
+        ? Q.prosperityClampMax
+        : ECONOMIC_PROSPERITY_BLOCK_CLAMP_MAX
+    return Math.max(lo, Math.min(hi, value))
 }
 
 function economicProsperityDeltaForEntry(entry) {
@@ -546,29 +640,28 @@ function homesRequiredForPopulation(popInTenThousands) {
     return Math.ceil(pop / 10)
 }
 
-/**
- * Init seed target = floor(required × 1.2) — ~20% headroom at new game.
- * Mikasa's population is still recovering from its nadir, so the housing stock
- * seeded at start runs above today's headcount (monthly top-up uses 105% instead).
- * Penalty uses required only (operational homes vs ceil(pop/10)).
- */
-function homesTargetForPopulation(popInTenThousands) {
-    var required = homesRequiredForPopulation(popInTenThousands)
-    if (required <= 0) { return 0 }
-    return Math.floor(required * 1.2)
+/** Max owned homes (listed + unoccupied counter) = ceil(need × 1.1). */
+function homesBuildCapForNeed(needUnits) {
+    var n = Number(needUnits)
+    if (isNaN(n) || n <= 0) { return 0 }
+    return Math.ceil(n * 1.1)
 }
 
-/** Monthly top-up cap = 105% of required homes (rounded up). */
-function homesTopUpCapForPopulation(popInTenThousands) {
-    var required = homesRequiredForPopulation(popInTenThousands)
-    if (required <= 0) { return 0 }
-    return Math.ceil(required * 1.05)
+/** Listed occupied cap; surplus becomes unoccupied (not in asset lists). */
+function homesOccupiedCapForNeed(needUnits) {
+    var n = Number(needUnits)
+    if (isNaN(n) || n <= 0) { return 0 }
+    return Math.floor(n)
 }
 
-var HOUSING_SHORTFALL_PENALTY_PER_MISSING_FRACTION = 2.0
-/** Penalty runs only if operational gap is > 2, or gap > 0 with 2+ destroyed homes. */
-var HOUSING_SHORTFALL_APPLY_ABOVE = 2
-var HOUSING_SHORTFALL_DESTROYED_THRESHOLD = 2
+var HOUSING_SQM_PER_HOME = 10000
+var HOUSING_TAX_BASE_PER_HOME = 0.1
+/** District share of 0.1 budget/home (Aurora 50% → 0.05/home at prosperity 1). */
+var HOUSING_TAX_DISTRICT_MULTIPLIER = {
+    Docks: 0.1,
+    Pitts: 0.1,
+    Aurora: 0.5,
+}
 
 /** Deficit blocks filled in district order; phase-3 lenders use this stratum order. */
 var HOUSING_BORROW_DISTRICT_ORDER = [
@@ -681,32 +774,42 @@ function buildDroneDistrictPopulations(state) {
     return byDistrict
 }
 
-/** Home district: full drone need; elsewhere: one dorm per corp per district. */
+/** Big Three dormitories only in each corp's home district (drone pop basis). */
 function seedCorpDroneHousing(state) {
     if (Q.corpDroneHousingSeeded) { return }
     if (!state || !state.blocks || typeof Q.pickOwnerDisplayName !== 'function') {
         return
     }
     ensureEconomicAssets()
+    purgeCorpDroneHomesOutsideHomeDistricts()
     var droneByDistrict = buildDroneDistrictPopulations(state)
 
     for (var ci = 0; ci < CORP_DRONE_HOUSING_IGS.length; ci++) {
         var corp = CORP_DRONE_HOUSING_IGS[ci]
         var homeDist = IG_HOME_DISTRICT[corp]
-        var homeNeed = homesRequiredForPopulation(droneByDistrict[homeDist] || 0)
+        var homeNeed = homesOccupiedCapForNeed(
+            homesRequiredForPopulation(droneByDistrict[homeDist] || 0)
+        )
         ensureCorpDroneHomesInDistrict(corp, homeDist, homeNeed)
-
-        for (var di = 0; di < HOUSING_BORROW_DISTRICT_ORDER.length; di++) {
-            var dist = HOUSING_BORROW_DISTRICT_ORDER[di]
-            if (dist === homeDist) { continue }
-            var id = 'corp_drone_' + corp + '_' + dist + '_0'
-            if (!hasEconomicAssetId(id)) {
-                addCorpDroneHome(corp, dist, id)
-            }
-        }
     }
 
     Q.corpDroneHousingSeeded = 1
+}
+
+function purgeCorpDroneHomesOutsideHomeDistricts() {
+    ensureEconomicAssets()
+    var kept = []
+    for (var i = 0; i < Q.economicAssets.length; i++) {
+        var e = Q.economicAssets[i]
+        if (!isCorpDroneHousing(e)) {
+            kept.push(e)
+            continue
+        }
+        if (e.district === IG_HOME_DISTRICT[e.owner]) {
+            kept.push(e)
+        }
+    }
+    Q.economicAssets = kept
 }
 
 function corpDronePoolLendRoom(pool) {
@@ -788,10 +891,215 @@ function countStratumHousing(assets, stratumId) {
     return { total: total, operational: operational, destroyed: destroyed }
 }
 
-function housingShortfallRuleApplies(operationalShortfall, destroyedHomes) {
-    if (operationalShortfall <= 0) { return false }
-    if (operationalShortfall > HOUSING_SHORTFALL_APPLY_ABOVE) { return true }
-    return destroyedHomes >= HOUSING_SHORTFALL_DESTROYED_THRESHOLD
+function ensureHousingInventory() {
+    if (!Q.economicHousingInventory) { Q.economicHousingInventory = {} }
+}
+
+function housingInventoryKey(ownerType, owner, district) {
+    return ownerType + ':' + owner + ':' + district
+}
+
+function getHousingInventorySlot(key) {
+    ensureHousingInventory()
+    if (!Q.economicHousingInventory[key]) {
+        Q.economicHousingInventory[key] = { total: 0, unoccupied: 0 }
+    }
+    return Q.economicHousingInventory[key]
+}
+
+/** Housing stock counts (listed economic + slack) to three decimal places. */
+function roundHousingUnits(value) {
+    var n = Number(value)
+    if (isNaN(n)) { return 0 }
+    return Math.round(n * 1000) / 1000
+}
+
+function normalizeHousingSlot(slot) {
+    if (!slot) { return }
+    slot.unoccupied = roundHousingUnits(slot.unoccupied || 0)
+    slot.total = roundHousingUnits(slot.total || 0)
+    if (slot.total < slot.unoccupied) {
+        slot.unoccupied = slot.total
+    }
+}
+
+function roundAllHousingInventory() {
+    ensureHousingInventory()
+    var inv = Q.economicHousingInventory || {}
+    for (var key in inv) {
+        if (!Object.prototype.hasOwnProperty.call(inv, key)) { continue }
+        normalizeHousingSlot(inv[key])
+    }
+}
+
+function housingBucketListedEconomic(slot) {
+    if (!slot) { return 0 }
+    return roundHousingUnits(Math.max(0, (slot.total || 0) - (slot.unoccupied || 0)))
+}
+
+function ensureBucketHousingTotals(bucket) {
+    var key = housingInventoryKey(bucket.ownerType, bucket.owner, bucket.district)
+    var slot = getHousingInventorySlot(key)
+    var regListed = countListedHomesForBucket(bucket)
+    if (slot.total == null || isNaN(Number(slot.total))) {
+        slot.total = roundHousingUnits(regListed + (slot.unoccupied || 0))
+    } else if (slot.total + 0.0005 < regListed + (slot.unoccupied || 0)) {
+        slot.total = roundHousingUnits(
+            Math.max(slot.total, regListed + (slot.unoccupied || 0))
+        )
+    }
+    normalizeHousingSlot(slot)
+    return slot
+}
+
+/** Add registry sites when economic listed (fractional) crosses the next whole home. */
+function syncListedRegistryHomesForBucket(bucket, slot) {
+    var economicListed = housingBucketListedEconomic(slot)
+    var reg = countListedHomesForBucket(bucket)
+    var need = bucket.required + bucket.lent
+    var occupiedCap = homesOccupiedCapForNeed(need)
+    while (reg < Math.ceil(economicListed - 1e-9) && reg < occupiedCap) {
+        addListedHomeForBucket(bucket)
+        reg += 1
+    }
+}
+
+/** Initial slack = occupied homes × 2 × prosperity × 1% (three decimal places). */
+function initialHousingSlackUnits(listedHomes, prosperity) {
+    var listed = Number(listedHomes)
+    var p = Number(prosperity)
+    if (isNaN(listed) || isNaN(p) || listed <= 0 || p <= 0) { return 0 }
+    return roundHousingUnits(listed * 2 * p * 0.01)
+}
+
+function seedHousingSlotSlack(ownerType, owner, district, listed, prosperity) {
+    var slack = initialHousingSlackUnits(listed, prosperity)
+    var slot = getHousingInventorySlot(
+        housingInventoryKey(ownerType, owner, district)
+    )
+    slot.unoccupied = slack
+    slot.total = roundHousingUnits(listed + slack)
+    normalizeHousingSlot(slot)
+}
+
+function startingProsperityForStratumDistrict(state, stratumId, districtId) {
+    if (!state || !state.blocks) { return 6 }
+    for (var bi = 0; bi < state.blocks.length; bi++) {
+        var block = state.blocks[bi]
+        if (block.demographic.id !== stratumId) { continue }
+        if (block.district.id !== districtId) { continue }
+        var pros = block.prosperity
+        if (pros != null && !isNaN(Number(pros))) { return Number(pros) }
+        return block.district.startingProsperity ?? 6
+    }
+    return 6
+}
+
+/** One-time: slack after occupied homes exist — listed × 2 × prosperity × 1%. */
+function seedInitialHousingSlack(state) {
+    if (Q.housingSlackSeeded) { return }
+    ensureHousingInventory()
+    ensureEconomicAssets()
+
+    if (state && state.blocks) {
+        var ledger = buildBlockHousingLedger(state)
+        var stratumBuckets = summarizeStratumDistrictBuckets(ledger, state)
+        for (var sk in stratumBuckets) {
+            if (!Object.prototype.hasOwnProperty.call(stratumBuckets, sk)) {
+                continue
+            }
+            var sb = stratumBuckets[sk]
+            var listed = countListedHomesForBucket(sb)
+            var pros = startingProsperityForStratumDistrict(
+                state,
+                sb.owner,
+                sb.district
+            )
+            seedHousingSlotSlack('stratum', sb.owner, sb.district, listed, pros)
+        }
+
+        var corpBuckets = summarizeCorpHomeDistrictBuckets(ledger, state)
+        for (var ck in corpBuckets) {
+            if (!Object.prototype.hasOwnProperty.call(corpBuckets, ck)) {
+                continue
+            }
+            var cb = corpBuckets[ck]
+            var corpListed = countListedHomesForBucket(cb)
+            seedHousingSlotSlack(
+                'ig',
+                cb.owner,
+                cb.district,
+                corpListed,
+                ownerProsperityForHousing('ig', cb.owner)
+            )
+        }
+    }
+
+    var assets = Q.economicAssets || []
+    var publicListed = {}
+    for (var ai = 0; ai < assets.length; ai++) {
+        var e = assets[ai]
+        if (!e.countsAsHome || e.ownerType !== 'public') { continue }
+        var pkey = housingInventoryKey('public', e.owner, e.district)
+        publicListed[pkey] = (publicListed[pkey] || 0) + 1
+    }
+    for (var pk in publicListed) {
+        if (!Object.prototype.hasOwnProperty.call(publicListed, pk)) { continue }
+        var parts = pk.split(':')
+        seedHousingSlotSlack(
+            'public',
+            parts[1],
+            parts[2],
+            publicListed[pk],
+            ownerProsperityForHousing('public', 'city', null)
+        )
+    }
+
+    for (var si = 0; si < assets.length; si++) {
+        var home = assets[si]
+        if (!home.countsAsHome || home.ownerType !== 'stratum') { continue }
+        var skey = housingInventoryKey('stratum', home.owner, home.district)
+        var sslot = getHousingInventorySlot(skey)
+        if (sslot.total != null && !isNaN(Number(sslot.total))) { continue }
+        var sListed = countStratumHousingInDistrict(
+            assets,
+            home.owner,
+            home.district
+        ).operational
+        seedHousingSlotSlack(
+            'stratum',
+            home.owner,
+            home.district,
+            sListed,
+            ownerProsperityForHousing('stratum', home.owner)
+        )
+    }
+
+    roundAllHousingInventory()
+    Q.housingSlackSeeded = 1
+}
+
+function ownerProsperityForHousing(ownerType, owner, housingFor) {
+    if (ownerType === 'public') {
+        return 1
+    }
+    if (ownerType === 'ig') {
+        var igKey = 'prosperity_' + String(owner).toLowerCase()
+        var v = Q[igKey]
+        if (v == null || isNaN(Number(v))) { return 6 }
+        return Number(v)
+    }
+    var sk = 'prosperity_' + String(owner)
+    var sv = Q[sk]
+    if (sv == null || isNaN(Number(sv))) { return 6 }
+    return Number(sv)
+}
+
+function monthlyHomesBuildRate(prosperity, popInTenThousands) {
+    var p = Number(prosperity)
+    var pop = Number(popInTenThousands)
+    if (isNaN(p) || isNaN(pop) || pop <= 0 || p <= 0) { return 0 }
+    return roundHousingUnits((p / 10) * pop)
 }
 
 function nextStratumHomeId(stratum, district) {
@@ -860,24 +1168,6 @@ function placeStratumHomesInDistricts(stratum, districtPops, count) {
     return placed
 }
 
-/** Init seed: operational homes toward 120% of required (recovery-era oversupply). */
-function ensureStratumHomesAtTarget(stratum, districtPops) {
-    var totalPop = 0
-    for (var dk in districtPops) {
-        if (Object.prototype.hasOwnProperty.call(districtPops, dk)) {
-            totalPop += districtPops[dk]
-        }
-    }
-    if (totalPop <= 0) { return 0 }
-
-    ensureEconomicAssets()
-    var target = homesTargetForPopulation(totalPop)
-    var housing = countStratumHousing(Q.economicAssets, stratum)
-    var toPlace = target - housing.operational
-    if (toPlace <= 0) { return 0 }
-    return placeStratumHomesInDistricts(stratum, districtPops, toPlace)
-}
-
 function buildStratumDistrictPopulations(state) {
     var byStratumDistrict = {}
     if (!state || !state.blocks) { return byStratumDistrict }
@@ -890,46 +1180,6 @@ function buildStratumDistrictPopulations(state) {
         byStratumDistrict[sid][did] = (byStratumDistrict[sid][did] || 0) + block.population
     }
     return byStratumDistrict
-}
-
-/**
- * Monthly top-up (after prosperity): add ceil(half the gap to 105% cap).
- * gap = homesTopUpCap − operational; new homes = ceil(gap / 2).
- */
-function topUpStratumHomesMonthly(stratum, districtPops) {
-    var totalPop = 0
-    for (var dk in districtPops) {
-        if (Object.prototype.hasOwnProperty.call(districtPops, dk)) {
-            totalPop += districtPops[dk]
-        }
-    }
-    if (totalPop <= 0) { return 0 }
-
-    ensureEconomicAssets()
-    var cap = homesTopUpCapForPopulation(totalPop)
-    var housing = countStratumHousing(Q.economicAssets, stratum)
-    var gap = cap - housing.operational
-    if (gap <= 0) { return 0 }
-    var toPlace = Math.ceil(gap / 2)
-    if (toPlace <= 0) { return 0 }
-    return placeStratumHomesInDistricts(stratum, districtPops, toPlace)
-}
-
-/** Monthly: partial home build after all prosperity steps. */
-function topUpStratumHomesToTarget() {
-    var state = Q.electionV2
-    if (!state || !state.blocks) { return false }
-    var byStratumDistrict = buildStratumDistrictPopulations(state)
-    var changed = false
-    for (var si = 0; si < ECONOMIC_HOME_STRATA.length; si++) {
-        var stratum = ECONOMIC_HOME_STRATA[si]
-        var districtPops = byStratumDistrict[stratum]
-        if (!districtPops) { continue }
-        if (topUpStratumHomesMonthly(stratum, districtPops) > 0) {
-            changed = true
-        }
-    }
-    return changed
 }
 
 function countBlockHousing(assets, districtId, stratumId) {
@@ -1075,46 +1325,362 @@ function redistributeBlockHousingSurplus(state) {
     return entries
 }
 
-/**
- * Per VoterBlock: borrow surplus first, then prosperity −= 2 × (fraction missing).
- * Applies only when gap > 2 operational homes, or gap > 0 with ≥ 2 destroyed homes (block).
- */
-function applyHousingShortfallProsperity() {
-    var state = Q.electionV2
-    if (!state || !state.blocks) { return false }
-    ensureEconomicAssets()
-    var ledger = redistributeBlockHousingSurplus(state)
-    if (!ledger || !ledger.length) { return false }
+function summarizeStratumDistrictBuckets(ledger, state) {
+    var buckets = {}
+    for (var i = 0; i < ledger.length; i++) {
+        var e = ledger[i]
+        if (ECONOMIC_HOME_STRATA.indexOf(e.stratum) < 0) { continue }
+        var key = housingInventoryKey('stratum', e.stratum, e.district)
+        if (!buckets[key]) {
+            buckets[key] = {
+                ownerType: 'stratum',
+                owner: e.stratum,
+                district: e.district,
+                required: 0,
+                lent: 0,
+                pop: 0,
+                destroyed: 0,
+            }
+        }
+        var b = buckets[key]
+        b.required += e.required
+        b.lent += e.lent
+        b.destroyed += e.destroyed
+    }
+    if (state && state.blocks) {
+        for (var bi = 0; bi < state.blocks.length; bi++) {
+            var block = state.blocks[bi]
+            var sid = block.demographic.id
+            if (ECONOMIC_HOME_STRATA.indexOf(sid) < 0) { continue }
+            var key = housingInventoryKey('stratum', sid, block.district.id)
+            if (!buckets[key]) { continue }
+            buckets[key].pop += block.population
+        }
+    }
+    return buckets
+}
 
+function summarizeCorpHomeDistrictBuckets(ledger, state) {
+    var buckets = {}
+    var droneByDistrict = buildDroneDistrictPopulations(state)
+    for (var ci = 0; ci < CORP_DRONE_HOUSING_IGS.length; ci++) {
+        var corp = CORP_DRONE_HOUSING_IGS[ci]
+        var homeDist = IG_HOME_DISTRICT[corp]
+        var key = housingInventoryKey('ig', corp, homeDist)
+        var required = homesRequiredForPopulation(droneByDistrict[homeDist] || 0)
+        var lent = 0
+        var destroyed = 0
+        for (var i = 0; i < ledger.length; i++) {
+            var e = ledger[i]
+            if (e.district !== homeDist || e.stratum !== 'drone') { continue }
+            lent += e.borrowed
+            destroyed += e.destroyed
+        }
+        var h = countCorpDroneHousingInDistrict(
+            Q.economicAssets || [],
+            corp,
+            homeDist
+        )
+        destroyed = Math.max(destroyed, h.destroyed)
+        lent = Math.max(lent, 0)
+        buckets[key] = {
+            ownerType: 'ig',
+            owner: corp,
+            district: homeDist,
+            required: required,
+            lent: lent,
+            pop: droneByDistrict[homeDist] || 0,
+            destroyed: destroyed,
+            housingFor: 'drone',
+        }
+    }
+    return buckets
+}
+
+function countListedHomesForBucket(bucket) {
+    if (bucket.ownerType === 'ig') {
+        return countCorpDroneHousingInDistrict(
+            Q.economicAssets,
+            bucket.owner,
+            bucket.district
+        ).operational
+    }
+    return countStratumHousingInDistrict(
+        Q.economicAssets,
+        bucket.owner,
+        bucket.district
+    ).operational
+}
+
+function countStratumHousingInDistrict(assets, stratumId, districtId) {
+    var operational = 0
+    var destroyed = 0
+    for (var i = 0; i < assets.length; i++) {
+        var e = assets[i]
+        if (e.district !== districtId) { continue }
+        if (!economicHomeServesStratum(e, stratumId)) { continue }
+        if (isEconomicHomeOperational(e)) {
+            operational += 1
+        } else {
+            destroyed += 1
+        }
+    }
+    return { operational: operational, destroyed: destroyed }
+}
+
+function removeOneListedHomeFromBucket(bucket) {
+    ensureEconomicAssets()
+    for (var i = Q.economicAssets.length - 1; i >= 0; i--) {
+        var e = Q.economicAssets[i]
+        if (e.district !== bucket.district) { continue }
+        if (bucket.ownerType === 'ig') {
+            if (!isCorpDroneHousing(e) || e.owner !== bucket.owner) { continue }
+        } else if (!economicHomeServesStratum(e, bucket.owner)) {
+            continue
+        }
+        Q.economicAssets.splice(i, 1)
+        return true
+    }
+    return false
+}
+
+function addListedHomeForBucket(bucket) {
+    if (typeof Q.pickOwnerDisplayName !== 'function') { return }
+    if (bucket.ownerType === 'ig') {
+        var id = nextCorpDroneHomeId(bucket.owner, bucket.district)
+        addCorpDroneHome(bucket.owner, bucket.district, id)
+        return
+    }
+    var homeId = nextStratumHomeId(bucket.owner, bucket.district)
+    addHome({
+        id: homeId,
+        name: Q.pickOwnerDisplayName({
+            ownerType: 'stratum',
+            owner: bucket.owner,
+            district: bucket.district,
+            id: homeId,
+            isHome: true,
+        }),
+        district: bucket.district,
+        ownerType: 'stratum',
+        owner: bucket.owner,
+        major: false,
+    })
+}
+
+function reconcileHousingBucket(bucket) {
+    var need = bucket.required + bucket.lent
+    var occupiedCap = homesOccupiedCapForNeed(need)
+    var maxTotal = homesBuildCapForNeed(need)
+    var slot = ensureBucketHousingTotals(bucket)
+    var listed = housingBucketListedEconomic(slot)
+    var unoccupied = slot.unoccupied || 0
+    var total = slot.total || 0
+
+    if (total > maxTotal) {
+        var trim = roundHousingUnits(total - maxTotal)
+        unoccupied = roundHousingUnits(Math.max(0, unoccupied - trim))
+        total = maxTotal
+        slot.total = total
+        slot.unoccupied = unoccupied
+        listed = housingBucketListedEconomic(slot)
+    }
+
+    if (listed > occupiedCap) {
+        var shift = roundHousingUnits(listed - occupiedCap)
+        slot.unoccupied = roundHousingUnits(slot.unoccupied + shift)
+        slot.total = roundHousingUnits(occupiedCap + slot.unoccupied)
+        listed = housingBucketListedEconomic(slot)
+        unoccupied = slot.unoccupied
+        total = slot.total
+    }
+
+    var reg = countListedHomesForBucket(bucket)
+    while (reg > Math.ceil(housingBucketListedEconomic(slot) + 1e-9) && reg > 0) {
+        if (removeOneListedHomeFromBucket(bucket)) {
+            reg -= 1
+        } else {
+            break
+        }
+    }
+    syncListedRegistryHomesForBucket(bucket, slot)
+    normalizeHousingSlot(slot)
+    return {
+        listed: housingBucketListedEconomic(slot),
+        unoccupied: slot.unoccupied,
+        need: need,
+        maxTotal: maxTotal,
+    }
+}
+
+function buildHomesForBucket(bucket) {
+    var need = bucket.required + bucket.lent
+    var occupiedCap = homesOccupiedCapForNeed(need)
+    var maxTotal = homesBuildCapForNeed(need)
+    var prosperity = ownerProsperityForHousing(bucket.ownerType, bucket.owner)
+    var toBuild = monthlyHomesBuildRate(prosperity, bucket.pop)
+    if (toBuild <= 0) { return 0 }
+
+    var slot = ensureBucketHousingTotals(bucket)
+    var listed = housingBucketListedEconomic(slot)
+    var total = slot.total || 0
+    var unoccupied = slot.unoccupied || 0
+    var room = roundHousingUnits(maxTotal - total)
+    if (room <= 0) { return 0 }
+
+    var add = roundHousingUnits(Math.min(toBuild, room))
+    if (add <= 0) { return 0 }
+
+    var needListed = Math.max(0, occupiedCap - listed)
+    var toListed = roundHousingUnits(Math.min(add, needListed))
+    var toUnocc = roundHousingUnits(add - toListed)
+
+    slot.total = roundHousingUnits(total + add)
+    slot.unoccupied = roundHousingUnits(unoccupied + toUnocc)
+    normalizeHousingSlot(slot)
+    syncListedRegistryHomesForBucket(bucket, slot)
+    return add
+}
+
+function countCitywideHomesForStratum(stratumId) {
+    ensureEconomicAssets()
+    ensureHousingInventory()
+    var total = 0
+    var prefix = 'stratum:' + stratumId + ':'
+    var inv = Q.economicHousingInventory || {}
+    var hasSlot = {}
+    for (var slotKey in inv) {
+        if (!Object.prototype.hasOwnProperty.call(inv, slotKey)) { continue }
+        if (slotKey.indexOf(prefix) !== 0) { continue }
+        hasSlot[slotKey] = true
+        var slot = inv[slotKey]
+        if (slot.total != null && !isNaN(Number(slot.total))) {
+            total += roundHousingUnits(slot.total)
+        } else {
+            total += roundHousingUnits(slot.unoccupied || 0)
+        }
+    }
+    var assets = Q.economicAssets || []
+    for (var i = 0; i < assets.length; i++) {
+        var e = assets[i]
+        if (!e.countsAsHome || !economicHomeServesStratum(e, stratumId)) { continue }
+        var key = housingInventoryKey('stratum', stratumId, e.district)
+        if (hasSlot[key]) { continue }
+        if (isEconomicHomeOperational(e)) {
+            total += 1
+        }
+    }
+    return roundHousingUnits(total)
+}
+
+/** Per destroyed home: prosperity −= 1 / citywide homes owned by that stratum. */
+function applyDestroyedHomeProsperity(state, ledger) {
+    if (!state || !state.blocks || !ledger) { return false }
     var byBlockId = {}
     for (var i = 0; i < ledger.length; i++) {
         byBlockId[ledger[i].blockId] = ledger[i]
     }
-
     var changed = false
     for (var b = 0; b < state.blocks.length; b++) {
         var block = state.blocks[b]
         var entry = byBlockId[block.id]
-        if (!entry || entry.required <= 0) { continue }
-
-        var operationalShortfall = blockHousingDeficit(entry)
-        if (!housingShortfallRuleApplies(operationalShortfall, entry.destroyed)) {
-            continue
-        }
-
-        var fractionMissing = operationalShortfall / entry.required
-        if (fractionMissing > 1) { fractionMissing = 1 }
-        var penalty = -HOUSING_SHORTFALL_PENALTY_PER_MISSING_FRACTION * fractionMissing
+        if (!entry || entry.destroyed <= 0) { continue }
+        var sid = block.demographic.id
+        var ownedCitywide = countCitywideHomesForStratum(sid)
+        if (ownedCitywide <= 0) { ownedCitywide = 1 }
+        var perHome = 1 / ownedCitywide
+        var penalty = -perHome * entry.destroyed
         block.prosperity = clampEconomicBlockProsperity(
-            (block.prosperity ?? 1) + penalty
+            (block.prosperity ?? 6) + penalty
         )
         changed = true
     }
-
     if (changed && typeof Q.qified_block_prosperity === 'function') {
         Q.qified_block_prosperity()
     }
     return changed
+}
+
+function applyHousingTaxRevenue() {
+    ensureEconomicAssets()
+    ensureHousingInventory()
+    var revenue = 0
+    var assets = Q.economicAssets || []
+
+    for (var i = 0; i < assets.length; i++) {
+        var e = assets[i]
+        if (!e.countsAsHome || !isEconomicHomeOperational(e)) { continue }
+        var district = e.district
+        var mult = HOUSING_TAX_DISTRICT_MULTIPLIER[district]
+        if (mult == null || mult <= 0) { continue }
+        var ownerPros = ownerProsperityForHousing(
+            e.ownerType,
+            e.owner,
+            e.housingFor
+        )
+        revenue += HOUSING_TAX_BASE_PER_HOME * mult * ownerPros
+    }
+
+    Q.monthly_housing_tax = Math.round(revenue * 1000) / 1000
+    if (Q.budget != null && !isNaN(Number(Q.budget))) {
+        Q.budget = Number(Q.budget) + Q.monthly_housing_tax
+    }
+    return revenue > 0
+}
+
+/**
+ * Borrow surplus, destroyed-home prosperity hit, prosperity-scaled builds,
+ * unoccupied counters, housing tax → Q.budget.
+ */
+function processMonthlyHousing() {
+    var state = Q.electionV2
+    if (!state || !state.blocks) { return false }
+    ensureEconomicAssets()
+    ensureHousingInventory()
+
+    var ledger = redistributeBlockHousingSurplus(state)
+    if (!ledger) { return false }
+
+    var changed = applyDestroyedHomeProsperity(state, ledger)
+
+    var stratumBuckets = summarizeStratumDistrictBuckets(ledger, state)
+    for (var sk in stratumBuckets) {
+        if (!Object.prototype.hasOwnProperty.call(stratumBuckets, sk)) { continue }
+        var sb = stratumBuckets[sk]
+        if (buildHomesForBucket(sb) > 0) { changed = true }
+        reconcileHousingBucket(sb)
+    }
+
+    var corpBuckets = summarizeCorpHomeDistrictBuckets(ledger, state)
+    for (var ck in corpBuckets) {
+        if (!Object.prototype.hasOwnProperty.call(corpBuckets, ck)) { continue }
+        var cb = corpBuckets[ck]
+        if (buildHomesForBucket(cb) > 0) { changed = true }
+        reconcileHousingBucket(cb)
+    }
+
+    if (applyHousingTaxRevenue()) { changed = true }
+    roundAllHousingInventory()
+    return changed
+}
+
+function seedStratumHomesToOccupiedCap(state) {
+    if (!state || !state.blocks || typeof Q.pickOwnerDisplayName !== 'function') {
+        return
+    }
+    var ledger = buildBlockHousingLedger(state)
+    var buckets = summarizeStratumDistrictBuckets(ledger, state)
+    for (var key in buckets) {
+        if (!Object.prototype.hasOwnProperty.call(buckets, key)) { continue }
+        var bucket = buckets[key]
+        var cap = homesOccupiedCapForNeed(bucket.required + bucket.lent)
+        var listed = countListedHomesForBucket(bucket)
+        var toPlace = cap - listed
+        if (toPlace <= 0) { continue }
+        var districtPops = {}
+        districtPops[bucket.district] = bucket.pop
+        placeStratumHomesInDistricts(bucket.owner, districtPops, toPlace)
+    }
 }
 
 function hasEconomicAssetId(id) {
@@ -1199,7 +1765,7 @@ function applyEconomicAssetProsperity() {
         var bd = blockDeltas[block.id]
         if (!bd) { continue }
         block.prosperity = clampEconomicBlockProsperity(
-            (block.prosperity ?? 1) + bd
+            (block.prosperity ?? 6) + bd
         )
         changed = true
     }
@@ -1244,14 +1810,9 @@ function initEconomicAssets() {
         return
     }
 
-    var byStratumDistrict = buildStratumDistrictPopulations(state)
-    for (var si = 0; si < ECONOMIC_HOME_STRATA.length; si++) {
-        var stratum = ECONOMIC_HOME_STRATA[si]
-        var districtPops = byStratumDistrict[stratum]
-        if (!districtPops) { continue }
-        ensureStratumHomesAtTarget(stratum, districtPops)
-    }
+    seedStratumHomesToOccupiedCap(state)
     seedCorpDroneHousing(state)
+    seedInitialHousingSlack(state)
     Q.economicAssetsHomesSeeded = 1
     }
     seedStarterEconomicAssets()
@@ -1302,38 +1863,130 @@ function economicAffiliationGroupKey(entry) {
     return 'stratum:' + (entry.owner || '')
 }
 
-/** Count homes and assets per affiliation group (not per site). */
+/** Listed homes × owner prosperity (each home = 10k m² at prosperity 1). */
+function housingSqm10kUnits(homeCount, ownerType, owner, housingFor) {
+    var n = Number(homeCount)
+    if (isNaN(n) || n <= 0) { return 0 }
+    var pros = ownerProsperityForHousing(ownerType, owner, housingFor)
+    return Math.round(n * pros * 10) / 10
+}
+
+/** Unoccupied share of total owned stock (listed + slack counter). */
+function slackCapacityPercent(homeCount, unoccupiedCount) {
+    var listed = Number(homeCount) || 0
+    var unocc = Number(unoccupiedCount) || 0
+    var total = listed + unocc
+    if (total <= 0) { return 0 }
+    return Math.round((1000 * unocc) / total) / 10
+}
+
+function formatSlackCapacityPercent(pct) {
+    if (pct <= 0) { return '0%' }
+    var s = String(pct)
+    if (s.indexOf('.') < 0) { return s + '%' }
+    return s.replace(/\.?0+$/, '') + '%'
+}
+
+function enrichEconomicReportGroup(row) {
+    row.sqm10k = housingSqm10kUnits(
+        row.homes,
+        row.ownerType,
+        row.owner,
+        row.housingFor
+    )
+    row.slackPct = slackCapacityPercent(row.homes, row.unoccupied)
+    row.slackLabel = formatSlackCapacityPercent(row.slackPct)
+    return row
+}
+
+/** Fractional listed homes + slack per affiliation; non-home assets counted separately. */
 function aggregateEconomicAssetsByGroup() {
     ensureEconomicAssets()
+    ensureHousingInventory()
     var assets = Q.economicAssets || []
     var buckets = {}
     var order = []
 
-    for (var i = 0; i < assets.length; i++) {
-        var e = assets[i]
-        var key = economicAffiliationGroupKey(e)
+    function ensureBucket(key, label, ownerType, owner, housingFor) {
         if (!buckets[key]) {
             buckets[key] = {
-                label: affiliationTextPlain(e),
+                label: label,
+                ownerType: ownerType,
+                owner: owner,
+                housingFor: housingFor || null,
                 homes: 0,
+                unoccupied: 0,
                 assets: 0,
             }
             order.push(key)
         }
-        if (e.countsAsHome) {
-            buckets[key].homes += 1
-        } else {
+    }
+
+    for (var i = 0; i < assets.length; i++) {
+        var e = assets[i]
+        var key = economicAffiliationGroupKey(e)
+        ensureBucket(
+            key,
+            affiliationTextPlain(e),
+            e.ownerType,
+            e.owner,
+            e.housingFor
+        )
+        if (!e.countsAsHome) {
             buckets[key].assets += 1
         }
     }
 
+    var inv = Q.economicHousingInventory || {}
+    for (var slotKey in inv) {
+        if (!Object.prototype.hasOwnProperty.call(inv, slotKey)) { continue }
+        var slot = inv[slotKey]
+        normalizeHousingSlot(slot)
+        var listed = housingBucketListedEconomic(slot)
+        var unocc = slot.unoccupied || 0
+        if (listed <= 0 && unocc <= 0) { continue }
+        var parts = slotKey.split(':')
+        if (parts.length < 3) { continue }
+        var ownerType = parts[0]
+        var owner = parts[1]
+        var mock = { ownerType: ownerType, owner: owner }
+        if (ownerType === 'ig') { mock.housingFor = 'drone' }
+        var key = economicAffiliationGroupKey(mock)
+        ensureBucket(
+            key,
+            affiliationTextPlain(mock),
+            ownerType,
+            owner,
+            mock.housingFor
+        )
+        buckets[key].homes = roundHousingUnits((buckets[key].homes || 0) + listed)
+        buckets[key].unoccupied = roundHousingUnits(
+            (buckets[key].unoccupied || 0) + unocc
+        )
+    }
+
+    for (var hi = 0; hi < assets.length; hi++) {
+        var home = assets[hi]
+        if (!home.countsAsHome) { continue }
+        var hkey = economicAffiliationGroupKey(home)
+        if (buckets[hkey] && buckets[hkey].homes > 0) { continue }
+        ensureBucket(
+            hkey,
+            affiliationTextPlain(home),
+            home.ownerType,
+            home.owner,
+            home.housingFor
+        )
+        buckets[hkey].homes += 1
+    }
+
     var rows = []
     for (var j = 0; j < order.length; j++) {
-        rows.push(buckets[order[j]])
+        rows.push(enrichEconomicReportGroup(buckets[order[j]]))
     }
     rows.sort(function(a, b) {
-        var ta = a.homes + a.assets
-        var tb = b.homes + b.assets
+        var ta = a.sqm10k + a.assets
+        var tb = b.sqm10k + b.assets
         if (tb !== ta) { return tb - ta }
         return a.label < b.label ? -1 : (a.label > b.label ? 1 : 0)
     })
@@ -1341,13 +1994,31 @@ function aggregateEconomicAssetsByGroup() {
 }
 
 function economicAssetsReportTotals(groupRows) {
-    var totalHomes = 0
+    var totalSqm10k = 0
+    var totalOwned = 0
+    var totalUnoccupied = 0
     var totalAssets = 0
     for (var i = 0; i < groupRows.length; i++) {
-        totalHomes += groupRows[i].homes
-        totalAssets += groupRows[i].assets
+        var g = groupRows[i]
+        totalSqm10k += g.sqm10k || 0
+        totalOwned += g.homes + (g.unoccupied || 0)
+        totalUnoccupied += g.unoccupied || 0
+        totalAssets += g.assets
     }
-    return { homes: totalHomes, assets: totalAssets, sites: totalHomes + totalAssets }
+    var slackPct = slackCapacityPercent(
+        totalOwned - totalUnoccupied,
+        totalUnoccupied
+    )
+    return {
+        sqm10k: Math.round(totalSqm10k * 10) / 10,
+        unoccupied: totalUnoccupied,
+        slackPct: slackPct,
+        slackLabel: formatSlackCapacityPercent(slackPct),
+        assets: totalAssets,
+        sites: groupRows.reduce(function(n, g) {
+            return n + g.homes + g.assets
+        }, 0),
+    }
 }
 
 /** Plain-text holdings summary (see scheduled_elections election_report pattern). */
@@ -1370,14 +2041,28 @@ function formatEconomicAssetsReportText() {
     var lines = []
     lines.push(
         padEconomicReportField('Demographic', labelWidth)
-        + '  Housing  Assets'
+        + '  '
+        + padEconomicReportField('Occupied', 8)
+        + '  '
+        + padEconomicReportField('Residential', 8)
+        + '  Assets'
+    )
+    lines.push(
+        padEconomicReportField('', labelWidth)
+        + '  '
+        + padEconomicReportField('m² (×10k)', 8)
+        + '  '
+        + padEconomicReportField('Slack cap %', 8)
+        + '  '
     )
     for (var i = 0; i < groups.length; i++) {
         var g = groups[i]
         lines.push(
             padEconomicReportField(g.label, labelWidth)
             + '  '
-            + padEconomicReportField(String(g.homes), 5)
+            + padEconomicReportField(String(g.sqm10k), 8)
+            + '  '
+            + padEconomicReportField(g.slackLabel, 8)
             + '  '
             + String(g.assets)
         )
@@ -1385,12 +2070,14 @@ function formatEconomicAssetsReportText() {
     var totals = economicAssetsReportTotals(groups)
     lines.push('')
     lines.push(
-        totals.homes
-        + ' homes, '
+        totals.sqm10k
+        + ' ×10k m² owned (occupied stock), '
+        + totals.slackLabel
+        + ' slack capacity, '
         + totals.assets
         + ' assets ('
         + totals.sites
-        + ' sites registered).'
+        + ' listed sites).'
     )
     return lines.join('\n')
 }
@@ -1412,21 +2099,23 @@ function formatEconomicAssetsReportHtml() {
 
     var html = '<table style="width:100%;border-collapse:collapse;font-size:0.85em;margin:0.25em 0;">'
     html += '<tr><th style="text-align:left;font-weight:normal;">Demographic</th>'
-    html += '<th style="text-align:right;font-weight:normal;">Housing</th>'
+    html += '<th style="text-align:right;font-weight:normal;">Residential<br>m² (×10k)</th>'
+    html += '<th style="text-align:right;font-weight:normal;">Slack cap.</th>'
     html += '<th style="text-align:right;font-weight:normal;">Assets</th></tr>'
 
     for (var i = 0; i < groups.length; i++) {
         var g = groups[i]
         html += '<tr><td style="text-align:left;">' + g.label + '</td>'
-        html += '<td style="text-align:right;">' + g.homes + '</td>'
+        html += '<td style="text-align:right;">' + g.sqm10k + '</td>'
+        html += '<td style="text-align:right;">' + g.slackLabel + '</td>'
         html += '<td style="text-align:right;">' + g.assets + '</td></tr>'
     }
 
     var totals = economicAssetsReportTotals(groups)
     html += '</table>'
     html += '<p style="font-size:0.85em;margin:0.35em 0 0 0;">'
-    html += totals.homes + ' homes, ' + totals.assets + ' assets ('
-    html += totals.sites + ' sites registered).</p>'
+    html += totals.sqm10k + ' ×10k m² owned, ' + totals.slackLabel + ' slack capacity, '
+    html += totals.assets + ' assets (' + totals.sites + ' listed sites).</p>'
     return html
 }
 
@@ -1488,8 +2177,13 @@ function renderEconomicAssetsReport() {
         var housingTh = document.createElement('th')
         housingTh.style.textAlign = 'right'
         housingTh.style.fontWeight = 'normal'
-        housingTh.textContent = 'Housing'
+        housingTh.innerHTML = 'Residential<br>m² (×10k)'
         header.appendChild(housingTh)
+        var unoccTh = document.createElement('th')
+        unoccTh.style.textAlign = 'right'
+        unoccTh.style.fontWeight = 'normal'
+        unoccTh.textContent = 'Slack cap.'
+        header.appendChild(unoccTh)
         var assetsTh = document.createElement('th')
         assetsTh.style.textAlign = 'right'
         assetsTh.style.fontWeight = 'normal'
@@ -1503,8 +2197,12 @@ function renderEconomicAssetsReport() {
             appendEconomicReportCell(tr, g.label)
             var homesTd = document.createElement('td')
             homesTd.style.textAlign = 'right'
-            homesTd.textContent = String(g.homes)
+            homesTd.textContent = String(g.sqm10k)
             tr.appendChild(homesTd)
+            var unoccTd = document.createElement('td')
+            unoccTd.style.textAlign = 'right'
+            unoccTd.textContent = g.slackLabel
+            tr.appendChild(unoccTd)
             var assetsTd = document.createElement('td')
             assetsTd.style.textAlign = 'right'
             assetsTd.textContent = String(g.assets)
@@ -1519,12 +2217,14 @@ function renderEconomicAssetsReport() {
         foot.style.fontSize = '0.85em'
         foot.style.margin = '0.35em 0 0 0'
         foot.textContent = (
-            totals.homes
-            + ' homes, '
+            totals.sqm10k
+            + ' ×10k m² owned, '
+            + totals.slackLabel
+            + ' slack capacity, '
             + totals.assets
             + ' assets ('
             + totals.sites
-            + ' sites registered).'
+            + ' listed sites).'
         )
         root.appendChild(foot)
         return true
@@ -1554,8 +2254,7 @@ Q.formatEconomicAssetsReportHtml = formatEconomicAssetsReportHtml
 Q.renderEconomicAssetsReport = renderEconomicAssetsReport
 Q.updateJacobsAssetsReport = updateJacobsAssetsReport
 Q.applyEconomicAssetProsperity = applyEconomicAssetProsperity
-Q.topUpStratumHomesToTarget = topUpStratumHomesToTarget
-Q.applyHousingShortfallProsperity = applyHousingShortfallProsperity
+Q.processMonthlyHousing = processMonthlyHousing
 Q.redistributeBlockHousingSurplus = redistributeBlockHousingSurplus
 Q.seedStarterEconomicAssets = seedStarterEconomicAssets
 

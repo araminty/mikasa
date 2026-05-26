@@ -1,7 +1,7 @@
 
-(..0.49999) Desperate
-(0.50..0.7499999) Impoverished
-(0.75..0.949999) Slipping
-(0.95..1.049999) Stable
-(1.05..1.249999) Gaining
-(1.25..) Thriving
+(..2.9999) Desperate
+(3..4.9999) Impoverished
+(5..5.9999) Slipping
+(6..6.9999) Stable
+(7..7.59999) Gaining
+(8..20) Thriving

@@ -13,7 +13,17 @@ title: menu
 - @districts_library: District Descriptions
 - @ai_library: Artificial Intelligence
 - @street_indices_library: Syndicates and Street Indices
+- @faction_attitudes: Faction attitudes
 - @backSpecialScene: Exit library
+
+
+@faction_attitudes
+
+Faction attitudes are a bit different then in the original game.  Whether they like or dislike you is generally irrelevent.  What matters is if they see you as useful/necessary (leverage) and whether you have provoked them and/or they view you as a threat (reprisal).
+
+At the start of the game, the corporations and syndicates will all consider you as unimportant.  If the reprisal or leverage becomes extreme they will be waging war against you or obey you.  In between these, the balance between reprisal and leverage will matter, being hostile close to the boundary with Tolerating is different from them being hostile while you have no leverage at all.
+
+{!<img src="img/leverage_reprisal.webp">!}
 
 @ai_library
 

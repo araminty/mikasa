@@ -1,10 +1,25 @@
 title: Status
 new-page: true
 is-special: true
+on-arrival: {!
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
 
 = Status
 
 [+ month : month +] [+ year +]
+
+= Attitudes towards Democrats
+
+{!<table style="width:100%; border-collapse:collapse; font-size:0.85em; margin:0.25em 0;">!}
+{!<tr><th style="text-align:left; font-weight:normal;">Faction</th><th style="text-align:left;">Stance</th></tr>!}
+{!<tr><td style="text-align:left;">!}{!<span style="color: #44b88f;">Brazos</span>!}{!</td><td style="text-align:left;"><span class="tooltip-text" title="Leverage: !}[+ brazos_leverage +]{!; reprisal: !}[+ brazos_reprisal +]{!">!}[+ attitude_brazos : attitude +]{!</span></td></tr>!}
+{!<tr><td style="text-align:left;">!}{!<span style="color: #44b88f;">Magrail</span>!}{!</td><td style="text-align:left;"><span class="tooltip-text" title="Leverage: !}[+ magrail_leverage +]{!; reprisal: !}[+ magrail_reprisal +]{!">!}[+ attitude_magrail : attitude +]{!</span></td></tr>!}
+{!<tr><td style="text-align:left;">!}{!<span style="color: #44b88f;">Soylent</span>!}{!</td><td style="text-align:left;"><span class="tooltip-text" title="Leverage: !}[+ soylent_leverage +]{!; reprisal: !}[+ soylent_reprisal +]{!">!}[+ attitude_soylent : attitude +]{!</span></td></tr>!}
+{!<tr><td style="text-align:left;">!}{!<span style="color: #cf6e19;">Families</span>!}{!</td><td style="text-align:left;"><span class="tooltip-text" title="Leverage: !}[+ families_leverage +]{!; reprisal: !}[+ families_reprisal +]{!">!}[+ attitude_families : attitude +]{!</span></td></tr>!}
+{!<tr><td style="text-align:left;">!}{!<span style="color: #cf6e19;">Edges</span>!}{!</td><td style="text-align:left;"><span class="tooltip-text" title="Leverage: !}[+ edges_leverage +]{!; reprisal: !}[+ edges_reprisal +]{!">!}[+ attitude_edges : attitude +]{!</span></td></tr>!}
+{!<tr><td style="text-align:left;">!}{!<span style="color: #cf6e19;">Sharks</span>!}{!</td><td style="text-align:left;"><span class="tooltip-text" title="Leverage: !}[+ sharks_leverage +]{!; reprisal: !}[+ sharks_reprisal +]{!">!}[+ attitude_sharks : attitude +]{!</span></td></tr>!}
+{!</table>!}
 
 = Current seats
 
@@ -25,8 +40,11 @@ Council composition from the opening election (January 2300):
 {!<tr><td style="text-align:left;">D7 Deeps</td><td style="text-align:right;">!}[+ Deeps_C +]{!</td><td style="text-align:right;">!}[+ Deeps_G +]{!</td><td style="text-align:right;">!}[+ Deeps_D +]{!</td><td style="text-align:right;">!}[+ Deeps_H +]{!</td><td style="text-align:right;">!}[+ Deeps_I +]{!</td></tr>!}
 {!</table>!}
 
+Budget: [+ budget +]
+
 @politics
 on-arrival: {!
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
 if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
 if (typeof Q.syncStratumProsperityAverages === 'function') { Q.syncStratumProsperityAverages() }
 !}
@@ -45,7 +63,7 @@ Prosperity indicators (higher generally means that faction is doing better):
 
 = Prosperity by class
 
-Citywide average prosperity in each stratum (population-weighted across districts; 1.0 = Mikasa average):
+Citywide average prosperity in each stratum (population-weighted across districts; 6 = Mikasa average):
 
 {!<table style="width:100%; border-collapse:collapse; font-size:0.85em; margin:0.25em 0;">!}
 {!<tr><th style="text-align:left; font-weight:normal;">Stratum</th><th style="text-align:left;">Condition</th></tr>!}
