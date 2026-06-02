@@ -33,6 +33,14 @@
     }
   };
 
+  window.showDistrictMap = function() {
+    if (window.dendryUI.dendryEngine.state.sceneId.startsWith('district_map')) {
+        window.dendryUI.dendryEngine.goToScene('backSpecialScene');
+    } else {
+        window.dendryUI.dendryEngine.goToScene('district_map');
+    }
+  };
+
   window.showMods = function() {
     window.hideOptions();
     if (window.dendryUI.dendryEngine.state.sceneId.startsWith('mod_loader')) {
@@ -107,11 +115,24 @@
   window.enableImages = function() {
       window.dendryUI.show_portraits = true;
       window.dendryUI.saveSettings();
+      if (typeof Q !== 'undefined' && typeof Q.syncDistrictMapVisibility === 'function') {
+          Q.syncDistrictMapVisibility();
+          if (window.dendryUI.dendryEngine.state.sceneId.startsWith('district_map')
+              && typeof Q.initDistrictMap === 'function') {
+              Q.initDistrictMap();
+          }
+      }
   };
 
   window.disableImages = function() {
       window.dendryUI.show_portraits = false;
       window.dendryUI.saveSettings();
+      if (typeof Q !== 'undefined' && typeof Q.destroyDistrictMap === 'function') {
+          Q.destroyDistrictMap();
+      }
+      if (typeof Q !== 'undefined' && typeof Q.syncDistrictMapVisibility === 'function') {
+          Q.syncDistrictMapVisibility();
+      }
   };
 
   window.enableLightMode = function() {
@@ -177,6 +198,10 @@
     }
     if (window.justLoaded) {
         window.justLoaded = false;
+    }
+    if (!scene.startsWith('district_map') && typeof Q !== 'undefined'
+        && typeof Q.destroyDistrictMap === 'function') {
+        Q.destroyDistrictMap();
     }
   };
 

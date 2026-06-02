@@ -1,0 +1,456 @@
+title: District map runtime
+max-visits: 1
+new-page: false
+on-arrival: {!
+
+// MIKASA_DISTRICT_MAP_RUNTIME_BEGIN
+Q.DISTRICT_MAP_SCENE_IDS = [
+  'docks',
+  'aurora',
+  'vats',
+  'railyard',
+  'pitts',
+  'limelight',
+  'deeps',
+]
+
+Q.DISTRICT_MAP_COLORS = [
+  0x142d54,
+  0x1e6b8a,
+  0x2d4a9a,
+  0x176b7a,
+  0x4a5088,
+  0x3a78b0,
+  0x1a4480,
+]
+
+Q._districtMapInstance = null
+
+Q.goToDistrictFromMap = function (index) {
+  var ids = Q.DISTRICT_MAP_SCENE_IDS
+  if (index < 0 || index >= ids.length) return
+  Q.destroyDistrictMap()
+  window.dendryUI.dendryEngine.goToScene(ids[index])
+}
+
+Q.syncDistrictMapVisibility = function () {
+  var widget = document.getElementById('district-map-widget')
+  var showWidget = !!(window.dendryUI && window.dendryUI.show_portraits)
+  if (widget) {
+    widget.style.display = showWidget ? '' : 'none'
+  }
+
+  var content = document.getElementById('content')
+  if (!content) return
+
+  var headings = content.getElementsByTagName('h2')
+  var fallbackHeading = null
+  for (var h = 0; h < headings.length; h++) {
+    if (headings[h].textContent.trim() === 'Choose a district') {
+      fallbackHeading = headings[h]
+      break
+    }
+  }
+  if (fallbackHeading) {
+    fallbackHeading.style.display = showWidget ? 'none' : ''
+  }
+
+  var lists = content.getElementsByClassName('choices')
+  if (!lists.length) return
+  var list = lists[lists.length - 1]
+  var items = list.getElementsByTagName('li')
+  var districtChoiceCount = Q.DISTRICT_MAP_SCENE_IDS ? Q.DISTRICT_MAP_SCENE_IDS.length : 7
+  for (var i = 0; i < items.length; i++) {
+    if (i < districtChoiceCount) {
+      items[i].style.display = showWidget ? 'none' : ''
+    }
+  }
+}
+
+Q.destroyDistrictMap = function () {
+  var inst = Q._districtMapInstance
+  if (!inst) return
+  if (inst.animationId) {
+    cancelAnimationFrame(inst.animationId)
+  }
+  if (inst.renderer && inst.renderer.domElement && inst.renderer.domElement.parentNode) {
+    inst.renderer.domElement.parentNode.removeChild(inst.renderer.domElement)
+  }
+  if (inst.renderer) {
+    inst.renderer.dispose()
+  }
+  if (inst.landscapeGeometry) inst.landscapeGeometry.dispose()
+  for (var i = 0; i < inst.districtGeometries.length; i++) {
+    inst.districtGeometries[i].dispose()
+  }
+  for (var t = 0; t < inst.tubeGeometries.length; t++) {
+    inst.tubeGeometries[t].dispose()
+  }
+  if (inst.landscapeMaterial) inst.landscapeMaterial.dispose()
+  if (inst.tubeMaterial) inst.tubeMaterial.dispose()
+  for (var m = 0; m < inst.districtMaterials.length; m++) {
+    inst.districtMaterials[m].dispose()
+  }
+  Q._districtMapInstance = null
+}
+
+Q.initDistrictMap = function () {
+  if (typeof THREE === 'undefined' || typeof MIKASA_LANDSCAPE_MAP_DATA === 'undefined') {
+    return
+  }
+  Q.syncDistrictMapVisibility()
+  if (!window.dendryUI || !window.dendryUI.show_portraits) {
+    return
+  }
+
+  var host = document.getElementById('district-map-canvas-host')
+  var buttonsHost = document.getElementById('district-map-buttons')
+  var actionsHost = document.getElementById('district-map-actions')
+  var label = document.getElementById('district-map-label')
+  if (!host || !buttonsHost) return
+
+  Q.destroyDistrictMap()
+
+  var mapData = MIKASA_LANDSCAPE_MAP_DATA
+  var width = host.clientWidth || 480
+  var height = host.clientHeight || 400
+
+  var scene = new THREE.Scene()
+  scene.background = new THREE.Color(0x000000)
+
+  var camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 500)
+  var renderer = new THREE.WebGLRenderer({ antialias: true })
+  renderer.setSize(width, height)
+  host.appendChild(renderer.domElement)
+
+  var mapGroup = new THREE.Group()
+  mapGroup.rotation.x = -0.42
+  scene.add(mapGroup)
+
+  var districtGeometries = []
+  var districtMaterials = []
+  var tubeGeometries = []
+
+  function geometryFromPositions(positions) {
+    var geometry = new THREE.BufferGeometry()
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
+    geometry.computeBoundingSphere()
+    return geometry
+  }
+
+  var landscapeGeometry = geometryFromPositions(mapData.landscape.positions)
+  var landscapeMaterial = new THREE.LineBasicMaterial({
+    color: 0x2a6b38,
+    transparent: true,
+    opacity: 0.28,
+    depthWrite: false,
+  })
+  var landscapeMesh = new THREE.LineSegments(landscapeGeometry, landscapeMaterial)
+  landscapeMesh.renderOrder = 0
+  mapGroup.add(landscapeMesh)
+
+  var districtMeshes = []
+  for (var d = 0; d < mapData.districts.length; d++) {
+    var record = mapData.districts[d]
+    var geometry = geometryFromPositions(record.positions)
+    districtGeometries.push(geometry)
+    var material = new THREE.MeshBasicMaterial({
+      color: Q.DISTRICT_MAP_COLORS[d],
+      wireframe: true,
+    })
+    districtMaterials.push(material)
+    var mesh = new THREE.Mesh(geometry, material)
+    mesh.renderOrder = 1
+    mesh.position.set(record.position[0], record.position[1], record.position[2])
+    mesh.userData.baseColor = Q.DISTRICT_MAP_COLORS[d]
+    mesh.userData.districtIndex = record.index
+    mesh.name = record.name
+    mapGroup.add(mesh)
+    districtMeshes.push(mesh)
+  }
+
+  var tubeMaterial = new THREE.MeshBasicMaterial({
+    color: 0x4a7a9a,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.5,
+    depthWrite: false,
+  })
+
+  for (var i = 0; i < mapData.straightTubes.length; i++) {
+    var tubeGeometry = geometryFromPositions(mapData.straightTubes[i].positions)
+    tubeGeometries.push(tubeGeometry)
+    var tube = new THREE.Mesh(tubeGeometry, tubeMaterial)
+    tube.renderOrder = 0.5
+    mapGroup.add(tube)
+  }
+
+  var kinkedGeometry = geometryFromPositions(mapData.kinkedTube.positions)
+  tubeGeometries.push(kinkedGeometry)
+  var kinkedTube = new THREE.Mesh(kinkedGeometry, tubeMaterial)
+  kinkedTube.renderOrder = 0.5
+  mapGroup.add(kinkedTube)
+
+  buttonsHost.innerHTML = ''
+  if (actionsHost) actionsHost.innerHTML = ''
+  var districtButtons = []
+  var selectedDistrictIndex = null
+  var DISTRICT_SELECTED_COLOR = 0xffdd22
+  var DISTRICT_HOVER_COLOR = 0x92d0ff
+
+  function updateGotoButton() {
+    if (!gotoBtn) return
+    if (selectedDistrictIndex === null) {
+      gotoBtn.disabled = true
+      gotoBtn.textContent = 'Go to district'
+    } else {
+      gotoBtn.disabled = false
+      var record = mapData.districts[selectedDistrictIndex]
+      gotoBtn.textContent = 'Go to ' + (record ? record.name.replace('district_', 'District ') : 'district')
+    }
+  }
+
+  function updateDistrictButtonStates() {
+    for (var bi = 0; bi < districtButtons.length; bi++) {
+      districtButtons[bi].classList.toggle('is-selected', bi === selectedDistrictIndex)
+    }
+  }
+
+  function selectDistrict(index) {
+    if (index < 0 || index >= districtMeshes.length) return
+    selectedDistrictIndex = index
+    for (var si = 0; si < districtMeshes.length; si++) {
+      if (si === index) {
+        setDistrictColor(districtMeshes[si], DISTRICT_SELECTED_COLOR)
+      } else {
+        setDistrictColor(districtMeshes[si], districtMeshes[si].userData.baseColor)
+      }
+    }
+    hoveredDistrict = null
+    updateDistrictButtonStates()
+    updateGotoButton()
+    if (label) {
+      label.textContent = 'Selected: ' + districtMeshes[index].name.replace('district_', 'District ') +
+        '. Double-click or press Go to visit.'
+    }
+  }
+
+  for (var b = 0; b < mapData.districts.length; b++) {
+    var button = document.createElement('button')
+    button.type = 'button'
+    button.textContent = String(b + 1)
+    button.className = 'district-map-num-btn'
+    button.dataset.districtIndex = String(b)
+    ;(function (idx) {
+      button.addEventListener('click', function () {
+        selectDistrict(idx)
+      })
+      button.addEventListener('dblclick', function () {
+        Q.goToDistrictFromMap(idx)
+      })
+    })(b)
+    buttonsHost.appendChild(button)
+    districtButtons.push(button)
+  }
+
+  var gotoBtn = document.createElement('button')
+  gotoBtn.type = 'button'
+  gotoBtn.id = 'district-map-goto-btn'
+  gotoBtn.className = 'district-map-goto-btn'
+  gotoBtn.textContent = 'Go to district'
+  gotoBtn.disabled = true
+  gotoBtn.addEventListener('click', function () {
+    if (selectedDistrictIndex !== null) {
+      Q.goToDistrictFromMap(selectedDistrictIndex)
+    }
+  })
+  if (actionsHost) {
+    actionsHost.appendChild(gotoBtn)
+  } else {
+    buttonsHost.parentNode.insertBefore(gotoBtn, host)
+  }
+  updateGotoButton()
+
+  var cameraDistance = 28
+  var viewYaw = 0.15
+  var viewPitch = 0.08
+  var baseViewDir = new THREE.Vector3(0.35, -0.55, 1).normalize()
+  var viewYawAxis = new THREE.Vector3(0, 1, 0)
+  var viewScratch = new THREE.Vector3()
+  var viewQuat = new THREE.Quaternion()
+
+  function updateCameraView() {
+    viewScratch.copy(baseViewDir)
+    viewQuat.setFromAxisAngle(new THREE.Vector3(1, 0, 0), viewPitch)
+    viewScratch.applyQuaternion(viewQuat)
+    viewQuat.setFromAxisAngle(viewYawAxis, viewYaw)
+    viewScratch.applyQuaternion(viewQuat).normalize()
+    camera.position.copy(viewScratch.multiplyScalar(cameraDistance))
+    camera.lookAt(0, 0, -1.5)
+  }
+
+  updateCameraView()
+
+  var raycaster = new THREE.Raycaster()
+  var mouse = new THREE.Vector2()
+  var hoveredDistrict = null
+  var isDragging = false
+  var dragPointerId = null
+  var lastDragX = 0
+  var lastDragY = 0
+  var dragDistancePx = 0
+  var pointerOverCanvas = false
+  var DRAG_ROTATE_SPEED = 0.004
+  var CLICK_DRAG_THRESHOLD_PX = 4
+  var VIEW_YAW_MAX = 1.45
+  var VIEW_PITCH_MAX = 1.35
+
+  function setDistrictColor(mesh, hex) {
+    mesh.material.color.setHex(hex)
+  }
+
+  function restoreDistrictColor(mesh) {
+    if (mesh.userData.districtIndex === selectedDistrictIndex) {
+      setDistrictColor(mesh, DISTRICT_SELECTED_COLOR)
+    } else {
+      setDistrictColor(mesh, mesh.userData.baseColor)
+    }
+  }
+
+  function updateMouseFromEvent(event) {
+    var rect = renderer.domElement.getBoundingClientRect()
+    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
+    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
+  }
+
+  function pickDistrict() {
+    raycaster.setFromCamera(mouse, camera)
+    var intersects = raycaster.intersectObjects(districtMeshes, false)
+    return intersects.length > 0 ? intersects[0].object : null
+  }
+
+  function clearHover() {
+    if (!hoveredDistrict) return
+    restoreDistrictColor(hoveredDistrict)
+    hoveredDistrict = null
+    if (!isDragging) renderer.domElement.style.cursor = 'default'
+  }
+
+  function updateHover() {
+    if (!pointerOverCanvas || isDragging) return
+    var hit = pickDistrict()
+    if (hit === hoveredDistrict) return
+    clearHover()
+    if (hit) {
+      hoveredDistrict = hit
+      if (hit.userData.districtIndex !== selectedDistrictIndex) {
+        setDistrictColor(hit, DISTRICT_HOVER_COLOR)
+      }
+      renderer.domElement.style.cursor = 'pointer'
+    }
+  }
+
+  function rotateFromDragDelta(dx, dy) {
+    viewYaw = Math.max(-VIEW_YAW_MAX, Math.min(VIEW_YAW_MAX, viewYaw - dx * DRAG_ROTATE_SPEED))
+    viewPitch = Math.max(-VIEW_PITCH_MAX, Math.min(VIEW_PITCH_MAX, viewPitch - dy * DRAG_ROTATE_SPEED))
+    updateCameraView()
+  }
+
+  renderer.domElement.addEventListener('pointerdown', function (event) {
+    if (event.button !== 0) return
+    isDragging = true
+    dragPointerId = event.pointerId
+    lastDragX = event.clientX
+    lastDragY = event.clientY
+    dragDistancePx = 0
+    clearHover()
+    renderer.domElement.setPointerCapture(event.pointerId)
+    renderer.domElement.style.cursor = 'grabbing'
+  })
+
+  renderer.domElement.addEventListener('pointermove', function (event) {
+    updateMouseFromEvent(event)
+    if (isDragging && event.pointerId === dragPointerId) {
+      var dx = event.clientX - lastDragX
+      var dy = event.clientY - lastDragY
+      dragDistancePx += Math.abs(dx) + Math.abs(dy)
+      lastDragX = event.clientX
+      lastDragY = event.clientY
+      rotateFromDragDelta(dx, dy)
+      return
+    }
+    updateHover()
+  })
+
+  function endDrag(event) {
+    if (!isDragging || event.pointerId !== dragPointerId) return
+    var wasClick = dragDistancePx < CLICK_DRAG_THRESHOLD_PX
+    isDragging = false
+    dragPointerId = null
+    if (renderer.domElement.hasPointerCapture(event.pointerId)) {
+      renderer.domElement.releasePointerCapture(event.pointerId)
+    }
+    if (wasClick) {
+      updateMouseFromEvent(event)
+      var hit = pickDistrict()
+      if (hit) {
+        selectDistrict(hit.userData.districtIndex)
+      }
+    }
+    renderer.domElement.style.cursor = pointerOverCanvas ? 'grab' : 'default'
+    updateHover()
+  }
+
+  renderer.domElement.addEventListener('dblclick', function (event) {
+    if (event.button !== 0) return
+    updateMouseFromEvent(event)
+    var hit = pickDistrict()
+    if (hit) {
+      Q.goToDistrictFromMap(hit.userData.districtIndex)
+    } else if (selectedDistrictIndex !== null) {
+      Q.goToDistrictFromMap(selectedDistrictIndex)
+    }
+  })
+
+  renderer.domElement.addEventListener('pointerup', endDrag)
+  renderer.domElement.addEventListener('pointercancel', endDrag)
+  renderer.domElement.addEventListener('pointerenter', function () {
+    pointerOverCanvas = true
+    if (!isDragging) renderer.domElement.style.cursor = 'grab'
+  })
+  renderer.domElement.addEventListener('pointerleave', function () {
+    pointerOverCanvas = false
+    clearHover()
+    if (!isDragging) renderer.domElement.style.cursor = 'default'
+  })
+
+  if (label) {
+    label.textContent = 'Drag to rotate. Click to select; double-click or Go to visit.'
+  }
+
+  var animationId = null
+  function animate() {
+    animationId = requestAnimationFrame(animate)
+    renderer.render(scene, camera)
+  }
+  animate()
+
+  Q._districtMapInstance = {
+    animationId: animationId,
+    renderer: renderer,
+    landscapeGeometry: landscapeGeometry,
+    landscapeMaterial: landscapeMaterial,
+    districtGeometries: districtGeometries,
+    districtMaterials: districtMaterials,
+    tubeGeometries: tubeGeometries,
+    tubeMaterial: tubeMaterial,
+  }
+}
+// MIKASA_DISTRICT_MAP_RUNTIME_END
+
+Q.district_map_runtime_ready = 1
+if (Q.district_map_bootstrap_return = 1) {
+  this.state.jumpSceneId = 'district_map.map_body'
+}
+!}
+go-to: jumpScene

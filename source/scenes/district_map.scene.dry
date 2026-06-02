@@ -1,0 +1,58 @@
+title: District map
+new-page: true
+is-special: true
+go-to: map_body
+on-arrival: {!
+if (typeof Q.initDistrictMap !== 'function') {
+  Q.district_map_bootstrap_return = 1
+  this.state.jumpSceneId = 'district_map.map_body'
+  this.goToScene('district_map_runtime')
+}
+!}
+
+@pick_docks
+go-to: docks
+
+@pick_aurora
+go-to: aurora
+
+@pick_vats
+go-to: vats
+
+@pick_railyard
+go-to: railyard
+
+@pick_pitts
+go-to: pitts
+
+@pick_limelight
+go-to: limelight
+
+@pick_deeps
+go-to: deeps
+
+@map_body
+on-display: {!
+if (typeof Q.syncDistrictMapVisibility === 'function') { Q.syncDistrictMapVisibility() }
+if (typeof Q.initDistrictMap === 'function') { Q.initDistrictMap() }
+!}
+
+= Mikasa districts
+
+{!<div id="district-map-widget" class="district-map-widget">!}
+{!<div id="district-map-buttons" class="district-map-buttons"></div>!}
+{!<div id="district-map-canvas-host" class="district-map-canvas-host"></div>!}
+{!<p id="district-map-label" class="district-map-label">Loading map…</p>!}
+{!<div id="district-map-actions" class="district-map-actions"></div>!}
+{!</div>!}
+
+= Choose a district
+
+- @pick_docks: D1 — The Docks
+- @pick_aurora: D2 — Aurora
+- @pick_vats: D3 — The Vats
+- @pick_railyard: D4 — Railyard
+- @pick_pitts: D5 — Pitts
+- @pick_limelight: D6 — Limelight
+- @pick_deeps: D7 — The Deeps
+- @backSpecialScene: Back

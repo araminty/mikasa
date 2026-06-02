@@ -11,7 +11,8 @@
     "lint:dendry": "node scripts/lint-dendry.js",
     "simulate-election": "node scripts/simulate-election.js",
     "simulate-election:v2": "node scripts/simulate-election.js --v2",
-    "simulate-prosperity": "node scripts/simulate-prosperity-months.js"
+    "simulate-prosperity": "node scripts/simulate-prosperity-months.js",
+    "export-landscape-geometry": "node scripts/export-landscape-geometry.js"
   },
   "repository": {
     "type": "git",
@@ -27,5 +28,8 @@
   "dependencies": {
     "dendrynexus": "github:aucchen/dendrynexus",
     "parliament-svg": "^3.0.0"
+  },
+  "devDependencies": {
+    "three": "^0.184.0"
   }
 }

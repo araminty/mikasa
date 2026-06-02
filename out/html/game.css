@@ -574,3 +574,71 @@ table {
     text-decoration: underline;
     text-decoration-style: dotted;
 }
+
+/* District map (district_map special scene) */
+.district-map-widget {
+  max-width: 480px;
+  margin: 0.5em 0 1em;
+}
+.district-map-buttons {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+.district-map-buttons .district-map-num-btn {
+  flex: 1;
+  padding: 0.35rem 0;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: 1px solid #446688;
+  background: #1a2a3a;
+  color: #c8dce8;
+  border-radius: 4px;
+  font-family: sans-serif;
+}
+.district-map-buttons .district-map-num-btn:hover {
+  background: #243848;
+}
+.district-map-buttons .district-map-num-btn.is-selected {
+  background: #ffdd22;
+  color: #1a1a00;
+  border-color: #ccb000;
+  font-weight: bold;
+}
+.district-map-actions {
+  margin: 0.5em 0 0;
+}
+.district-map-goto-btn {
+  padding: 0.4rem 0.85rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: 1px solid #446688;
+  background: #1a2a3a;
+  color: #c8dce8;
+  border-radius: 4px;
+  font-family: sans-serif;
+}
+.district-map-goto-btn:hover:not(:disabled) {
+  background: #243848;
+}
+.district-map-goto-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.district-map-canvas-host {
+  width: 100%;
+  max-width: 480px;
+  height: 400px;
+  background: #000;
+}
+.district-map-canvas-host canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+.district-map-label {
+  font-family: sans-serif;
+  font-size: 0.9em;
+  margin: 0.35em 0 0;
+  color: var(--text-color);
+}
