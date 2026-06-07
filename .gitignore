@@ -11,6 +11,9 @@
 !.cursor/
 !.cursor/**
 
+# Local Cursor session logs (not part of the game repo)
+.cursor/conversation-history/
+
 !out/
 out/*
 !out/html/
@@ -18,3 +21,6 @@ out/html/*
 !out/html/robots.txt
 !out/html/img/
 !out/html/img/**
+
+# WSL / Windows Mark-of-the-Web sidecar files (e.g. image.jpg:Zone.Identifier)
+**/*:Zone.Identifier
