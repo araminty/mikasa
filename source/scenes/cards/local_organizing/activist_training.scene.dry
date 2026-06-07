@@ -10,6 +10,12 @@ Turn popular support into power.
 -@nonviolence
 -@sabotage
 -@defense
+- @break_sabotage_soylent: Break saboteur truce — hit Soylent
+- @break_sabotage_magrail: Break saboteur truce — hit Magrail
+- @break_sabotage_brazos: Break saboteur truce — hit Brazos
+- @break_protest_soylent: Break protest truce — target Soylent
+- @break_protest_magrail: Break protest truce — target Magrail
+- @break_protest_brazos: Break protest truce — target Brazos
 - @return
 #-@intelligence
 #-@mutual_aid
@@ -43,3 +49,75 @@ unavailable-subtitle: We've already built up the militia
 on-arrival: militia += 1;
 
 We have established local community watch efforts to try to protect the citizens from crime.
+
+@break_sabotage_soylent
+title: Break saboteur truce — hit Soylent
+view-if: cable_promise_block_sabotage_soylent = 1
+subtitle: Ceasefire promise active; double reprisal if we break it
+on-arrival: {!
+if (typeof Q.cableNegEnsureApi === 'function') { Q.cableNegEnsureApi() }
+if (typeof Q.cableNegBreakPromise === 'function') { Q.cableNegBreakPromise('sabotage') }
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+
+We let the cells off the leash against Community Soylent again.  They will notice — and the bargain we signed at the cable talks will cost us **twice** the goodwill we traded away.
+
+@break_sabotage_magrail
+title: Break saboteur truce — hit Magrail
+view-if: cable_promise_block_sabotage_magrail = 1
+subtitle: Ceasefire promise active; double reprisal if we break it
+on-arrival: {!
+if (typeof Q.cableNegEnsureApi === 'function') { Q.cableNegEnsureApi() }
+if (typeof Q.cableNegBreakPromise === 'function') { Q.cableNegBreakPromise('sabotage') }
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+
+Magrail Combine gets sand in the gears again.  The reprisal we bought down at the negotiations comes due at double strength.
+
+@break_sabotage_brazos
+title: Break saboteur truce — hit Brazos
+view-if: cable_promise_block_sabotage_brazos = 1
+subtitle: Ceasefire promise active; double reprisal if we break it
+on-arrival: {!
+if (typeof Q.cableNegEnsureApi === 'function') { Q.cableNegEnsureApi() }
+if (typeof Q.cableNegBreakPromise === 'function') { Q.cableNegBreakPromise('sabotage') }
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+
+Brazos Zaibatsu is fair game for deniable ops again.  They will remember we broke our word — at twice the price.
+
+@break_protest_soylent
+title: Break protest truce — target Soylent
+view-if: cable_promise_block_protest_soylent = 1
+subtitle: Ceasefire promise active; double reprisal if we break it
+on-arrival: {!
+if (typeof Q.cableNegEnsureApi === 'function') { Q.cableNegEnsureApi() }
+if (typeof Q.cableNegBreakPromise === 'function') { Q.cableNegBreakPromise('protest') }
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+
+The disciplined picket lines march on Soylent facilities again.  We eat the doubled corporate heat we promised to avoid.
+
+@break_protest_magrail
+title: Break protest truce — target Magrail
+view-if: cable_promise_block_protest_magrail = 1
+subtitle: Ceasefire promise active; double reprisal if we break it
+on-arrival: {!
+if (typeof Q.cableNegEnsureApi === 'function') { Q.cableNegEnsureApi() }
+if (typeof Q.cableNegBreakPromise === 'function') { Q.cableNegBreakPromise('protest') }
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+
+Magrail gets the street pressure we swore off.  Their reprisal meter jumps by twice what we traded away at the table.
+
+@break_protest_brazos
+title: Break protest truce — target Brazos
+view-if: cable_promise_block_protest_brazos = 1
+subtitle: Ceasefire promise active; double reprisal if we break it
+on-arrival: {!
+if (typeof Q.cableNegEnsureApi === 'function') { Q.cableNegEnsureApi() }
+if (typeof Q.cableNegBreakPromise === 'function') { Q.cableNegBreakPromise('protest') }
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+
+Brazos faces our protesters again.  Breaking the truce lands double reprisal — immediately.

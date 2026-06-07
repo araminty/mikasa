@@ -1,0 +1,81 @@
+title: Deniable op at the Docks
+subtitle: What we agreed not to see
+priority: 4
+max-visits: 1
+tags: event
+view-if: cable_break_peace = 1 and cable_syndicate_blind_eye_pending = 1 and cable_promise_blind_eye_event_ready = 1 and cable_promise_blind_eye_event_done = 0
+
+Brazos contacts us and says it is time to follow through on our promise to turn a blind eye to a major attack.  They want us to immediately evacuate a pair of transit stations in the Docks and Railyard.  In an hour their syndicate ally will send forces through those stations to conduct a raid, and shoot anyone we do not evacuate.
+
+Upon hearing the evacuation order, one of the station managers asks if we should engage the emergency pressure seals on the nearby tunnels.  Normally that would be safety overkill... but if we wanted to, we could foil the raid.
+
+- @honor_promise: Honor our promise — evacuate and look away
+- @break_promise: Engage the seals — stop the raid
+
+@break_promise
+title: Engage the seals
+subtitle: Brazos will be furious; we break the blind-eye bargain
+on-arrival: {!
+if (typeof Q.cableNegEnsureApi === 'function') { Q.cableNegEnsureApi() }
+Q.cableNegBreakPromise('blind_eye')
+Q.magrail_reprisal = Math.max(0, (Number(Q.magrail_reprisal) || 0) - 1)
+Q.magrail_leverage = (Number(Q.magrail_leverage) || 0) + 1
+var safeManager = (Number(Q.police_reform) || 0) >= 2 && (Number(Q.police_investigated) || 0) >= 1
+if (!safeManager) {
+    if (!Q.martyrs) { Q.martyrs = [] }
+    Q.martyrs.push('Marcus Hale')
+}
+Q.cable_promise_blind_eye_event_done = 1
+Q.cable_promise_blind_eye_event_ready = 0
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+
+We seal the tunnels.  The Sharks' strike team runs into dead ends and withdraws — Brazos Zaibatsu is predictably furious.
+
+Magrail Combine is thrilled, but their gratitude and ν¥4.99 will buy you a CafeMax breakfast in a can.
+
+[? if police_reform >= 2 and police_investigated >= 1: Reformed city police escort station manager Marcus Hale to a safehouse before syndicate gunmen arrive. ?]
+[? if police_reform < 2 or police_investigated = 0: The next day, the well intentioned station manager Marcus Hale is found butchered in the tunnels around his station.  The Sharks are thorough; they make sure to unspool his intestines so that they can put some of him in every one of the tunnels. ?]
+
+- @return
+
+@honor_promise
+title: Honor our promise
+subtitle: Evacuate the stations and let the raid proceed
+on-arrival: {!
+if (typeof Q.cableNegEnsureApi === 'function') { Q.cableNegEnsureApi() }
+Q.cableNegRemoveIgAssets('Magrail', 'Railyard', 3)
+if (typeof Q.ensureEconomicAssets === 'function') { Q.ensureEconomicAssets() }
+var hasWharf = false
+if (Q.economicAssets) {
+    for (var i = 0; i < Q.economicAssets.length; i++) {
+        if (Q.economicAssets[i].id === 'docks_sharks_smuggling_wharf') { hasWharf = true; break }
+    }
+}
+if (!hasWharf && typeof Q.addAsset === 'function') {
+    Q.addAsset({
+        id: 'docks_sharks_smuggling_wharf',
+        name: 'Sharks smuggling wharf',
+        district: 'Docks',
+        ownerType: 'ig',
+        owner: 'Sharks',
+        kind: 'warehouse',
+    })
+}
+Q.cableNegApplySyndicateBacklash({ global: 1, docks: 1 })
+if (typeof Q.bumpDistrictProsperity === 'function') { Q.bumpDistrictProsperity('Docks', -0.12) }
+Q.cableNegBumpIgProsperity('Magrail', -0.2)
+Q.soylent_leverage = Math.max(0, (Number(Q.soylent_leverage) || 0) - 1)
+Q.soylent_reprisal = Math.max(0, (Number(Q.soylent_reprisal) || 0) - 1)
+Q.cableNegHonorPromise('blind_eye')
+Q.cable_promise_blind_eye_event_done = 1
+Q.cable_promise_blind_eye_event_ready = 0
+Q.cable_break_peace_frail = 1
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+
+We kept our word and looked away.  Brazos Zaibatsu had the Sharks hit Magrail Combine hard.  Magrail personal weaponry and wetware factories are left burning wrecks.
+
+In the weeks afterwards, Magrail unleashes hell on the Sharks but the Sharks still make a killing as the black markets boom.  Eventually the violence tapers off.  Flare ups like this aren't new but people put two and two together and figure out that the city government was complicit in this one.
+
+- @return

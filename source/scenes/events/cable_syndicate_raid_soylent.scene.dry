@@ -1,0 +1,52 @@
+title: Soylent's syndicate raid
+subtitle: Heat we promised to carry
+priority: 4
+max-visits: 1
+tags: event
+view-if: cable_break_peace = 1 and cable_syndicate_raid_heat_pending = 1 and cable_syndicate_raid_heat_corp_id = 1 and cable_promise_raid_heat_event_ready = 1 and cable_promise_raid_heat_event_done = 0
+
+Community Soylent's liaison catches us before the op goes live.  The deniable raid is happening either way — we already promised to absorb the heat.  They are offering a sweetener on top: if we bless it, Seven Families enforcers will coordinate with city police or our militia on joint patrols through the Pitts once the dust settles.
+
+- @accept_pitts_patrol
+- @decline_pitts_patrol
+
+@accept_pitts_patrol
+title: Take the deal
+subtitle: Deal with the devil
+on-arrival: {!
+Q.cable_soylent_pitts_patrol = 1
+Q.families_leverage = (Number(Q.families_leverage) || 0) + 1
+if (typeof Q.cableNegEnsureApi === 'function') { Q.cableNegEnsureApi() }
+Q.cableNegBumpIgProsperity('Families', 0.12)
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+if (typeof Q.update_projections === 'function') { Q.update_projections() }
+!}
+go-to: soylent_raid_falls
+
+@decline_pitts_patrol
+title: Refuse the patrol pact
+subtitle: The raid still goes forward; we just skip the Families sweetener
+go-to: soylent_raid_falls
+
+@soylent_raid_falls
+title: The raid lands
+on-arrival: {!
+if (typeof Q.cableNegEnsureApi === 'function') { Q.cableNegEnsureApi() }
+Q.edges_reprisal = (Number(Q.edges_reprisal) || 0) + 2
+Q.sharks_reprisal = (Number(Q.sharks_reprisal) || 0) + 2
+Q.cableNegBumpIgProsperity('Edges', -0.25)
+Q.cableNegBumpIgProsperity('Sharks', -0.25)
+Q.cableNegRemoveIgAssets('Edges', 'Railyard', 1)
+Q.cableNegRemoveIgAssets('Sharks', 'Deeps', 1)
+Q.cableNegApplySyndicateBacklash({ global: 1, railyard: 1, deeps: 1 })
+Q.cableNegHonorPromise('raid_heat')
+Q.cable_promise_raid_heat_event_done = 1
+Q.cable_promise_raid_heat_event_ready = 0
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+
+Soylent's deniable op hits ends up hitting the Bleeding Edges and the Sharks simultaneously.  As per our agreement, we take credit for the raid.  We also end up taking the blame as violence surges in the weeks after.
+
+[? if cable_soylent_pitts_patrol = 1: While the other syndicates are distracted, the seven families start enforcing their personal brand of law and order in the Pitts.  Maybe the Pitts are better off this way.  Maybe. ?]
+
+- @return

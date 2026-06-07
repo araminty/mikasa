@@ -7,7 +7,14 @@ on-arrival: {!
 Q.cableNegEnsureApi = function() {
 // --- reprisal knobs (edit here to rebalance demands) ---
 // Leverage all three megacorps receive when negotiations open (accept if leverage > reprisal).
-CABLE_NEG_LEVERAGE_BOOST = 5
+CABLE_NEG_LEVERAGE_BOOST = 3
+// Reprisal on each megacorp shaved at the table opening (may go negative).
+CABLE_NEG_OPENING_REPRISAL_RELIEF = 2
+
+// Promise enticements — reprisal relief while bargaining; 2× back if broken later.
+CABLE_NEG_PROMISE_BLIND_EYE_RELIEF = 2
+CABLE_NEG_PROMISE_RAID_HEAT_RELIEF = 2
+CABLE_NEG_PROMISE_DOCKS_DMZ_RELIEF = 2
 
 // Police jurisdiction — reprisal on the corp that loses district security.
 CABLE_NEG_REPR_VATS_SOYLENT = 2          // @take_vats_police
@@ -120,6 +127,9 @@ Q.CABLE_NEG_REPR_INFRA_FAIR_EACH = CABLE_NEG_REPR_INFRA_FAIR_EACH
 Q.CABLE_NEG_REPR_EDU_ENROLL_EACH = CABLE_NEG_REPR_EDU_ENROLL_EACH
 Q.CABLE_NEG_REPR_EDU_PAY_EACH = CABLE_NEG_REPR_EDU_PAY_EACH
 Q.CABLE_NEG_REPR_LAND_TAX_EACH = CABLE_NEG_REPR_LAND_TAX_EACH
+Q.CABLE_NEG_PROMISE_BLIND_EYE_RELIEF = CABLE_NEG_PROMISE_BLIND_EYE_RELIEF
+Q.CABLE_NEG_PROMISE_RAID_HEAT_RELIEF = CABLE_NEG_PROMISE_RAID_HEAT_RELIEF
+Q.CABLE_NEG_PROMISE_DOCKS_DMZ_RELIEF = CABLE_NEG_PROMISE_DOCKS_DMZ_RELIEF
 if (Q._cable_neg_api) return
 Q._cable_neg_api = 1
 Q.cableNegReprisalAdd = function(corp, delta) {
@@ -131,7 +141,210 @@ Q.cableNegReprisalAddEach = function(delta) {
     Q.cableNegReprisalAdd('brazos', delta)
 }
 Q.cableNegReprisalSub = function(corp, delta) {
-    Q[corp + '_reprisal'] = Math.max(0, (Number(Q[corp + '_reprisal']) || 0) - delta)
+    Q[corp + '_reprisal'] = (Number(Q[corp + '_reprisal']) || 0) - delta
+}
+Q.cableNegCorpId = function(corp) {
+    if (corp === 'soylent') { return 1 }
+    if (corp === 'magrail') { return 2 }
+    if (corp === 'brazos') { return 3 }
+    return 0
+}
+Q.cableNegCorpName = function(id) {
+    id = Number(id) || 0
+    if (id === 1) { return 'soylent' }
+    if (id === 2) { return 'magrail' }
+    if (id === 3) { return 'brazos' }
+    return ''
+}
+Q.cableNegPolicePayReprisalForCorp = function(corp, pay) {
+    pay = Number(pay) || 0
+    if (pay === 1) { return Q.CABLE_NEG_REPR_PAY_2X_EACH }
+    if (pay === 2) { return Q.CABLE_NEG_REPR_PAY_6X_EACH }
+    if (pay === 3) { return Q.CABLE_NEG_REPR_PAY_6X_MATCH_EACH }
+    if (pay === 4) {
+        if (corp === 'soylent') { return Q.CABLE_NEG_REPR_PAY_10X_SOYLENT }
+        if (corp === 'magrail') { return Q.CABLE_NEG_REPR_PAY_10X_MAGRAIL }
+        if (corp === 'brazos') { return Q.CABLE_NEG_REPR_PAY_10X_BRAZOS }
+    }
+    return 0
+}
+Q.cableNegPromiseRelief = function(kind, corp) {
+    corp = corp || ''
+    if (kind === 'sabotage') { return Math.max(0, Number(Q.sabotage) || 0) }
+    if (kind === 'protest') { return Math.max(0, Number(Q.non_violence) || 0) }
+    if (kind === 'blind_eye') { return Q.CABLE_NEG_PROMISE_BLIND_EYE_RELIEF }
+    if (kind === 'raid_heat') { return Q.CABLE_NEG_PROMISE_RAID_HEAT_RELIEF }
+    if (kind === 'docks_dmz') { return Q.CABLE_NEG_PROMISE_DOCKS_DMZ_RELIEF }
+    if (kind === 'deeps_tax') {
+        return Q.cableNegPolicePayReprisalForCorp(corp, Q.cableNegEffectivePolicePay())
+    }
+    return 0
+}
+Q.cableNegPromiseCorpField = function(kind) {
+    return 'cable_neg_promise_' + kind + '_corp'
+}
+Q.cableNegPromiseReliefField = function(kind) {
+    return 'cable_neg_promise_' + kind + '_relief'
+}
+Q.cableNegPromiseTaken = function(kind) {
+    return (Number(Q[Q.cableNegPromiseCorpField(kind)]) || 0) > 0
+}
+Q.cableNegApplyPromise = function(kind, corp) {
+    var id = Q.cableNegCorpId(corp)
+    if (!id || Q.cableNegPromiseTaken(kind)) { return 0 }
+    var relief = Q.cableNegPromiseRelief(kind, corp)
+    if (relief <= 0) { return 0 }
+    Q[Q.cableNegPromiseCorpField(kind)] = id
+    Q[Q.cableNegPromiseReliefField(kind)] = relief
+    Q.cableNegReprisalSub(corp, relief)
+    if (kind === 'deeps_tax') { Q.cableNegSyncPolicePayReprisal() }
+    return relief
+}
+Q.cableNegClearPromise = function(kind) {
+    var id = Number(Q[Q.cableNegPromiseCorpField(kind)]) || 0
+    if (id <= 0) { return }
+    var corp = Q.cableNegCorpName(id)
+    var relief = Number(Q[Q.cableNegPromiseReliefField(kind)]) || 0
+    if (relief > 0) { Q.cableNegReprisalAdd(corp, relief) }
+    Q[Q.cableNegPromiseCorpField(kind)] = 0
+    Q[Q.cableNegPromiseReliefField(kind)] = 0
+    if (kind === 'deeps_tax') { Q.cableNegSyncPolicePayReprisal() }
+}
+Q.cableNegDeepsTaxCorp = function() {
+    return Q.cableNegCorpName(Number(Q.cable_neg_promise_deeps_tax_corp) || 0)
+}
+Q.cableNegPersistPromises = function() {
+    var kinds = ['sabotage', 'protest', 'blind_eye', 'raid_heat', 'deeps_tax', 'docks_dmz']
+    var i, kind, id, corp, relief
+    for (i = 0; i < kinds.length; i++) {
+        kind = kinds[i]
+        id = Number(Q[Q.cableNegPromiseCorpField(kind)]) || 0
+        corp = Q.cableNegCorpName(id)
+        relief = Number(Q[Q.cableNegPromiseReliefField(kind)]) || 0
+        Q['cable_promise_' + kind + '_corp'] = corp
+        Q['cable_promise_' + kind + '_relief'] = relief
+        if (corp) {
+            Q['cable_promise_block_' + kind + '_' + corp] = 1
+        }
+    }
+    if ((Number(Q.cable_neg_promise_blind_eye_corp) || 0) > 0) {
+        Q.cable_break_peace_frail = 1
+        Q.cable_promise_blind_eye_due_month = (Number(Q.month) || 0) + 1
+        Q.cable_promise_blind_eye_due_year = Number(Q.year) || 0
+        if (Q.cable_promise_blind_eye_due_month > 12) {
+            Q.cable_promise_blind_eye_due_month -= 12
+            Q.cable_promise_blind_eye_due_year += 1
+        }
+        Q.cable_syndicate_blind_eye_pending = 1
+        Q.cable_promise_blind_eye_event_done = 0
+        Q.cable_promise_blind_eye_event_ready = 0
+    }
+    if ((Number(Q.cable_neg_promise_raid_heat_corp) || 0) > 0) {
+        Q.cable_promise_raid_heat_due_month = (Number(Q.month) || 0) + 3
+        Q.cable_promise_raid_heat_due_year = Number(Q.year) || 0
+        while (Q.cable_promise_raid_heat_due_month > 12) {
+            Q.cable_promise_raid_heat_due_month -= 12
+            Q.cable_promise_raid_heat_due_year += 1
+        }
+        Q.cable_syndicate_raid_heat_pending = 1
+        Q.cable_syndicate_raid_heat_corp_id = Number(Q.cable_neg_promise_raid_heat_corp) || 0
+        Q.cable_promise_raid_heat_event_done = 0
+        Q.cable_promise_raid_heat_event_ready = 0
+    }
+    corp = Q.cableNegDeepsTaxCorp()
+    if (corp) {
+        Q.cable_deeps_tax_burden = Number(Q.cable_neg_promise_deeps_tax_relief) || 0
+    }
+    corp = Q.cableNegCorpName(Number(Q.cable_neg_promise_docks_dmz_corp) || 0)
+    if (corp) {
+        Q.cable_docks_dmz_favor = 1
+        Q.cable_docks_dmz_favor_corp = corp
+        if (corp === 'brazos') { Q.cable_break_peace_frail = 1 }
+    }
+}
+Q.cableNegBreakPromise = function(kind) {
+    var corp = Q['cable_promise_' + kind + '_corp']
+    var relief = Number(Q['cable_promise_' + kind + '_relief']) || 0
+    if (!corp || relief <= 0 || Q['cable_promise_' + kind + '_broken'] === 1) { return }
+    Q['cable_promise_' + kind + '_broken'] = 1
+    Q.cableNegReprisalAdd(corp, relief * 2)
+    if (Q['cable_promise_block_' + kind + '_' + corp] === 1) {
+        Q['cable_promise_block_' + kind + '_' + corp] = 0
+    }
+    if (kind === 'deeps_tax') { Q.cable_deeps_tax_burden = 0 }
+    if (kind === 'docks_dmz') {
+        Q.cable_docks_dmz_favor = 0
+        Q.cable_docks_dmz_favor_corp = ''
+    }
+}
+Q.cableNegPromiseMonthlyTick = function() {
+    if (Q.cable_break_peace !== 1) { return }
+    var m = Number(Q.month) || 0
+    var y = Number(Q.year) || 0
+    if (Q.cable_syndicate_blind_eye_pending === 1
+        && Q.cable_promise_blind_eye_honored !== 1
+        && Q.cable_promise_blind_eye_event_done !== 1
+        && m === (Number(Q.cable_promise_blind_eye_due_month) || 0)
+        && y === (Number(Q.cable_promise_blind_eye_due_year) || 0)) {
+        Q.cable_promise_blind_eye_event_ready = 1
+    }
+    if (Q.cable_syndicate_raid_heat_pending === 1
+        && Q.cable_promise_raid_heat_honored !== 1
+        && Q.cable_promise_raid_heat_event_done !== 1
+        && m === (Number(Q.cable_promise_raid_heat_due_month) || 0)
+        && y === (Number(Q.cable_promise_raid_heat_due_year) || 0)) {
+        Q.cable_promise_raid_heat_event_ready = 1
+    }
+}
+Q.cableNegBumpIgProsperity = function(igName, delta) {
+    var key = 'prosperity_' + String(igName).toLowerCase()
+    var lo = Q.prosperityClampMin != null ? Q.prosperityClampMin : 0
+    var hi = Q.prosperityClampMax != null ? Q.prosperityClampMax : 20
+    var v = Number(Q[key])
+    if (isNaN(v)) { v = 10 }
+    Q[key] = Math.max(lo, Math.min(hi, v + Number(delta)))
+    if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+}
+Q.cableNegRemoveIgAssets = function(owner, district, count) {
+    if (typeof Q.ensureEconomicAssets === 'function') { Q.ensureEconomicAssets() }
+    if (!Q.economicAssets) { return 0 }
+    var removed = 0
+    var n = Math.max(0, Number(count) || 0)
+    for (var pass = 0; pass < n; pass++) {
+        for (var i = Q.economicAssets.length - 1; i >= 0; i--) {
+            var e = Q.economicAssets[i]
+            if (e.ownerType !== 'ig' || e.owner !== owner) { continue }
+            if (e.countsAsHome) { continue }
+            if (district && e.district !== district) { continue }
+            if (e.health != null && Number(e.health) < 1) { continue }
+            Q.economicAssets.splice(i, 1)
+            removed += 1
+            break
+        }
+    }
+    if (removed > 0 && typeof Q.updateJacobsAssetsReport === 'function') {
+        Q.updateJacobsAssetsReport()
+    }
+    return removed
+}
+Q.cableNegHonorPromise = function(kind) {
+    Q['cable_promise_' + kind + '_honored'] = 1
+}
+Q.cableNegApplySyndicateBacklash = function(opts) {
+    opts = opts || {}
+    if (opts.global) {
+        Q.cable_syndicate_raid_backlash_global = (Number(Q.cable_syndicate_raid_backlash_global) || 0) + opts.global
+    }
+    if (opts.docks) {
+        Q.cable_syndicate_raid_backlash_docks = (Number(Q.cable_syndicate_raid_backlash_docks) || 0) + opts.docks
+    }
+    if (opts.deeps) {
+        Q.cable_syndicate_raid_backlash_deeps = (Number(Q.cable_syndicate_raid_backlash_deeps) || 0) + opts.deeps
+    }
+    if (opts.railyard) {
+        Q.cable_syndicate_raid_backlash_railyard = (Number(Q.cable_syndicate_raid_backlash_railyard) || 0) + opts.railyard
+    }
+    if (typeof Q.update_projections === 'function') { Q.update_projections() }
 }
 Q.cableNegEffectiveRelief = function(downs, grossUp) {
     var i, grossDown = 0, out = []
@@ -313,36 +526,44 @@ Q.cableNegEffectivePolicePay = function() {
 }
 Q.cableNegApplyPolicePayReprisal = function(pay) {
     pay = Number(pay) || 0
-    if (pay === 1) {
-        Q.cableNegReprisalAddEach(Q.CABLE_NEG_REPR_PAY_2X_EACH)
-    } else if (pay === 2) {
-        Q.cableNegReprisalAddEach(Q.CABLE_NEG_REPR_PAY_6X_EACH)
-    } else if (pay === 3) {
-        Q.cableNegReprisalAddEach(Q.CABLE_NEG_REPR_PAY_6X_MATCH_EACH)
+    var corps = ['soylent', 'magrail', 'brazos']
+    var deepsCorp = Q.cableNegDeepsTaxCorp()
+    var i, corp, n
+    if (pay >= 1 && pay <= 3) {
+        n = pay === 1 ? Q.CABLE_NEG_REPR_PAY_2X_EACH
+            : (pay === 2 ? Q.CABLE_NEG_REPR_PAY_6X_EACH : Q.CABLE_NEG_REPR_PAY_6X_MATCH_EACH)
+        for (i = 0; i < corps.length; i++) {
+            corp = corps[i]
+            if (corp === deepsCorp) { continue }
+            Q.cableNegReprisalAdd(corp, n)
+        }
     } else if (pay === 4) {
-        Q.cableNegReprisalAdd('soylent', Q.CABLE_NEG_REPR_PAY_10X_SOYLENT)
-        Q.cableNegReprisalAdd('magrail', Q.CABLE_NEG_REPR_PAY_10X_MAGRAIL)
-        Q.cableNegReprisalAdd('brazos', Q.CABLE_NEG_REPR_PAY_10X_BRAZOS)
+        for (i = 0; i < corps.length; i++) {
+            corp = corps[i]
+            if (corp === deepsCorp) { continue }
+            Q.cableNegReprisalAdd(corp, Q.cableNegPolicePayReprisalForCorp(corp, pay))
+        }
     }
 }
 Q.cableNegClearPolicePayReprisal = function(pay) {
     pay = Number(pay) || 0
-    if (pay === 1) {
-        Q.cableNegReprisalSub('soylent', Q.CABLE_NEG_REPR_PAY_2X_EACH)
-        Q.cableNegReprisalSub('magrail', Q.CABLE_NEG_REPR_PAY_2X_EACH)
-        Q.cableNegReprisalSub('brazos', Q.CABLE_NEG_REPR_PAY_2X_EACH)
-    } else if (pay === 2) {
-        Q.cableNegReprisalSub('soylent', Q.CABLE_NEG_REPR_PAY_6X_EACH)
-        Q.cableNegReprisalSub('magrail', Q.CABLE_NEG_REPR_PAY_6X_EACH)
-        Q.cableNegReprisalSub('brazos', Q.CABLE_NEG_REPR_PAY_6X_EACH)
-    } else if (pay === 3) {
-        Q.cableNegReprisalSub('soylent', Q.CABLE_NEG_REPR_PAY_6X_MATCH_EACH)
-        Q.cableNegReprisalSub('magrail', Q.CABLE_NEG_REPR_PAY_6X_MATCH_EACH)
-        Q.cableNegReprisalSub('brazos', Q.CABLE_NEG_REPR_PAY_6X_MATCH_EACH)
+    var corps = ['soylent', 'magrail', 'brazos']
+    var deepsCorp = Q.cableNegDeepsTaxCorp()
+    var i, corp, n
+    if (pay >= 1 && pay <= 3) {
+        n = pay === 1 ? Q.CABLE_NEG_REPR_PAY_2X_EACH
+            : (pay === 2 ? Q.CABLE_NEG_REPR_PAY_6X_EACH : Q.CABLE_NEG_REPR_PAY_6X_MATCH_EACH)
+        for (i = 0; i < corps.length; i++) {
+            corp = corps[i]
+            if (corp === deepsCorp) { continue }
+            Q.cableNegReprisalSub(corp, n)
+        }
     } else if (pay === 4) {
-        Q.cableNegReprisalSub('soylent', Q.CABLE_NEG_REPR_PAY_10X_SOYLENT)
-        Q.cableNegReprisalSub('magrail', Q.CABLE_NEG_REPR_PAY_10X_MAGRAIL)
-        Q.cableNegReprisalSub('brazos', Q.CABLE_NEG_REPR_PAY_10X_BRAZOS)
+        for (i = 0; i < corps.length; i++) {
+            corp = corps[i]
+            if (corp === deepsCorp) { continue }
+            Q.cableNegReprisalSub(corp, Q.cableNegPolicePayReprisalForCorp(corp, pay))
+        }
     }
 }
 Q.cableNegSyncPolicePayReprisal = function() {
@@ -424,6 +645,9 @@ if (Q.cable_neg_ready != 1) {
     Q.soylent_leverage = (Number(Q.soylent_leverage) || 0) + Q.cable_neg_leverage_boost
     Q.magrail_leverage = (Number(Q.magrail_leverage) || 0) + Q.cable_neg_leverage_boost
     Q.brazos_leverage = (Number(Q.brazos_leverage) || 0) + Q.cable_neg_leverage_boost
+    Q.soylent_reprisal = (Number(Q.soylent_reprisal) || 0) - CABLE_NEG_OPENING_REPRISAL_RELIEF
+    Q.magrail_reprisal = (Number(Q.magrail_reprisal) || 0) - CABLE_NEG_OPENING_REPRISAL_RELIEF
+    Q.brazos_reprisal = (Number(Q.brazos_reprisal) || 0) - CABLE_NEG_OPENING_REPRISAL_RELIEF
 
     Q.cable_neg_prior_soylent = (Number(Q.soylent_leverage) || 0) > Q.cable_neg_leverage_boost ? 1 : 0
     Q.cable_neg_prior_magrail = (Number(Q.magrail_leverage) || 0) > Q.cable_neg_leverage_boost ? 1 : 0
@@ -458,6 +682,18 @@ if (Q.cable_neg_ready != 1) {
     Q.cable_neg_magrail_land_tax = 0
     Q.cable_neg_brazos_land_tax = 0
     Q.cable_neg_infra_cap = 0
+    Q.cable_neg_promise_sabotage_corp = 0
+    Q.cable_neg_promise_sabotage_relief = 0
+    Q.cable_neg_promise_protest_corp = 0
+    Q.cable_neg_promise_protest_relief = 0
+    Q.cable_neg_promise_blind_eye_corp = 0
+    Q.cable_neg_promise_blind_eye_relief = 0
+    Q.cable_neg_promise_raid_heat_corp = 0
+    Q.cable_neg_promise_raid_heat_relief = 0
+    Q.cable_neg_promise_deeps_tax_corp = 0
+    Q.cable_neg_promise_deeps_tax_relief = 0
+    Q.cable_neg_promise_docks_dmz_corp = 0
+    Q.cable_neg_promise_docks_dmz_relief = 0
 }
 if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
 !}
@@ -520,6 +756,21 @@ if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
 [? if cable_neg_brazos_land_tax = 1: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ <span style="color: #44b88f;">Brazos</span>: land tax on holdings</td></tr>!} ?]
 [? if cable_neg_infra_cap = 1: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ Generous cap on corp city-infrastructure use</td></tr>!} ?]
 [? if cable_neg_infra_cap = 2: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ Fair cap on corp city-infrastructure use</td></tr>!} ?]
+[? if cable_neg_promise_sabotage_corp = 1: {!<tr><td style="text-align:left; padding:0.15em 0;">→ Promise: saboteurs stand down vs <span style="color: #44b88f;">Soylent</span> (−!}[+ cable_neg_promise_sabotage_relief +]{! reprisal)</td></tr>!} ?]
+[? if cable_neg_promise_sabotage_corp = 2: {!<tr><td style="text-align:left; padding:0.15em 0;">→ Promise: saboteurs stand down vs <span style="color: #44b88f;">Magrail</span> (−!}[+ cable_neg_promise_sabotage_relief +]{! reprisal)</td></tr>!} ?]
+[? if cable_neg_promise_sabotage_corp = 3: {!<tr><td style="text-align:left; padding:0.15em 0;">→ Promise: saboteurs stand down vs <span style="color: #44b88f;">Brazos</span> (−!}[+ cable_neg_promise_sabotage_relief +]{! reprisal)</td></tr>!} ?]
+[? if cable_neg_promise_protest_corp = 1: {!<tr><td style="text-align:left; padding:0.15em 0;">→ Promise: protesters stand down vs <span style="color: #44b88f;">Soylent</span> (−!}[+ cable_neg_promise_protest_relief +]{! reprisal)</td></tr>!} ?]
+[? if cable_neg_promise_protest_corp = 2: {!<tr><td style="text-align:left; padding:0.15em 0;">→ Promise: protesters stand down vs <span style="color: #44b88f;">Magrail</span> (−!}[+ cable_neg_promise_protest_relief +]{! reprisal)</td></tr>!} ?]
+[? if cable_neg_promise_protest_corp = 3: {!<tr><td style="text-align:left; padding:0.15em 0;">→ Promise: protesters stand down vs <span style="color: #44b88f;">Brazos</span> (−!}[+ cable_neg_promise_protest_relief +]{! reprisal)</td></tr>!} ?]
+[? if cable_neg_promise_blind_eye_corp = 3: {!<tr><td style="text-align:left; padding:0.15em 0;">→ Promise: blind eye for Brazos syndicate op next month (−!}[+ cable_neg_promise_blind_eye_relief +]{! reprisal; frays peace)</td></tr>!} ?]
+[? if cable_neg_promise_raid_heat_corp = 1: {!<tr><td style="text-align:left; padding:0.15em 0;">→ Promise: city absorbs syndicate raid heat for <span style="color: #44b88f;">Soylent</span> in 3 months (−!}[+ cable_neg_promise_raid_heat_relief +]{! reprisal)</td></tr>!} ?]
+[? if cable_neg_promise_raid_heat_corp = 2: {!<tr><td style="text-align:left; padding:0.15em 0;">→ Promise: city absorbs syndicate raid heat for <span style="color: #44b88f;">Magrail</span> in 3 months (−!}[+ cable_neg_promise_raid_heat_relief +]{! reprisal)</td></tr>!} ?]
+[? if cable_neg_promise_deeps_tax_corp = 1: {!<tr><td style="text-align:left; padding:0.15em 0;">→ Promise: Deeps tax farming for <span style="color: #44b88f;">Soylent</span> offsets police payroll reprisal</td></tr>!} ?]
+[? if cable_neg_promise_deeps_tax_corp = 2: {!<tr><td style="text-align:left; padding:0.15em 0;">→ Promise: Deeps tax farming for <span style="color: #44b88f;">Magrail</span> offsets police payroll reprisal</td></tr>!} ?]
+[? if cable_neg_promise_deeps_tax_corp = 3: {!<tr><td style="text-align:left; padding:0.15em 0;">→ Promise: Deeps tax farming for <span style="color: #44b88f;">Brazos</span> offsets police payroll reprisal</td></tr>!} ?]
+[? if cable_neg_promise_docks_dmz_corp = 1: {!<tr><td style="text-align:left; padding:0.15em 0;">→ Promise: Docks DMZ favoring <span style="color: #44b88f;">Soylent</span> (−!}[+ cable_neg_promise_docks_dmz_relief +]{! reprisal; Soylent prosperity up, Magrail down, Brazos nicked)</td></tr>!} ?]
+[? if cable_neg_promise_docks_dmz_corp = 2: {!<tr><td style="text-align:left; padding:0.15em 0;">→ Promise: Docks DMZ favoring <span style="color: #44b88f;">Magrail</span> (−!}[+ cable_neg_promise_docks_dmz_relief +]{! reprisal; Magrail prosperity up, Soylent down, Brazos nicked)</td></tr>!} ?]
+[? if cable_neg_promise_docks_dmz_corp = 3: {!<tr><td style="text-align:left; padding:0.15em 0;">→ Promise: Docks DMZ favoring <span style="color: #44b88f;">Brazos</span> (−!}[+ cable_neg_promise_docks_dmz_relief +]{! reprisal; drains Soylent and Magrail prosperity; frays peace)</td></tr>!} ?]
 {!</table>!}
 
 - @take_vats_police: Vats corporate police → city
@@ -534,13 +785,14 @@ if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
 - @judge_review: Review city judges
 - @infra_cap: Cap megacorp use of city infrastructure
 - @prior_leverage_demands: Non-security demands (prior leverage)
+- @corp_promises: Offer enticements to individual megacorps
 - @withdraw_demands: Remove a demand from the package
 - @finalize_deal: Close the bargain
 
 @withdraw_demands
 title: Remove a demand
 subtitle: Pull terms off the table to lower corporate reprisal
-view-if: cable_neg_police_vats = 1 or cable_neg_police_railyard = 1 or cable_neg_police_docks = 1 or cable_neg_police_limelight = 1 or cable_neg_police_pay > 0 or cable_neg_corp_tax > 0 or cable_neg_civil_rights = 1 or cable_neg_trials > 0 or cable_neg_judge_review > 0 or cable_neg_disband > 0 or cable_neg_soylent_education_enroll = 1 or cable_neg_magrail_education_enroll = 1 or cable_neg_brazos_education_enroll = 1 or cable_neg_soylent_education_pay = 1 or cable_neg_magrail_education_pay = 1 or cable_neg_brazos_education_pay = 1 or cable_neg_soylent_land_tax = 1 or cable_neg_magrail_land_tax = 1 or cable_neg_brazos_land_tax = 1 or cable_neg_infra_cap > 0
+view-if: cable_neg_police_vats = 1 or cable_neg_police_railyard = 1 or cable_neg_police_docks = 1 or cable_neg_police_limelight = 1 or cable_neg_police_pay > 0 or cable_neg_corp_tax > 0 or cable_neg_civil_rights = 1 or cable_neg_trials > 0 or cable_neg_judge_review > 0 or cable_neg_disband > 0 or cable_neg_soylent_education_enroll = 1 or cable_neg_magrail_education_enroll = 1 or cable_neg_brazos_education_enroll = 1 or cable_neg_soylent_education_pay = 1 or cable_neg_magrail_education_pay = 1 or cable_neg_brazos_education_pay = 1 or cable_neg_soylent_land_tax = 1 or cable_neg_magrail_land_tax = 1 or cable_neg_brazos_land_tax = 1 or cable_neg_infra_cap > 0 or cable_neg_promise_sabotage_corp > 0 or cable_neg_promise_protest_corp > 0 or cable_neg_promise_blind_eye_corp > 0 or cable_neg_promise_raid_heat_corp > 0 or cable_neg_promise_deeps_tax_corp > 0 or cable_neg_promise_docks_dmz_corp > 0
 
 Dependent terms drop together — security tax if payroll goes; judicial review if trial rules go; tuition if enrollment goes.
 
@@ -564,6 +816,12 @@ Dependent terms drop together — security tax if payroll goes; judicial review 
 - @wd_land_tax_soylent: Withdraw Soylent land tax
 - @wd_land_tax_magrail: Withdraw Magrail land tax
 - @wd_land_tax_brazos: Withdraw Brazos land tax
+- @wd_promise_sabotage: Withdraw saboteur truce promise
+- @wd_promise_protest: Withdraw protest truce promise
+- @wd_promise_blind_eye: Withdraw blind-eye promise
+- @wd_promise_raid_heat: Withdraw raid-heat promise
+- @wd_promise_deeps_tax: Withdraw Deeps tax-farming promise
+- @wd_promise_docks_dmz: Withdraw Docks DMZ promise
 - @terms_menu
 
 @wd_corp_tax
@@ -796,6 +1054,66 @@ if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
 !}
 go-to: terms_menu
 
+@wd_promise_sabotage
+title: Withdraw saboteur truce promise
+choose-if: cable_neg_promise_sabotage_corp > 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegClearPromise('sabotage')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@wd_promise_protest
+title: Withdraw protest truce promise
+choose-if: cable_neg_promise_protest_corp > 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegClearPromise('protest')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@wd_promise_blind_eye
+title: Withdraw blind-eye promise
+choose-if: cable_neg_promise_blind_eye_corp > 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegClearPromise('blind_eye')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@wd_promise_raid_heat
+title: Withdraw raid-heat promise
+choose-if: cable_neg_promise_raid_heat_corp > 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegClearPromise('raid_heat')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@wd_promise_deeps_tax
+title: Withdraw Deeps tax-farming promise
+choose-if: cable_neg_promise_deeps_tax_corp > 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegClearPromise('deeps_tax')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@wd_promise_docks_dmz
+title: Withdraw Docks DMZ promise
+choose-if: cable_neg_promise_docks_dmz_corp > 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegClearPromise('docks_dmz')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
 @take_vats_police
 title: Vats corporate police → city
 choose-if: cable_neg_police_vats = 0
@@ -969,8 +1287,8 @@ Alternative to jurisdiction: dissolve megacorp security outright and substitute 
 
 @disband_city_police
 title: Disband corp security; city police replace them
-choose-if: cable_neg_disband = 0 and cable_neg_police_vats = 0 and cable_neg_police_railyard = 0 and cable_neg_police_docks = 0
-unavailable-subtitle: Incompatible with jurisdiction transfer, or already disbanding.
+choose-if: cable_neg_disband = 0 and cable_neg_police_vats = 0 and cable_neg_police_railyard = 0 and cable_neg_police_docks = 0 and cable_neg_promise_raid_heat_corp = 0
+unavailable-subtitle: Incompatible with jurisdiction transfer, raid-heat promise, or already disbanding.
 on-arrival: {!
 Q.cableNegEnsureApi()
 Q.cableNegClearPolicePay()
@@ -984,7 +1302,7 @@ go-to: terms_menu
 
 @disband_militia
 title: Disband corp security; militia replaces them
-choose-if: cable_neg_disband = 0 and cable_neg_police_vats = 0 and cable_neg_police_railyard = 0 and cable_neg_police_docks = 0
+choose-if: cable_neg_disband = 0 and cable_neg_police_vats = 0 and cable_neg_police_railyard = 0 and cable_neg_police_docks = 0 and cable_neg_promise_raid_heat_corp = 0
 on-arrival: {!
 Q.cableNegEnsureApi()
 Q.cableNegClearPolicePay()
@@ -1242,6 +1560,212 @@ Q.cableNegReprisalAdd('brazos', Q.CABLE_NEG_REPR_LAND_TAX_EACH)
 !}
 go-to: prior_leverage_brazos
 
+@corp_promises
+title: Offer enticements
+subtitle: Each promise goes to one megacorp only; breaks cost double reprisal later
+
+Sweeteners lower reprisal now but bind us — and certain cards — if we break faith.
+
+- @promises_soylent: Promises to Community Soylent
+- @promises_magrail: Promises to Magrail Combine
+- @promises_brazos: Promises to Brazos Zaibatsu
+- @terms_menu
+
+@promises_soylent
+title: Promises — Community Soylent
+
+- @offer_sabotage_truce_soylent: Saboteurs stand down vs Soylent
+- @offer_protest_truce_soylent: Protesters stand down vs Soylent
+- @offer_raid_heat_soylent: Absorb syndicate raid heat in 3 months
+- @offer_deeps_tax_soylent: Deeps tax farming offsets Soylent payroll share
+- @offer_docks_dmz_soylent: Docks DMZ favoring Soylent lines
+- @corp_promises
+
+@promises_magrail
+title: Promises — Magrail Combine
+
+- @offer_sabotage_truce_magrail: Saboteurs stand down vs Magrail
+- @offer_protest_truce_magrail: Protesters stand down vs Magrail
+- @offer_raid_heat_magrail: Absorb syndicate raid heat in 3 months
+- @offer_deeps_tax_magrail: Deeps tax farming offsets Magrail payroll share
+- @offer_docks_dmz_magrail: Docks DMZ favoring Magrail lines
+- @corp_promises
+
+@promises_brazos
+title: Promises — Brazos Zaibatsu
+
+- @offer_sabotage_truce_brazos: Saboteurs stand down vs Brazos
+- @offer_protest_truce_brazos: Protesters stand down vs Brazos
+- @offer_blind_eye_brazos: Blind eye to syndicate deniable op next month
+- @offer_deeps_tax_brazos: Deeps tax farming offsets Brazos payroll share
+- @offer_docks_dmz_brazos: Docks DMZ favoring Brazos lines
+- @corp_promises
+
+@offer_sabotage_truce_soylent
+title: Saboteur truce for Soylent
+subtitle: Relief scales with sabotage training ([+ sabotage +])
+choose-if: cable_neg_promise_sabotage_corp = 0 and sabotage >= 1
+unavailable-subtitle: Need sabotage training, or truce already promised elsewhere.
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegApplyPromise('sabotage', 'soylent')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: promises_soylent
+
+@offer_sabotage_truce_magrail
+title: Saboteur truce for Magrail
+subtitle: Relief scales with sabotage training ([+ sabotage +])
+choose-if: cable_neg_promise_sabotage_corp = 0 and sabotage >= 1
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegApplyPromise('sabotage', 'magrail')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: promises_magrail
+
+@offer_sabotage_truce_brazos
+title: Saboteur truce for Brazos
+subtitle: Relief scales with sabotage training ([+ sabotage +])
+choose-if: cable_neg_promise_sabotage_corp = 0 and sabotage >= 1
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegApplyPromise('sabotage', 'brazos')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: promises_brazos
+
+@offer_protest_truce_soylent
+title: Protest truce for Soylent
+subtitle: Relief scales with non-violence training ([+ non_violence +])
+choose-if: cable_neg_promise_protest_corp = 0 and non_violence >= 1
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegApplyPromise('protest', 'soylent')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: promises_soylent
+
+@offer_protest_truce_magrail
+title: Protest truce for Magrail
+subtitle: Relief scales with non-violence training ([+ non_violence +])
+choose-if: cable_neg_promise_protest_corp = 0 and non_violence >= 1
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegApplyPromise('protest', 'magrail')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: promises_magrail
+
+@offer_protest_truce_brazos
+title: Protest truce for Brazos
+subtitle: Relief scales with non-violence training ([+ non_violence +])
+choose-if: cable_neg_promise_protest_corp = 0 and non_violence >= 1
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegApplyPromise('protest', 'brazos')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: promises_brazos
+
+@offer_blind_eye_brazos
+title: Blind eye to Brazos syndicate op (next month)
+subtitle: This will undermine the ceasefire
+choose-if: cable_neg_promise_blind_eye_corp = 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegApplyPromise('blind_eye', 'brazos')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: promises_brazos
+
+@offer_raid_heat_soylent
+title: Take syndicate raid heat for Soylent (3 months)
+subtitle: Requires keeping corp security — not disbanding
+choose-if: cable_neg_promise_raid_heat_corp = 0 and cable_neg_disband = 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegApplyPromise('raid_heat', 'soylent')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: promises_soylent
+
+@offer_raid_heat_magrail
+title: Take syndicate raid heat for Magrail (3 months)
+choose-if: cable_neg_promise_raid_heat_corp = 0 and cable_neg_disband = 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegApplyPromise('raid_heat', 'magrail')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: promises_magrail
+
+@offer_deeps_tax_soylent
+title: Deeps tax farming for Soylent payroll share
+subtitle: Shifts Deeps voters Dem → Independent; scales with payroll burden
+choose-if: cable_neg_promise_deeps_tax_corp = 0 and cable_neg_police_pay_effective > 0
+unavailable-subtitle: Set police payroll first, or promise already offered.
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegApplyPromise('deeps_tax', 'soylent')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: promises_soylent
+
+@offer_deeps_tax_magrail
+title: Deeps tax farming for Magrail payroll share
+choose-if: cable_neg_promise_deeps_tax_corp = 0 and cable_neg_police_pay_effective > 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegApplyPromise('deeps_tax', 'magrail')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: promises_magrail
+
+@offer_deeps_tax_brazos
+title: Deeps tax farming for Brazos payroll share
+choose-if: cable_neg_promise_deeps_tax_corp = 0 and cable_neg_police_pay_effective > 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegApplyPromise('deeps_tax', 'brazos')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: promises_brazos
+
+@offer_docks_dmz_soylent
+title: Docks DMZ favoring Soylent
+subtitle: Hub ceasefire lines favor Soylent trade; Magrail prosperity bleeds, Brazos takes a smaller hit
+choose-if: cable_neg_promise_docks_dmz_corp = 0
+unavailable-subtitle: DMZ promise already offered to another megacorp.
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegApplyPromise('docks_dmz', 'soylent')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: promises_soylent
+
+@offer_docks_dmz_magrail
+title: Docks DMZ favoring Magrail
+subtitle: Hub ceasefire lines favor Magrail trade; Soylent prosperity bleeds, Brazos takes a smaller hit
+choose-if: cable_neg_promise_docks_dmz_corp = 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegApplyPromise('docks_dmz', 'magrail')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: promises_magrail
+
+@offer_docks_dmz_brazos
+title: Docks DMZ favoring Brazos
+subtitle: Brazos controls the hub buffer; Soylent and Magrail prosperity drain — this will undermine the peace
+choose-if: cable_neg_promise_docks_dmz_corp = 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegApplyPromise('docks_dmz', 'brazos')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: promises_brazos
+
 @finalize_deal
 title: Close the bargain
 on-arrival: {!
@@ -1280,6 +1804,7 @@ if (votes >= 2) {
         Q.corp_security_tax_fund = Q.cable_neg_corp_tax_fund
         Q.brazos_security_tax_exempt = Q.cable_neg_brazos_tax_exempt
     }
+    Q.cableNegPersistPromises()
     // TODO: apply budget revenue from corp_security_tax_fund × police payroll cost
     // TODO: set militia vs city replacement flags from cable_neg_disband
 } else {
@@ -1303,7 +1828,7 @@ go-to: deal_won if cable_neg_deal = 1; deal_failed if cable_neg_deal = 0
 @deal_won
 title: Ceasefire signed
 
-[? if cable_neg_votes = 3: All three megacorps signed — a rare unanimous municipal victory. ?]
+[? if cable_neg_votes = 3: All three megacorps signed — peace for now at least. ?]
 [? if cable_neg_votes = 2: Two megacorps signed; the holdout will remember what we extracted. ?]
 
 The ceasefire holds on paper.  City enforcement begins where we demanded jurisdiction; the solar exchanges breathe easier for a day.
@@ -1313,7 +1838,7 @@ The ceasefire holds on paper.  City enforcement begins where we demanded jurisdi
 @deal_failed
 title: Talks collapse
 
-We could not get two megacorps to swallow the package — leverage fell short of reprisal.  Soylent [? if cable_neg_soylent_accepts = 1: signed ?][? if cable_neg_soylent_accepts = 0: walked ?]; Magrail [? if cable_neg_magrail_accepts = 1: signed ?][? if cable_neg_magrail_accepts = 0: walked ?]; Brazos [? if cable_neg_brazos_accepts = 1: signed ?][? if cable_neg_brazos_accepts = 0: walked ?].
+The talks failed.  Soylent [? if cable_neg_soylent_accepts = 1: signed ?][? if cable_neg_soylent_accepts = 0: walked ?]; Magrail [? if cable_neg_magrail_accepts = 1: signed ?][? if cable_neg_magrail_accepts = 0: walked ?]; Brazos [? if cable_neg_brazos_accepts = 1: signed ?][? if cable_neg_brazos_accepts = 0: walked ?].
 
 Violence in the Vats and Railyard may continue until someone blinks.
 

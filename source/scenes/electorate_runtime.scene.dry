@@ -248,6 +248,77 @@ Q.electorateModifierCatalog = [
     new ElectorateModifier('police_reform_auto', 'police_reform', 'global', '', 'D', 0),
     new ElectorateModifier('sabotage_auto', 'sabotage', 'global', '', 'D', 0),
 
+    // Cable neg Deeps tax-farming promise — burden stack scales Dem → Ind shift in Deeps.
+    new ElectorateModifier('cable_deeps_tax_D', 'cable_deeps_tax_burden', 'district', 'Deeps', 'D', -0.12),
+    new ElectorateModifier('cable_deeps_tax_I', 'cable_deeps_tax_burden', 'district', 'Deeps', 'I', 0.12),
+
+    // Cable neg Docks DMZ promise — ceasefire lines favor one megacorp's grip on the hub.
+    new ElectorateModifier({
+        id: 'cable_docks_dmz_soylent_C',
+        stackId: 'cable_docks_dmz_favor',
+        scope: 'district',
+        target: 'Docks',
+        party: 'C',
+        delta: 0.18,
+        activeIf: function(q) { return q.cable_docks_dmz_favor_corp === 'soylent' },
+    }),
+    new ElectorateModifier({
+        id: 'cable_docks_dmz_soylent_D',
+        stackId: 'cable_docks_dmz_favor',
+        scope: 'district',
+        target: 'Docks',
+        party: 'D',
+        delta: -0.12,
+        activeIf: function(q) { return q.cable_docks_dmz_favor_corp === 'soylent' },
+    }),
+    new ElectorateModifier({
+        id: 'cable_docks_dmz_magrail_C',
+        stackId: 'cable_docks_dmz_favor',
+        scope: 'district',
+        target: 'Docks',
+        party: 'C',
+        delta: 0.18,
+        activeIf: function(q) { return q.cable_docks_dmz_favor_corp === 'magrail' },
+    }),
+    new ElectorateModifier({
+        id: 'cable_docks_dmz_magrail_D',
+        stackId: 'cable_docks_dmz_favor',
+        scope: 'district',
+        target: 'Docks',
+        party: 'D',
+        delta: -0.12,
+        activeIf: function(q) { return q.cable_docks_dmz_favor_corp === 'magrail' },
+    }),
+    new ElectorateModifier({
+        id: 'cable_docks_dmz_brazos_C',
+        stackId: 'cable_docks_dmz_favor',
+        scope: 'district',
+        target: 'Docks',
+        party: 'C',
+        delta: 0.18,
+        activeIf: function(q) { return q.cable_docks_dmz_favor_corp === 'brazos' },
+    }),
+    new ElectorateModifier({
+        id: 'cable_docks_dmz_brazos_D',
+        stackId: 'cable_docks_dmz_favor',
+        scope: 'district',
+        target: 'Docks',
+        party: 'D',
+        delta: -0.12,
+        activeIf: function(q) { return q.cable_docks_dmz_favor_corp === 'brazos' },
+    }),
+
+    // Cable neg syndicate raid / blind-eye fallout — stacks bumped in timed events.
+    new ElectorateModifier('cable_raid_backlash_global_D', 'cable_syndicate_raid_backlash_global', 'global', '', 'D', -1.2),
+    new ElectorateModifier('cable_raid_backlash_global_I', 'cable_syndicate_raid_backlash_global', 'global', '', 'I', 0.4),
+    new ElectorateModifier('cable_raid_backlash_docks_D', 'cable_syndicate_raid_backlash_docks', 'district', 'Docks', 'D', -1),
+    new ElectorateModifier('cable_raid_backlash_deeps_D', 'cable_syndicate_raid_backlash_deeps', 'district', 'Deeps', 'D', -0.8),
+    new ElectorateModifier('cable_raid_backlash_railyard_D', 'cable_syndicate_raid_backlash_railyard', 'district', 'Railyard', 'D', -0.8),
+
+    // Soylent raid — optional Seven Families joint patrols calm the Pitts a little.
+    new ElectorateModifier('cable_pitts_patrol_calm_G', 'cable_soylent_pitts_patrol', 'district', 'Pitts', 'G', -0.15),
+    new ElectorateModifier('cable_pitts_patrol_calm_D', 'cable_soylent_pitts_patrol', 'district', 'Pitts', 'D', 0.08),
+
 ]
 
 // --- Reference only: competitiveScores from root buildDemographics / buildDistricts ---

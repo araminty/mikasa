@@ -283,6 +283,12 @@ var PROSPERITY_IG_EFFECTIVE_POP = {
     Sharks: 41,
 }
 
+/** Cable neg Docks DMZ — monthly IG prosperity while ceasefire lines favor one megacorp. */
+var CABLE_DOCKS_DMZ_PROSP_GAIN = 0.06
+var CABLE_DOCKS_DMZ_PROSP_RIVAL = -0.06
+var CABLE_DOCKS_DMZ_PROSP_BRAZOS = -0.015
+var CABLE_DOCKS_DMZ_PROSP_BELLIGERENT = -0.06
+
 var PROSPERITY_DISTRICT_IDS = [
     'Docks', 'Aurora', 'Vats', 'Railyard', 'Pitts', 'Limelight', 'Deeps',
 ]
@@ -618,6 +624,97 @@ Q.prosperityConnectionCatalog = [
     new ProsperityConnectionModifier('decay_families', 'ig', 'Families', 'ig', 'Families', -0.02, { self_feedback: true }),
     new ProsperityConnectionModifier('decay_edges', 'ig', 'Edges', 'ig', 'Edges', -0.02, { self_feedback: true }),
     new ProsperityConnectionModifier('decay_sharks', 'ig', 'Sharks', 'ig', 'Sharks', -0.02, { self_feedback: true }),
+
+    // Cable neg Docks DMZ — belligerent favor: gain favored corp, drain rival, quarter hit Brazos.
+    new ProsperityConnectionModifier({
+        id: 'cable_dmz_soylent_gain',
+        fromScope: 'quality',
+        fromTarget: 'cable_docks_dmz_favor',
+        toScope: 'ig',
+        toTarget: 'Soylent',
+        coefficient: CABLE_DOCKS_DMZ_PROSP_GAIN,
+        activeIf: function(q) {
+            return q.cable_docks_dmz_favor === 1 && q.cable_docks_dmz_favor_corp === 'soylent'
+        },
+    }),
+    new ProsperityConnectionModifier({
+        id: 'cable_dmz_soylent_magrail_drain',
+        fromScope: 'quality',
+        fromTarget: 'cable_docks_dmz_favor',
+        toScope: 'ig',
+        toTarget: 'Magrail',
+        coefficient: CABLE_DOCKS_DMZ_PROSP_RIVAL,
+        activeIf: function(q) {
+            return q.cable_docks_dmz_favor === 1 && q.cable_docks_dmz_favor_corp === 'soylent'
+        },
+    }),
+    new ProsperityConnectionModifier({
+        id: 'cable_dmz_soylent_brazos_drain',
+        fromScope: 'quality',
+        fromTarget: 'cable_docks_dmz_favor',
+        toScope: 'ig',
+        toTarget: 'Brazos',
+        coefficient: CABLE_DOCKS_DMZ_PROSP_BRAZOS,
+        activeIf: function(q) {
+            return q.cable_docks_dmz_favor === 1 && q.cable_docks_dmz_favor_corp === 'soylent'
+        },
+    }),
+    new ProsperityConnectionModifier({
+        id: 'cable_dmz_magrail_gain',
+        fromScope: 'quality',
+        fromTarget: 'cable_docks_dmz_favor',
+        toScope: 'ig',
+        toTarget: 'Magrail',
+        coefficient: CABLE_DOCKS_DMZ_PROSP_GAIN,
+        activeIf: function(q) {
+            return q.cable_docks_dmz_favor === 1 && q.cable_docks_dmz_favor_corp === 'magrail'
+        },
+    }),
+    new ProsperityConnectionModifier({
+        id: 'cable_dmz_magrail_soylent_drain',
+        fromScope: 'quality',
+        fromTarget: 'cable_docks_dmz_favor',
+        toScope: 'ig',
+        toTarget: 'Soylent',
+        coefficient: CABLE_DOCKS_DMZ_PROSP_RIVAL,
+        activeIf: function(q) {
+            return q.cable_docks_dmz_favor === 1 && q.cable_docks_dmz_favor_corp === 'magrail'
+        },
+    }),
+    new ProsperityConnectionModifier({
+        id: 'cable_dmz_magrail_brazos_drain',
+        fromScope: 'quality',
+        fromTarget: 'cable_docks_dmz_favor',
+        toScope: 'ig',
+        toTarget: 'Brazos',
+        coefficient: CABLE_DOCKS_DMZ_PROSP_BRAZOS,
+        activeIf: function(q) {
+            return q.cable_docks_dmz_favor === 1 && q.cable_docks_dmz_favor_corp === 'magrail'
+        },
+    }),
+    // Brazos DMZ — drains both belligerents; no corp prosperity gain.
+    new ProsperityConnectionModifier({
+        id: 'cable_dmz_brazos_soylent_drain',
+        fromScope: 'quality',
+        fromTarget: 'cable_docks_dmz_favor',
+        toScope: 'ig',
+        toTarget: 'Soylent',
+        coefficient: CABLE_DOCKS_DMZ_PROSP_BELLIGERENT,
+        activeIf: function(q) {
+            return q.cable_docks_dmz_favor === 1 && q.cable_docks_dmz_favor_corp === 'brazos'
+        },
+    }),
+    new ProsperityConnectionModifier({
+        id: 'cable_dmz_brazos_magrail_drain',
+        fromScope: 'quality',
+        fromTarget: 'cable_docks_dmz_favor',
+        toScope: 'ig',
+        toTarget: 'Magrail',
+        coefficient: CABLE_DOCKS_DMZ_PROSP_BELLIGERENT,
+        activeIf: function(q) {
+            return q.cable_docks_dmz_favor === 1 && q.cable_docks_dmz_favor_corp === 'brazos'
+        },
+    }),
 ]
 
 Q.prosperityIntraDistrictMeshDefault = PROSPERITY_INTRA_DISTRICT_DEFAULT
@@ -687,6 +784,8 @@ function syncProsperityDisplays() {
 
 
 function organize_tick(){
+    // TBD: when protest_good / protest_bad cross their thresholds, skip corps with an
+    // active ceasefire promise (Q.cable_promise_block_protest_* / block_sabotage_*).
     Q.protest_good += Q.non_violence -1.5 // hurt corp popularity with all every time it reaches 10
     Q.protest_bad += 2.25 - Q.non_violence // corp gain popularity with drones and affluent and lose with poor every time it reaches 10
 }
@@ -800,6 +899,9 @@ function syncContractingAllowance() {
 function monthly_tick_phase1() {
     syncContractingAllowance()
     organize_tick()
+    if (typeof Q.cableNegPromiseMonthlyTick === 'function') {
+        Q.cableNegPromiseMonthlyTick()
+    }
     trade_level_tick()
     economy_tick()
     applyStratumProsperityBumps()
@@ -852,5 +954,22 @@ if (typeof Q.initEconomicAssets === 'function') { Q.initEconomicAssets() }
 syncProsperityDisplays()
 
 if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+
+if (typeof Q.cableNegBreakPromise !== 'function') {
+    Q.cableNegBreakPromise = function(kind) {
+        var corp = Q['cable_promise_' + kind + '_corp']
+        var relief = Number(Q['cable_promise_' + kind + '_relief']) || 0
+        if (!corp || relief <= 0 || Q['cable_promise_' + kind + '_broken'] === 1) { return }
+        Q['cable_promise_' + kind + '_broken'] = 1
+        Q[corp + '_reprisal'] = (Number(Q[corp + '_reprisal']) || 0) + relief * 2
+        Q['cable_promise_block_' + kind + '_' + corp] = 0
+        if (kind === 'deeps_tax') { Q.cable_deeps_tax_burden = 0 }
+        if (kind === 'docks_dmz') {
+            Q.cable_docks_dmz_favor = 0
+            Q.cable_docks_dmz_favor_corp = ''
+        }
+        if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+    }
+}
 
 !}

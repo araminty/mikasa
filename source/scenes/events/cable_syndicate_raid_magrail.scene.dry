@@ -1,0 +1,26 @@
+title: Magrail's deniable raid
+subtitle: We absorb the syndicate heat
+priority: 4
+max-visits: 1
+tags: event
+view-if: cable_break_peace = 1 and cable_syndicate_raid_heat_pending = 1 and cable_syndicate_raid_heat_corp_id = 2 and cable_promise_raid_heat_event_ready = 1 and cable_promise_raid_heat_event_done = 0
+
+on-arrival: {!
+if (typeof Q.cableNegEnsureApi === 'function') { Q.cableNegEnsureApi() }
+Q.sharks_reprisal = (Number(Q.sharks_reprisal) || 0) + 3
+Q.cableNegBumpIgProsperity('Sharks', -0.35)
+Q.cableNegRemoveIgAssets('Sharks', 'Deeps', 1)
+Q.edges_leverage = Math.max(0, (Number(Q.edges_leverage) || 0) - 1)
+Q.cableNegBumpIgProsperity('Edges', 0.08)
+Q.cableNegApplySyndicateBacklash({ global: 1, deeps: 1 })
+Q.cableNegHonorPromise('raid_heat')
+Q.cable_promise_raid_heat_event_done = 1
+Q.cable_promise_raid_heat_event_ready = 0
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+
+Magrail calls in our marker for a massive crackdown on the Sharks.  City police are put front and center but the real firepower from the raid is from the corporate death squads backing them up.  Injuries among the police are light but quite a few of them resign from the force due to psychological trauma in the aftermath.
+
+Magrail had already seeded rumors that we hired the corporate troops on behalf of a foreign megacorp.  It's not the most plausible story but with city police front and center the Sharks swallow it hook line and sinker.
+
+- @return
