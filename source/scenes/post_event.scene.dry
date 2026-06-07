@@ -15,26 +15,6 @@ if (typeof Q.runScheduledElections === 'function') {
     Q.runScheduledElections()
 }
 
-Q.has_event = 0;
-// check if there are any cards in #event, and then go to main if not.
-var scene = this.game.scenes['post_event.events_choice'];
-var choices = this._compileChoices(scene);
-if (choices && choices[0].title != "Continue...") {
-    Q.has_event = 1;
-} else {
-    has_event = 0;
-}
-// pre-load all of the event images
-if (this.ui && this.ui.show_portraits) {
-    for (var choice of choices) {
-        var cc = this.game.scenes[choice.id];
-        if (cc.faceImage) {
-            var im = new Image();
-            im.url = cc.faceImage;
-        }
-    }
-}
-
 if (typeof window !== "undefined" && window.generateBar) {
 }
 
@@ -45,11 +25,26 @@ if (Q.year === 2302 && Q.month >= 1 && !Q.mikasa_journey_leg) {
 // MIKASA_POST_EVENT_TICK_END
 
 !}
-go-to: events_choice if has_event = 1; main if has_event = 0
-
-= [+ month : month +] [+ year +]
+go-to: events_choice
 
 @events_choice
+on-arrival: {!
+Q.has_event = 0;
+var choices = this._compileChoices(this.game.scenes['post_event.events_choice']);
+if (choices) {
+    var rootId = this.state.rootSceneId;
+    for (var ci = 0; ci < choices.length; ci++) {
+        var ch = choices[ci];
+        if (ch.canChoose && ch.id !== rootId) {
+            Q.has_event = 1;
+            break;
+        }
+    }
+}
+!}
+go-to: main if has_event = 0
+
+= [+ month : month +] [+ year +]
 
 - #event
 

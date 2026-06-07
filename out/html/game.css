@@ -312,6 +312,13 @@ ul.decks, ul.hand, ul.pinned-cards {
   padding-left: 0;
 }
 
+p.hand-description {
+  white-space: pre-line;
+  font-size: 0.9em;
+  margin: 0.5em 0;
+  line-height: 1.35;
+}
+
 .hand {
 
 }

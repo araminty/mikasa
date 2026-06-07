@@ -27,6 +27,10 @@ var ORGANIZE_API = [
     'bumpDistrictProsperity',
     'syncContractingAllowance',
     'syncContractFairChainComplete',
+    'syncActionEconomyDisplay',
+    'spendOrganizingAction',
+    'beginActionEconomyMonth',
+    'applyActionSurgeIfNewPhase',
 ]
 
 function setupApiMissing(names) {
@@ -78,7 +82,7 @@ if (Q.setup_complete) {
         Q.assignSeatsFromInitialPolling()
     }
     if (Q.economic_assets_bootstrap_return = 2) {
-        this.state.jumpSceneId = 'root.2300_main_continue'
+        this.state.jumpSceneId = 'organize_phase_start'
     } else if (Q.setup_goto_main = 1) {
         this.state.jumpSceneId = 'main'
     } else {

@@ -1168,6 +1168,32 @@ Q.update_projections = function(opts) {
     return runElectionsAndWriteQ(Object.assign({ commitSeats: false }, opts || {}))
 }
 
+/**
+ * Temporary: bump syndicate drone membership share 0.01 → 0.015 (Families/Edges/Sharks).
+ * REVISE when per-block ig_membership overhaul lands (see planning/ig_demographics.txt).
+ */
+Q.applySyndicateDroneMembershipBribe = function() {
+    var state = Q.electionV2
+    if (!state || !state.interestGroups) { return false }
+    var droneIdx = STRATUM_IDS.indexOf('drone')
+    if (droneIdx < 0) { return false }
+    var target = 0.015
+    var syndicateIds = ['Families', 'Edges', 'Sharks']
+    var changed = false
+    for (var si = 0; si < syndicateIds.length; si++) {
+        var wantId = syndicateIds[si]
+        for (var gi = 0; gi < state.interestGroups.length; gi++) {
+            var ig = state.interestGroups[gi]
+            if (ig.id !== wantId || !ig.membership) { continue }
+            if (ig.membership[droneIdx] < target) {
+                ig.membership[droneIdx] = target
+                changed = true
+            }
+        }
+    }
+    return changed
+}
+
 /** District scene stats → Q.<district>_prosperity, _crime, _dominant_party (lowercase key). */
 Q.syncDistrictDisplays = function(districtId) {
     Q.update_projections()

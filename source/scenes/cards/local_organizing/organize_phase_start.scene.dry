@@ -1,14 +1,21 @@
 title: The political situation
 priority: 1
 max-visits: 1
-tags: event
+new-page: false
 on-arrival: {!
 organizing_unlock = 1;
 phase = 1;
 Q.contracting_allowance_through_phase = 0;
 Q.contracting_visits_remaining = 0;
 if (typeof Q.syncContractingAllowance === 'function') { Q.syncContractingAllowance(); }
+if (typeof Q.beginActionEconomyMonth === 'function') { Q.beginActionEconomyMonth(); }
 !}
+
+= 2300
+
+It is a dark time for humanity.  Earth is mired in endless national conflicts while the off planet colonies are torn by violence between lawless corporations.
+
+As the corporations of the interplanetary waystation Mikasa become too distracted fighting each other, real power has started to fall into the hands of the city government for the first time in decades.  Now our task is to somehow maintain this newfound autonomy while beating back corruption.  Perhaps Mikasa might one day control the corporations instead of the other way around.
 
 The city government in Mikasa only holds substantial power in one section of the city: the Aurora district.  The "big 3" corporations run their home districts as fiefs.  The ganglands of the Pitts (the original mining district) are run by the syndicates to the extent they are run at all.  The wealthy Docks are controlled by a patchwork of private security forces. And finally the isolationist Deepers are stubbornly resistant to keep any and all influences of the city out.
 

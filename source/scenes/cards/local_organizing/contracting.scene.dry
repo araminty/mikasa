@@ -5,6 +5,7 @@ card-image: img/asteroid.jpg
 tags: local_organizing, city_affairs
 view-if: contracting_visits_remaining >= 1
 on-arrival: {!
+if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay(); }
 if (typeof Q.syncContractingAllowance === 'function') { Q.syncContractingAllowance(); }
 var contractingLeft = Number(Q.contracting_visits_remaining) || 0;
 if (contractingLeft > 0) { Q.contracting_visits_remaining = contractingLeft - 1; }
@@ -22,8 +23,11 @@ Mikasa government contracts are a swamp of favor trading and graft.  By revoking
 
 @fair_bidding
 title: Have honest and fair bidding
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
 subtitle: [? if contract_fair_chain_complete = 1 and contract_outside_below_quarter = 1: But we have reasonable grounds to favor domestic contractors ?][? if contract_fair_chain_complete = 1 and contract_outside_below_quarter = 0: We've implemented technocratic awards ?][? if contract_fair_chain_complete = 0 and fair_contract_uses = 0: It's just crazy enough to work ?]
 on-arrival: {!
+Q.spendOrganizingAction();
 var fairUses = Number(Q.fair_contract_uses) || 0;
 var MIKASA_DISTRICTS = ['Docks', 'Aurora', 'Vats', 'Railyard', 'Pitts', 'Limelight', 'Deeps'];
 function fairSlotOpen(reg, fair) {
@@ -95,8 +99,11 @@ title: Fair bid award
 @outside_corporations
 view-if: contract_fair_chain_complete = 0
 title: Outside corporation suppliers
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
 subtitle: They offer competitive pricing
 on-arrival: {!
+Q.spendOrganizingAction();
 contract_outside += 1;
 if (typeof Q.queueBudgetExpense === 'function') {
     Q.queueBudgetExpense(2, 'contract_award', 'Outside supplier contracts');
@@ -119,8 +126,11 @@ Community Soylent, Magrail Combine, and Brazos Zaibatsu all want the paperwork r
 
 @big_3_docks
 title: Split contracts through the Docks hub
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
 subtitle: Spread the work; lower antagonism with all three megacorps
 on-arrival: {!
+Q.spendOrganizingAction();
 contract_big3_docks = 1;
 soylent_reprisal = Math.max(0, (Number(Q.soylent_reprisal) || 0) - 1);
 magrail_reprisal = Math.max(0, (Number(Q.magrail_reprisal) || 0) - 1);
@@ -137,8 +147,11 @@ Clerks at the Docks hub process a three-way split.  None of the megacorps are th
 
 @big_3_vats
 title: Concentrate in the Vats
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
 subtitle: Favor Community Soylent; antagonize Magrail and Brazos
 on-arrival: {!
+Q.spendOrganizingAction();
 contract_big3_vats = 1;
 Q.soylent_leverage = (Number(Q.soylent_leverage) || 0) + 1;
 Q.magrail_reprisal = (Number(Q.magrail_reprisal) || 0) + 1;
@@ -155,8 +168,11 @@ Soylent compound managers take victory laps while rival corp liaisons file angry
 
 @big_3_railyard
 title: Concentrate in the Railyard
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
 subtitle: Favor Magrail Combine; antagonize Soylent and Brazos
 on-arrival: {!
+Q.spendOrganizingAction();
 contract_big3_railyard = 1;
 Q.magrail_leverage = (Number(Q.magrail_leverage) || 0) + 1;
 Q.soylent_reprisal = (Number(Q.soylent_reprisal) || 0) + 1;
@@ -173,8 +189,11 @@ Magrail foremen expand shift schedules; Soylent and Brazos quietly route their c
 
 @big_3_limelight
 title: Concentrate in the Limelight
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
 subtitle: Favor Brazos Zaibatsu; antagonize Soylent and Magrail
 on-arrival: {!
+Q.spendOrganizingAction();
 contract_big3_limelight = 1;
 Q.brazos_leverage = (Number(Q.brazos_leverage) || 0) + 1;
 Q.soylent_reprisal = (Number(Q.soylent_reprisal) || 0) + 1;
@@ -201,8 +220,11 @@ Shareholder-adjacent workshops and Docks rentiers both bid for the same municipa
 
 @wealthy_docks
 title: Award through Docks firms
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
 subtitle: Prosperity in the Docks; shareholders citywide take notice
 on-arrival: {!
+Q.spendOrganizingAction();
 contract_wealthy_docks = 1;
 Q.rich_bump = 0.05;
 if (typeof Q.addAsset === 'function') {
@@ -217,8 +239,11 @@ Docks shareholders pocket the prime subcontracts while their cousins in other di
 
 @wealthy_aurora
 title: Award through Aurora firms
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
 subtitle: Prosperity in Aurora; shareholders citywide take notice
 on-arrival: {!
+Q.spendOrganizingAction();
 contract_wealthy_aurora = 1;
 Q.rich_bump = 0.05;
 if (typeof Q.addAsset === 'function') {
@@ -245,7 +270,10 @@ Cooperative workshops and guild ateliers can absorb small-batch municipal orders
 
 @coop_aurora
 title: Aurora cooperatives
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
 on-arrival: {!
+Q.spendOrganizingAction();
 contract_coop_aurora = 1;
 if (typeof Q.addAsset === 'function') {
     Q.addAsset({ id: 'aurora_coop_contract_workshop', name: 'Aurora coop contract workshop', district: 'Aurora', ownerType: 'stratum', owner: 'coop', kind: 'workshop', major: false });
@@ -258,7 +286,10 @@ Aurora coop yards pick up fabrication and life-support maintenance orders.  Guil
 
 @coop_pitts
 title: Pitts cooperatives and guild workshops
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
 on-arrival: {!
+Q.spendOrganizingAction();
 contract_coop_pitts = 1;
 Q.families_leverage = (Number(Q.families_leverage) || 0) + 1;
 if (typeof Q.addAsset === 'function') {
@@ -273,7 +304,10 @@ Pitts cooperative machine shops and syndicate-tolerant guild floors share the wo
 
 @coop_deeps
 title: Deeps cooperatives
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
 on-arrival: {!
+Q.spendOrganizingAction();
 contract_coop_deeps = 1;
 if (typeof Q.addAsset === 'function') {
     Q.addAsset({ id: 'deeps_coop_contract_workshop', name: 'Deeps sealed contract workshop', district: 'Deeps', ownerType: 'stratum', owner: 'coop', kind: 'workshop', major: false });
@@ -286,7 +320,10 @@ Deepers' insulated workshops take contracts on their own terms — sealed bids, 
 
 @coop_docks
 title: Docks cooperatives and freight guilds
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
 on-arrival: {!
+Q.spendOrganizingAction();
 contract_coop_docks = 1;
 if (typeof Q.addAsset === 'function') {
     Q.addAsset({ id: 'docks_coop_contract_workshop', name: 'Docks coop contract workshop', district: 'Docks', ownerType: 'stratum', owner: 'coop', kind: 'workshop', major: false });

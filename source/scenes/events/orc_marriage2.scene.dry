@@ -13,8 +13,7 @@ In the October ruling of the Amira-Sponsa case, the appeals court ordered the ci
 
 
 @civil_unions_minimum
-on-arrival: orc_marriage_minimum = 1 
-# Q.first["Dems"]+=.2 ; Q.alien["Dems"]+=2 ; Q.second["Dems"]+= -.2; Q.first["Hate"]+=.05; 
+on-arrival: orc_marriage_minimum = 1
 
 Neither advocates or opponents of the Otherworlder rights seem to credit or resent us for introducing the bill, they just think we were obeying the courts by doing what the advocates call "the bare minimum".  However the corporate and syndicate factions wont even accept the bare minimum, they overhwlemingly ignore the court order and vote against the bill.  The megacorps aren't happy about this outcome and a Brazos Zaibatsu spokesperson even has the audacity to claim "Brazos Zaibatsu strongly condemns the vote against this bill but at least this incident shows that there is no truth to the claim that the Mikasa legislative assembly is a rubber stamp for corporate interests."
 
@@ -23,8 +22,7 @@ For what it's worth the voters seem to mostly blame the legislators who voted ag
 - @what_did_I_do: The F**** did we do?
 
 @civil_unions_modern
-on-arrival: orc_marriage_civil = 1 {! // Q.first["Dems"]+=.3 ; Q.alien["Dems"]+=5 ; Q.second["Dems"]+= -.3; Q.first["Hate"]+=.1; 
-!}
+on-arrival: orc_marriage_civil = 1
 
 Equality advocates are delighted by our boldness although we have alienated the anti-Otherworlder movements.  The issue turns out to be moot though.  The legislature not only overwhelmingly votes down our bill to start issueing civil union certificates, they also overwhelmingly vote down a compromise bill to simply comply with the court order.  The megacorps aren't happy about this outcome and a Brazos Zaibatsu spokesperson even has the audacity to claim "Brazos Zaibatsu strongly condemns the vote against this bill but at least this incident shows that three is no truth to the claim that the Mikasa legislative assembly is a rubber stamp for corporate interests."
 
@@ -34,8 +32,7 @@ For what it's worth the voters seem to mostly blame the legislators who voted ag
 
 
 @civil_unions_orci
-on-arrival: orc_marriage_wood = 1 {! // Q.first["Dems"]-=.1 ; Q.alien["Dems"]+=.2 ; Q.second["Dems"]+= -.01 
-!}
+on-arrival: orc_marriage_wood = 1
 
 Our party leadership make fools of themselves confusing Orci and Uruk rights.  While the Orci may be created from sentient creatures, they lack free will due to the magic controlling them.  The small Orci rights movement is not seeking for Orci to be treated as members of society but to be treated as compassion as souls (often the family of advocates) enslaved to a horrible fate.  There aren't even any Orci in Mikasa in the first place but talking about them just emboldens the anti-Uruk movement which loves to use Orci as a bogeyman.
 

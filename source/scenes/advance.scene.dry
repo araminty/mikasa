@@ -3,5 +3,24 @@ new-page: true
 is-card: true
 is-pinned-card: true
 card-image: img/solar_system.png
-on-arrival: {! Q.month += 1; if (Q.month>12){ Q.year += 1; Q.month -=12;} !}
-go-to: post_event.events_choice
+on-arrival: {!
+if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay() }
+!}
+go-to: reserve_warning if action_reserve >= 4 and organizing_unlock = 1; advance_month
+
+@reserve_warning
+title: Advance a month
+
+Your action reserve is full ([+ action_reserve +]/4). If you end the month now, the organizing action you would normally bank will be lost — you cannot carry more than four actions into next month.
+
+Spend your remaining actions first, or advance anyway if you are ready to move on.
+
+- @advance_month: Advance anyway
+- @return
+
+@advance_month
+on-arrival: {!
+Q.month += 1;
+if (Q.month>12){ Q.year += 1; Q.month -=12;}
+!}
+go-to: post_event

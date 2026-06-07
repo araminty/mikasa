@@ -4,6 +4,7 @@ is-card: true
 card-image: img/asteroid.jpg
 tags: local_organizing, city_affairs
 view_if: organizing_unlock = 1
+on-arrival: {! if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay() } !}
 
 Mikasa has more magical users then most of the solar system thanks to passageways to the Otherworld in the Aurora district.
 
@@ -12,16 +13,20 @@ Mikasa has more magical users then most of the solar system thanks to passageway
 -@establish_school
 - @return
 
-# dendry: choices above lacked @subscenes — stubs below until written
-
 @control
 title: Restrict magical practice
-on-arrival: magic_control += 1
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
+on-arrival: {! Q.spendOrganizingAction(); Q.magic_control += 1; !}
 
 @assimilate
 title: Assimilate magical traditions
-on-arrival: magic_assimilate += 1
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
+on-arrival: {! Q.spendOrganizingAction(); Q.magic_assimilate += 1; !}
 
 @establish_school
 title: Establish a formal school
-on-arrival: magic_school += 1
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
+on-arrival: {! Q.spendOrganizingAction(); Q.magic_school += 1; !}

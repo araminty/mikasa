@@ -896,7 +896,120 @@ function syncContractingAllowance() {
     return Number(Q.contracting_visits_remaining) || 0
 }
 
+var ACTION_RESERVE_MAX = 4
+var ACTION_SURGE_BONUS = 2
+var ACTION_SURGE_UNLIMITED = 999
+
+/** First month of each phase (phase 2+): +2 reserve (may exceed cap) and uncapped monthly spend. */
+function applyActionSurgeIfNewPhase() {
+    var phase = Number(Q.phase)
+    if (isNaN(phase) || phase < 2) { return false }
+    var granted = Number(Q.action_surge_granted_through_phase) || 0
+    if (phase <= granted) { return false }
+    Q.action_surge_granted_through_phase = phase
+    Q.action_surge_active = 1
+    Q.action_reserve = (Number(Q.action_reserve) || 0) + ACTION_SURGE_BONUS
+    Q.month_actions_limit = ACTION_SURGE_UNLIMITED
+    return true
+}
+
+function normalMonthActionsLimit() {
+    var usedLast = Number(Q.actions_used_last_month) || 0
+    return (usedLast === 0) ? 3 : 2
+}
+
+/** Hand banner on main (Dendrynexus reads Q.handDescription above the hand). */
+function syncMainHandActionDescription() {
+    if (Number(Q.organizing_unlock) !== 1) {
+        Q.handDescription = ''
+        return
+    }
+    var surge = Number(Q.action_surge_active) === 1
+    var reserve = Number(Q.action_reserve) || 0
+    var remaining = Number(Q.month_actions_remaining) || 0
+    var used = Number(Q.month_actions_used) || 0
+    var limit = Number(Q.month_actions_limit) || 2
+    var text = ''
+    if (surge) {
+        text = 'Action surge (opening month of phase ' + (Number(Q.phase) || 1) + ')'
+            + '\nAction reserve: ' + reserve + ' (+2 bonus; normal cap ' + ACTION_RESERVE_MAX + ')'
+            + '\nSpend uncapped this month (' + used + ' used)'
+    } else {
+        text = 'Action reserve: ' + reserve + '/' + ACTION_RESERVE_MAX
+            + '\nActions available this month: ' + remaining + ' (' + used + ' of ' + limit + ' used)'
+    }
+    text += '\n\nHand — click a card to play.'
+    Q.handDescription = text
+    var el = document.querySelector('.hand-description')
+    if (el) { el.textContent = text }
+}
+
+/** Recompute Q.month_actions_remaining from reserve, limit, and used this month. */
+function syncActionEconomyDisplay() {
+    var surge = Number(Q.action_surge_active) === 1
+    var used = Number(Q.month_actions_used) || 0
+    var reserve = Number(Q.action_reserve) || 0
+    if (reserve < 0) { reserve = 0 }
+    if (!surge && reserve > ACTION_RESERVE_MAX) { reserve = ACTION_RESERVE_MAX }
+    Q.action_reserve = reserve
+    Q.month_actions_used = used
+    var limit
+    if (surge) {
+        Q.month_actions_limit = ACTION_SURGE_UNLIMITED
+        limit = ACTION_SURGE_UNLIMITED
+    } else {
+        limit = Number(Q.month_actions_limit)
+        if (isNaN(limit) || limit < 1 || limit >= ACTION_SURGE_UNLIMITED) {
+            limit = normalMonthActionsLimit()
+        }
+        Q.month_actions_limit = limit
+    }
+    var remaining
+    if (surge) {
+        remaining = reserve
+    } else {
+        var slotsLeft = Math.max(0, limit - used)
+        remaining = Math.min(slotsLeft, reserve)
+    }
+    Q.month_actions_remaining = remaining
+    syncMainHandActionDescription()
+    return Q.month_actions_remaining
+}
+
+Q.canSpendOrganizingAction = function() {
+    syncActionEconomyDisplay()
+    return (Number(Q.month_actions_remaining) || 0) > 0
+}
+
+Q.spendOrganizingAction = function() {
+    if (!Q.canSpendOrganizingAction()) { return false }
+    Q.action_reserve = (Number(Q.action_reserve) || 0) - 1
+    Q.month_actions_used = (Number(Q.month_actions_used) || 0) + 1
+    syncActionEconomyDisplay()
+    return true
+}
+
+/** Month-start: +1 reserve (cap 4), reset used, set limit 2 or 3 if idle last month. */
+Q.beginActionEconomyMonth = function() {
+    var usedLast = Number(Q.month_actions_used) || 0
+    Q.actions_used_last_month = usedLast
+    Q.action_surge_active = 0
+    Q.month_actions_used = 0
+    Q.month_actions_limit = (usedLast === 0) ? 3 : 2
+    var reserve = Number(Q.action_reserve) || 0
+    if (reserve < 0) { reserve = 0 }
+    if (reserve > ACTION_RESERVE_MAX) { reserve = ACTION_RESERVE_MAX }
+    Q.action_reserve = Math.min(ACTION_RESERVE_MAX, reserve + 1)
+    applyActionSurgeIfNewPhase()
+    return syncActionEconomyDisplay()
+}
+
+Q.applyActionSurgeIfNewPhase = applyActionSurgeIfNewPhase
+
 function monthly_tick_phase1() {
+    if (typeof Q.beginActionEconomyMonth === 'function') {
+        Q.beginActionEconomyMonth()
+    }
     syncContractingAllowance()
     organize_tick()
     if (typeof Q.cableNegPromiseMonthlyTick === 'function') {
@@ -948,6 +1061,8 @@ Q.applyStratumProsperityBumps = applyStratumProsperityBumps
 Q.bumpDistrictProsperity = bumpDistrictProsperity
 Q.applyProsperityConnections = applyProsperityConnections
 Q.syncProsperityDisplays = syncProsperityDisplays
+Q.syncActionEconomyDisplay = syncActionEconomyDisplay
+Q.ACTION_RESERVE_MAX = ACTION_RESERVE_MAX
 
 initEconomyProsperity()
 if (typeof Q.initEconomicAssets === 'function') { Q.initEconomicAssets() }
@@ -973,3 +1088,4 @@ if (typeof Q.cableNegBreakPromise !== 'function') {
 }
 
 !}
+go-to: jumpScene

@@ -213,9 +213,23 @@ Q.electorateModifierCatalog = [
     new ElectorateModifier('magic_assimilate_alien_D', 'magic_assimilate', 'stratum', 'alien', 'D', 0.12),
     new ElectorateModifier('magic_school_alien_D', 'magic_school', 'stratum', 'alien', 'D', 0.15),
     new ElectorateModifier('magic_school_global_D', 'magic_school', 'global', '', 'D', 0.05),
-    new ElectorateModifier('orc_marriage_wood_auto', 'orc_marriage_wood', 'global', '', 'D', 0),
-    new ElectorateModifier('orc_marriage_civil_auto', 'orc_marriage_civil', 'global', '', 'D', 0),
-    new ElectorateModifier('orc_marriage_minimum_auto', 'orc_marriage_minimum', 'global', '', 'D', 0),
+
+    // orc_marriage2 (Dec 2301) — stack set by choice; ElectorateModifier applies stratum party shifts
+    new ElectorateModifier('orc_marriage_min_first_D', 'orc_marriage_minimum', 'stratum', 'first', 'D', 0.2),
+    new ElectorateModifier('orc_marriage_min_alien_D', 'orc_marriage_minimum', 'stratum', 'alien', 'D', 2),
+    new ElectorateModifier('orc_marriage_min_second_D', 'orc_marriage_minimum', 'stratum', 'second', 'D', -0.2),
+    new ElectorateModifier('orc_marriage_min_first_H', 'orc_marriage_minimum', 'stratum', 'first', 'H', 0.05),
+    new ElectorateModifier('orc_marriage_civil_first_D', 'orc_marriage_civil', 'stratum', 'first', 'D', 0.3),
+    new ElectorateModifier('orc_marriage_civil_alien_D', 'orc_marriage_civil', 'stratum', 'alien', 'D', 5),
+    new ElectorateModifier('orc_marriage_civil_second_D', 'orc_marriage_civil', 'stratum', 'second', 'D', -0.3),
+    new ElectorateModifier('orc_marriage_civil_first_H', 'orc_marriage_civil', 'stratum', 'first', 'H', 0.1),
+    new ElectorateModifier('orc_marriage_wood_first_D', 'orc_marriage_wood', 'stratum', 'first', 'D', -0.1),
+    new ElectorateModifier('orc_marriage_wood_alien_D', 'orc_marriage_wood', 'stratum', 'alien', 'D', 0.2),
+    new ElectorateModifier('orc_marriage_wood_second_D', 'orc_marriage_wood', 'stratum', 'second', 'D', -0.01),
+
+    // drone_vote_buying (Dec) — drone stratum only; G↑ or C↓ → more corp_or_abstain abstentions in status
+    new ElectorateModifier('drone_bribe_boost_G', 'drone_syndicate_bribe_boost', 'stratum', 'drone', 'G', 0.2),
+    new ElectorateModifier('drone_bribe_slip_C', 'drone_corp_bribe_slip', 'stratum', 'drone', 'C', -0.1),
 
     // --- otherworld event stacks (placeholder) ---
     new ElectorateModifier('otherworld_outpost_alien_D', 'otherworld_outpost', 'stratum', 'alien', 'D', 0.1),
@@ -245,6 +259,10 @@ Q.electorateModifierCatalog = [
     new ElectorateModifier('militia_police_auto', 'militia_police', 'global', '', 'D', 0),
     new ElectorateModifier('non_violence_auto', 'non_violence', 'global', '', 'D', 0),
     new ElectorateModifier('patriot_meme_strength_auto', 'patriot_meme_strength', 'global', '', 'D', 0),
+
+    // september_convention — ban slights first-wave settlers (stratum first)
+    new ElectorateModifier('sept_conv_first_slight_D', 'first_wave_ban_slights', 'stratum', 'first', 'D', -0.12),
+    new ElectorateModifier('sept_conv_first_slight_H', 'first_wave_ban_slights', 'stratum', 'first', 'H', 0.06),
     new ElectorateModifier('police_reform_auto', 'police_reform', 'global', '', 'D', 0),
     new ElectorateModifier('sabotage_auto', 'sabotage', 'global', '', 'D', 0),
 

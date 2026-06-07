@@ -19,11 +19,12 @@ A September Conference has been scheduled for February 10th, right after the lar
 - @permit: Allow it!  Dont falsely accuse this autodictat of autodictatism!
 
 @ban
+on-arrival: parochialism -= 3; parochial_radicalism -= 0.05; first_wave_ban_slights += 1
 
 The academics are unhappy about academic freedom being curtailed.  They blame both the megacorps and the city government.
 
 
 @permit
-on-arrival: patriot_meme_strength += 1;
+on-arrival: parochialism += 3
 
 The academics steer clear of any anticorporate speech.  The largest impact of their discussion is greater awareness of the non-binary movement in Mikasa.  Nativist elements have been latching onto the non-binary academic tradition in recent years and are slightly encouraged by this convention even though most academics reject the nativist interpretations.

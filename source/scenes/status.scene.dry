@@ -47,7 +47,16 @@ on-arrival: {!
 if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
 if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
 if (typeof Q.syncStratumProsperityAverages === 'function') { Q.syncStratumProsperityAverages() }
+if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay() }
 !}
+
+= Organizing actions
+
+[? if action_surge_active = 1: Action surge (opening month of phase [+ phase +]) ?]
+
+Action reserve: [+ action_reserve +][? if action_surge_active = 0: /4 ?][? if action_surge_active = 1: (+2 bonus; normal cap 4) ?]
+
+[? if action_surge_active = 1: Spend uncapped this month ([+ month_actions_used +] used) ?][? if action_surge_active = 0: Actions available this month: [+ month_actions_remaining +] ([+ month_actions_used +] of [+ month_actions_limit +] used) ?]
 
 = Public attitude towards outsiders
 

@@ -4,7 +4,7 @@ go-to: start_menu if started = 0; to_setup_functions if started = 1
 on-arrival: {!
 
 // MIKASA_BUILD_STAMP
-Q.build_time_label = '2026-06-07 06:55:57 local';
+Q.build_time_label = '2026-06-07 13:49:49 local';
 // /MIKASA_BUILD_STAMP
 
 if (Q.started && !Q.economic_assets_runtime_ready) {
@@ -57,6 +57,13 @@ Q.time = 1;
 Q.year = 2300;
 Q.month = 1;
 Q.month_actions = 0;
+Q.action_reserve = 0;
+Q.month_actions_used = 0;
+Q.month_actions_limit = 2;
+Q.actions_used_last_month = 0;
+Q.month_actions_remaining = 0;
+Q.action_surge_active = 0;
+Q.action_surge_granted_through_phase = 0;
 Q.parochialism = 25;
 Q.parochial_radicalism = 0.65; // moderate radicalism → ~35% clawed back to Dems, rest stays on H
 Q.third_wave_on_society = 0;
@@ -143,12 +150,3 @@ go-to: to_setup_functions
 @to_setup_functions
 new-page: false
 go-to: setup_functions
-
-@2300_main_continue
-go-to: organize_phase_start
-
-= 2300 
-
-It is a dark time for humanity.  Earth is mired in endless national conflicts while the off planet colonies are torn by violence between lawless corporations.
-
-As the corporations of the interplanetary waystation Mikasa become too distracted fighting each other, real power has started to fall into the hands of the city government for the first time in decades.  Now our task is to somehow maintain this newfound autonomy while beating back corruption.  Perhaps Mikasa might one day control the corporations instead of the other way around.

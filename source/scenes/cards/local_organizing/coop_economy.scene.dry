@@ -4,6 +4,7 @@ is-card: true
 card-image: img/asteroid.jpg
 tags: local_organizing
 view_if: organizing_unlock = 1
+on-arrival: {! if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay() } !}
 
 The cooperatives are the bedrock of the non-corporate economy on Mikasa.  Cooperatives tend to be semi-insular groups that live together, strive for self sufficiency and have an established trade to bring in outside revenues.
 
@@ -12,16 +13,20 @@ The cooperatives are the bedrock of the non-corporate economy on Mikasa.  Cooper
 -@investment
 - @return
 
-# dendry: choices above lacked @subscenes — stubs below until written
-
 @markets
 title: Interclan markets
-on-arrival: coop_markets += 1
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
+on-arrival: {! Q.spendOrganizingAction(); Q.coop_markets += 1; !}
 
 @mother
 title: Clans of mother outreach
-on-arrival: coop_mother += 1
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
+on-arrival: {! Q.spendOrganizingAction(); Q.coop_mother += 1; !}
 
 @investment
 title: Self-sufficiency investments
-on-arrival: coop_investment += 1
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
+on-arrival: {! Q.spendOrganizingAction(); Q.coop_investment += 1; !}

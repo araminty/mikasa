@@ -3,6 +3,7 @@ subtitle: The megacorps need a referee — we set the price
 max-visits: 1
 new-page: true
 tags: event
+view-if: cable_break_negotiations_go = 1
 on-arrival: {!
 Q.cableNegEnsureApi = function() {
 // --- reprisal knobs (edit here to rebalance demands) ---
@@ -1789,6 +1790,10 @@ Q.cable_neg_brazos_accepts = Q.cableNegAccepts('brazos')
 if (votes >= 2) {
     Q.cable_neg_deal = 1
     Q.cable_break_peace = 1
+    Q.phase = 2
+    if (typeof Q.syncContractingAllowance === 'function') { Q.syncContractingAllowance() }
+    if (typeof Q.applyActionSurgeIfNewPhase === 'function') { Q.applyActionSurgeIfNewPhase() }
+    if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay() }
     if (Q.cable_neg_civil_rights === 1) { Q.civil_rights_unlock = 1 }
     if (Q.cable_neg_police_vats === 1 || Q.cable_neg_police_railyard === 1 || Q.cable_neg_police_docks === 1 || Q.cable_neg_police_limelight === 1) {
         Q.corp_police_city_jurisdiction = 1

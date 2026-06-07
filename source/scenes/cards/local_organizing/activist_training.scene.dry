@@ -4,6 +4,7 @@ is-card: true
 card-image: img/asteroid.jpg
 tags: local_organizing
 view_if: organizing_unlock = 1
+on-arrival: {! if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay() } !}
 
 Turn popular support into power.
 
@@ -23,9 +24,9 @@ Turn popular support into power.
 
 @nonviolence
 title: Train disciplined activists for non-violent demostrations
-choose-if: non_violence < 3
-unavailable-subtitle: We already have a well trained vanguard
-on-arrival: non_violence += 1;
+choose-if: non_violence < 3 and month_actions_remaining > 0
+unavailable-subtitle: [? if month_actions_remaining <= 0: No organizing actions left this month. ?][? if month_actions_remaining > 0: We already have a well trained vanguard ?]
+on-arrival: {! Q.spendOrganizingAction(); Q.non_violence += 1; !}
 
 Non-violent discipline requires the utmost discipline to resist provocation and win the media war.  We are training a vanguard of activists for this difficult course of action.
 [? if non_violence == 1 : We are spreading knownledge of non-violent personal protection techniques and our activists can keep recording despite corporate suppression efforts ?]
@@ -35,89 +36,107 @@ Non-violent discipline requires the utmost discipline to resist provocation and 
 
 @sabotage
 title: Deniable sabotage techniques
-choose-if: sabotage < 3
-unavailable-subtitle: We already have a well established doctrine
-on-arrival: sabotage += 1;
+choose-if: sabotage < 3 and month_actions_remaining > 0
+unavailable-subtitle: [? if month_actions_remaining <= 0: No organizing actions left this month. ?][? if month_actions_remaining > 0: We already have a well established doctrine ?]
+on-arrival: {! Q.spendOrganizingAction(); Q.sabotage += 1; !}
 
 The corporations harshly punish destruction of property but the workers have developed a wide range of techniques to throw sand in the corporate gears that can't be traced.
 
 
 @defense
 title: Community self defense
-choose-if: militia < 3
-unavailable-subtitle: We've already built up the militia
-on-arrival: militia += 1;
+choose-if: militia < 3 and month_actions_remaining > 0
+unavailable-subtitle: [? if month_actions_remaining <= 0: No organizing actions left this month. ?][? if month_actions_remaining > 0: We've already built up the militia ?]
+on-arrival: {! Q.spendOrganizingAction(); Q.militia += 1; !}
 
 We have established local community watch efforts to try to protect the citizens from crime.
 
 @break_sabotage_soylent
-title: Break saboteur truce — hit Soylent
+title: Break saboteur truce with Soylent
 view-if: cable_promise_block_sabotage_soylent = 1
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
 subtitle: Ceasefire promise active; double reprisal if we break it
 on-arrival: {!
+Q.spendOrganizingAction();
 if (typeof Q.cableNegEnsureApi === 'function') { Q.cableNegEnsureApi() }
 if (typeof Q.cableNegBreakPromise === 'function') { Q.cableNegBreakPromise('sabotage') }
 if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
 !}
 
-We let the cells off the leash against Community Soylent again.  They will notice — and the bargain we signed at the cable talks will cost us **twice** the goodwill we traded away.
+It's hunting season for Soylent.
 
 @break_sabotage_magrail
-title: Break saboteur truce — hit Magrail
+title: Break saboteur truce with Magrail
 view-if: cable_promise_block_sabotage_magrail = 1
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
 subtitle: Ceasefire promise active; double reprisal if we break it
 on-arrival: {!
+Q.spendOrganizingAction();
 if (typeof Q.cableNegEnsureApi === 'function') { Q.cableNegEnsureApi() }
 if (typeof Q.cableNegBreakPromise === 'function') { Q.cableNegBreakPromise('sabotage') }
 if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
 !}
 
-Magrail Combine gets sand in the gears again.  The reprisal we bought down at the negotiations comes due at double strength.
+Magrail Combine gets sand in the gears again.
 
 @break_sabotage_brazos
-title: Break saboteur truce — hit Brazos
+title: Break saboteur truce with Brazos
 view-if: cable_promise_block_sabotage_brazos = 1
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
 subtitle: Ceasefire promise active; double reprisal if we break it
 on-arrival: {!
+Q.spendOrganizingAction();
 if (typeof Q.cableNegEnsureApi === 'function') { Q.cableNegEnsureApi() }
 if (typeof Q.cableNegBreakPromise === 'function') { Q.cableNegBreakPromise('sabotage') }
 if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
 !}
 
-Brazos Zaibatsu is fair game for deniable ops again.  They will remember we broke our word — at twice the price.
+Brazos Zaibatsu is fair game for deniable ops again.
 
 @break_protest_soylent
-title: Break protest truce — target Soylent
+title: Break protest truce with Soylent
 view-if: cable_promise_block_protest_soylent = 1
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
 subtitle: Ceasefire promise active; double reprisal if we break it
 on-arrival: {!
+Q.spendOrganizingAction();
 if (typeof Q.cableNegEnsureApi === 'function') { Q.cableNegEnsureApi() }
 if (typeof Q.cableNegBreakPromise === 'function') { Q.cableNegBreakPromise('protest') }
 if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
 !}
 
-The disciplined picket lines march on Soylent facilities again.  We eat the doubled corporate heat we promised to avoid.
+We are no longer discouraging activists from highlighting Soylent abuses.
 
 @break_protest_magrail
-title: Break protest truce — target Magrail
+title: Break protest truce with Magrail
 view-if: cable_promise_block_protest_magrail = 1
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
 subtitle: Ceasefire promise active; double reprisal if we break it
 on-arrival: {!
+Q.spendOrganizingAction();
 if (typeof Q.cableNegEnsureApi === 'function') { Q.cableNegEnsureApi() }
 if (typeof Q.cableNegBreakPromise === 'function') { Q.cableNegBreakPromise('protest') }
 if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
 !}
 
-Magrail gets the street pressure we swore off.  Their reprisal meter jumps by twice what we traded away at the table.
+Our activists stop giving Magrail special treatment.
 
 @break_protest_brazos
-title: Break protest truce — target Brazos
+title: Break protest truce with Brazos
 view-if: cable_promise_block_protest_brazos = 1
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
 subtitle: Ceasefire promise active; double reprisal if we break it
 on-arrival: {!
+Q.spendOrganizingAction();
 if (typeof Q.cableNegEnsureApi === 'function') { Q.cableNegEnsureApi() }
 if (typeof Q.cableNegBreakPromise === 'function') { Q.cableNegBreakPromise('protest') }
 if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
 !}
 
-Brazos faces our protesters again.  Breaking the truce lands double reprisal — immediately.
+No more playing nice with Brazos.

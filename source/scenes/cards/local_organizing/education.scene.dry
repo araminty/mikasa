@@ -4,6 +4,7 @@ is-card: true
 card-image: img/asteroid.jpg
 tags: local_organizing, city_affairs
 view_if: organizing_unlock = 1
+on-arrival: {! if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay() } !}
 
 The education system has both greatly advanced and greatly regressed since the pre-spaceflight era.  On the positive side, ubiquitous open sourced computerized educational resources have made it trivial for parents to provide children with basic life skills. On the negative side, most children are not recieving formal schooling.  Unschooled children are often left unprepared to the workforce and ignorant of world affairs.  The problem is particularly severe among the non-human populations from the otherworld.
 
@@ -15,22 +16,31 @@ The education system has both greatly advanced and greatly regressed since the p
 
 @vocational
 title: Focus on vocational training to reduce poverty
-choose-if: 1
-on-arrival: vocational_track += 1
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
+on-arrival: {! Q.spendOrganizingAction(); Q.vocational_track += 1; !}
 
 Improving vocational training helps workers get better jobs, in particular with the corporations.  School attendence has risen somewhat as students are attracted by the prospect of higher incomes.  The megacorps approve of this curriculum and agree to contract some of their internal training programs over to our education system which allows us to offset the costs of this expansion.
 
 @home_ec
 title: Expand teaching of home economics skills like nutrition, health, electronics and mechanics
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
+on-arrival: {! Q.spendOrganizingAction(); !}
 
 We strive to give students the skills to be more self reliant, making their food nuYen go farther, preventing health complications and repairing their home goods instead of buying new ones.  The cooperatives approve of this curriculum and some of their home schooled students have started attending classes part time.
 
 
 @well_rounded
 title: Provide a well rounded education
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
+on-arrival: {! Q.spendOrganizingAction(); !}
 
 We are laying the foundation for a true public education system.  This is an expensive choice but will improve education outcomes across the board in the long term.  This is particularly beneficial for the otherworld population.
 
 @too_broke
 title: We dont have the resources right now
-on-arrival: {! !}
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
+on-arrival: {! Q.spendOrganizingAction(); !}
