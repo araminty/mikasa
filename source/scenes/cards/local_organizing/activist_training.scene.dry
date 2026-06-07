@@ -2,7 +2,7 @@ title: Movement Organizing
 new-page: true
 is-card: true
 card-image: img/asteroid.jpg
-tags: organize_phase
+tags: local_organizing
 view_if: organizing_unlock = 1
 
 Turn popular support into power.
@@ -10,6 +10,7 @@ Turn popular support into power.
 -@nonviolence
 -@sabotage
 -@defense
+- @return
 #-@intelligence
 #-@mutual_aid
 

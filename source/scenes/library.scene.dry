@@ -11,6 +11,7 @@ title: menu
 - @guilds_library: Guild Descriptions
 - @demographics_library: Demographic Descriptions
 - @districts_library: District Descriptions
+- @technology_library: Technology
 - @ai_library: Artificial Intelligence
 - @street_indices_library: Syndicates and Street Indices
 - @faction_attitudes: Faction attitudes
@@ -24,6 +25,33 @@ Faction attitudes are a bit different then in the original game.  Whether they l
 At the start of the game, the corporations and syndicates will all consider you as unimportant.  If the reprisal or leverage becomes extreme they will be waging war against you or obey you.  In between these, the balance between reprisal and leverage will matter, being hostile close to the boundary with Tolerating is different from them being hostile while you have no leverage at all.
 
 {!<img src="img/leverage_reprisal.webp">!}
+
+@technology_library
+
+Setting-specific technologies and devices.  Corrupted AI, relay satellites, and the dead internet are described under Artificial Intelligence.
+
+Grav-plates: These linked plates create a wave of gravitrons between them.  They take lots of energy to start up but once running their ambient power draw is zero.  They require energy inputs or outputs due to changes of energy within their field in accordance with the conservation of energy.  Severing the connection between grav plates without powering them down first will completely burn them out.
+
+
+Grav-plate nullifiers: These are small handheld "grenades" which when activated will inhibit the grav plates directly above and below them.  This will generally burn out the grav plates.  These are heavily illegal due to the potential for property damage but they are cheap, can be readily made from legal materials and thus are amply available on the black market.
+
+
+Momentum transfer tethers:  Mikasa and the other waystations use tethers which catch a ship at one side of a rotation and release it on the other  to enable rapid transit between the inner and outer solar system.  So long as the inward and outward traffic remain balanced, this system requires little energy to operate.  Because it's trivial to dock a tethered ships, the waystations became vibrant travel hubs.  When the asteroid mining era bust hit, the tethers kept solar system traffic from collapsing entirely.
+
+
+Concealment field arrays:  An adaptation of grav plate technology which interferes with light, scrambling sight in the affected volume.  Unknown members of the deeper community developed these while resisting the annexation.  These are illegal and nobody but the deepers knows exactly how they are made.
+
+Reflector arrays: Essentially a cheap, lightweight mirror in orbit.  The moons of Jupiter rely on these to concentrate sunlight and enable agriculture.  They have been proposed but never used for Mikasa and the other waystations. 
+
+Jovian fighting robots: The arms restrictions for the moons of Jupiter coupled with the low gravity allowed for the "mecha" of ancient fiction to become reality.  These simultaneously allow military power to be concentrated in the hands of the Jovian elite while making the fights lucrative as a form of entertainment.
+
+Kipple: A strange and ever changing form of matter which has been accumulating on Earth through a process that has stumped scientists for decades.  Anecdotally it's said to appear out of thin air whenever your back is turned.  Photos and video recording becomes innaccurate when trying to observe kipple.
+
+Otherworld gates:  Although it's theoretically possible to travel to the Otherworld from anywhere, the magic requirements are much lower in some areas.  Mikasa has a high number of otherworld gates.
+
+
+- @menu
+- @backSpecialScene: Exit library.
 
 @ai_library
 

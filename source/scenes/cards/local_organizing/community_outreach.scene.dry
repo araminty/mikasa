@@ -2,7 +2,7 @@ title: Community Conflicts
 new-page: true
 is-card: true
 card-image: img/asteroid.jpg
-tags: party_affairs
+tags: local_organizing
 
 = Community Conflicts
 
@@ -11,6 +11,7 @@ tags: party_affairs
 - @isolated_communities
 - @drones_community
 - @otherworlders_community
+- @return
 
 @first_wave_community
 title: Calm the first wave settlers
@@ -31,7 +32,7 @@ Mikasa and the other transsolar waystations became refugee destinations as the c
 
 Addressing shortfalls in Mikasa's infrastructure and making connections with local community leaders helps address the poor living conditions and conflicts among these groups.
 
-@ isolated_communities
+@isolated_communities
 title: Outreach to isolated communities
 subtitle: Deepers and Tunnel Clans
 on-arrival: isolated_dissent -= 5;

@@ -7,4 +7,4 @@ Party vote shares are computed from voter blocks, IG floors, and competitive sof
 
 Design notes: [source/lib/election-v2.md](lib/election-v2.md) (same folder as this file: `source/lib/`). Population table UI: `source/scenes/election_simulation.scene.dry`.
 
-Prosperity / housing (monthly tick): `source/scenes/cards/organizing/organize_phase_tick.scene.dry`, `source/scenes/economic_assets_runtime.scene.dry` — see `source/scenes/cards/organizing/prosperity_connection_catalog.md` and `economic_tick_planning.md`.
+Prosperity / housing (monthly tick): `source/scenes/cards/local_organizing/organize_phase_tick.scene.dry`, `source/scenes/economic_assets_runtime.scene.dry` — see `source/scenes/cards/local_organizing/prosperity_connection_catalog.md` and `economic_tick_planning.md`.

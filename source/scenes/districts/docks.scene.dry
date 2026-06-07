@@ -1,6 +1,17 @@
 title: The Docks
 new-page: true
+on-arrival: {!
+if (typeof Q.syncDistrictDisplays === 'function') { Q.syncDistrictDisplays('Docks') }
+!}
 
 = The Docks
+
+The Docks are a glittering cosmopolitian area completely unconstained by the petty poverty or insidious control of the city below.  Travellers zipping between the inner and outer solar system go ashore here to dabble in arts, fine dining and deluxe services.  Genetic surgeons far more professional and refined then the chop shop docs below custom tailor aestetics to fit the personalities and whims of their well heeled clientelle.  Flashy luxury sport spaceships flit around carelessly below the massive space liners and freighters looming above.
+
+Anything people could desire is for sale here, including power over the lives of others.
+
+Crime level: [+ docks_crime : crime +] ([+ docks_crime +])
+Prosperity level: [+ docks_prosperity : prosperity +] ([+ docks_prosperity +])
+Political Dominance: [+ docks_dominant_party : party +]
 
 - @main: Return to main

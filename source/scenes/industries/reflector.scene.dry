@@ -1,0 +1,17 @@
+title: Fund a reflector industry
+new-page: true
+on-arrival: {!
+Q.placeholder_metal_demand += 1
+// to be done: make it so this increases demand for metal
+!}
+
+Giant reflector arrays have long been a fixture of the Jovian agriculture industry.  There have been proposals in the past for such arrays on Mikasa and the other waystations but the need is lower and ensuring a stable orientation requires more complex construction without a nearby body like Jupiter providing lagrange points.  An intruiging proposal raised at last year's September Conference could temporarily change this state of affairs.
+
+A prototype has been demonstrated for coupling a digitally managed electromagnetic "governor" field with a network of extremely small reflectors.  The system would use probabilistic forecasting to minimize the energy and computational demand over such a large number of objects.  This would boost solar generation on Mikasa's outbound flight.  Then at the Jovian system the small capture velocity of the mirrors would allow the array to be sold to the jovian agriculture industry.
+
+The margins on this endeavor would be thin but it could offer a way to stimulate demand for simple metal products that could be made domestically from domestic ores.
+
+Options to do:
+Fund it with city funds
+If high leverage over soylent, strongarm them into funding it
+Not worth it right now

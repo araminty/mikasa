@@ -2,6 +2,7 @@ title: Main
 set-bg: img/solar_system.jpg
 is-hand: true
 new-page: true
+set-root: ok
 max-cards: 3
 on-arrival: {!
 if (Q.prosperity_soylent == null) { Q.prosperity_soylent = 10 }
@@ -11,34 +12,28 @@ if (Q.prosperity_families == null) { Q.prosperity_families = 8 }
 if (Q.prosperity_edges == null) { Q.prosperity_edges = 8 }
 if (Q.prosperity_sharks == null) { Q.prosperity_sharks = 8 }
 if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+if (typeof Q.syncContractingAllowance === 'function') { Q.syncContractingAllowance() }
 !}
 
 #Here, the main deck will be displayed. Clicking on the deck draws a card into your hand. Clicking on a card activates that card.
 
-- @party
-- @govt
+- @local_organizing
+- @city_affairs
 - @advance
 - #advisor
 
-@party
-title: Party Affairs
-card-image: img/ballot.png
+@local_organizing
+title: Community Organizing
+card-image: img/aurora_pyramid.webp
 is-deck: true
 
-- #party_affairs
+- #local_organizing
 
-@govt
-title: Government Affairs
+@city_affairs
+title: City Affairs
 card-image: img/chamber.jpg
+view-if: phase>1
 is-deck: true
 
-- #govt_affairs
-
-
-@violence
-title: Corp/Syndicate Violence
-card-image: img/collapse.jpg
-is-deck: true
-
-- #govt_affairs
+- #city_affairs
 

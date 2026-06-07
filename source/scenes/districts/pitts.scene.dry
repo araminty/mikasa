@@ -1,6 +1,17 @@
 title: Pitts
 new-page: true
+on-arrival: {!
+if (typeof Q.syncDistrictDisplays === 'function') { Q.syncDistrictDisplays('Pitts') }
+!}
 
 = Pitts
 
+Crime level: [+ pitts_crime : crime +] ([+ pitts_crime +])
+Prosperity level: [+ pitts_prosperity : prosperity +] ([+ pitts_prosperity +])
+Political Dominance: [+ pitts_dominant_party : party +]
+
 - @main: Return to main
+- @subsidize_mines: Look into reopening closed mines
+
+@subsidize_mines
+go-to: mining

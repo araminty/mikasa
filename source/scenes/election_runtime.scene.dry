@@ -1167,6 +1167,43 @@ Q.syncStratumProsperityAverages = function() { syncStratumProsperityAverages(ele
 Q.update_projections = function(opts) {
     return runElectionsAndWriteQ(Object.assign({ commitSeats: false }, opts || {}))
 }
+
+/** District scene stats → Q.<district>_prosperity, _crime, _dominant_party (lowercase key). */
+Q.syncDistrictDisplays = function(districtId) {
+    Q.update_projections()
+    var key = districtId.charAt(0).toLowerCase() + districtId.slice(1)
+    var base = (Q.mikasaBlockProsperityBase != null) ? Q.mikasaBlockProsperityBase : MIKASA_BLOCK_PROSPERITY_BASE
+    var popSum = 0
+    var weighted = 0
+    for (const block of electionState.blocks) {
+        if (block.district.id !== districtId) { continue }
+        const pop = block.population
+        if (pop <= 0) { continue }
+        popSum += pop
+        weighted += pop * (block.prosperity != null ? block.prosperity : base)
+    }
+    Q[key + '_prosperity'] = popSum > 0 ? Math.round(weighted / popSum * 100) / 100 : base
+
+    const gPoll = Number(Q[districtId + '_poll_G']) || 0
+    const hPoll = Number(Q[districtId + '_poll_H']) || 0
+    const crimeRaw = 12 - Q[key + '_prosperity'] + gPoll * 0.025 + hPoll * 0.012
+    Q[key + '_crime'] = Math.round(Math.max(1, Math.min(10, crimeRaw)) * 100) / 100
+
+    const parties = [
+        { code: 1, seats: Number(Q[districtId + '_C']) || 0 },
+        { code: 2, seats: Number(Q[districtId + '_G']) || 0 },
+        { code: 3, seats: Number(Q[districtId + '_D']) || 0 },
+        { code: 4, seats: Number(Q[districtId + '_H']) || 0 },
+        { code: 5, seats: Number(Q[districtId + '_I']) || 0 },
+    ]
+    let maxSeats = -1
+    for (const party of parties) {
+        if (party.seats > maxSeats) { maxSeats = party.seats }
+    }
+    const leaders = parties.filter((party) => party.seats === maxSeats && maxSeats > 0)
+    Q[key + '_dominant_party'] = leaders.length === 1 ? leaders[0].code : 0
+}
+
 Q.assignSeatsFromInitialPolling = function() {
     return runElectionsAndWriteQ({ month: 1, allDistricts: true, commitSeats: true })
 }

@@ -294,38 +294,31 @@ var PROSPERITY_DISTRICT_IDS = [
  */
 var PROSPERITY_INTRA_DISTRICT_DEFAULT = {
     rich: {
-        first: 0.0005, second: 0.0015, coop: 0.0004, drone: 0, alien: 0,
-        deeper: 0, third_wave: 0,
+        rich: 0, first: 0.0102, second: 0.0115, coop: 0.0104, drone: 0, alien: 0, deeper: 0, third_wave: 0,
     },
     first: {
-        rich: 0.0003, second: 0.002, coop: 0.001, drone: 0.0004, alien: 0,
-        deeper: 0, third_wave: 0,
+        rich: 0, first: 0, second: 0.012, coop: 0.011, drone: 0.0031, alien: 0, deeper: 0, third_wave: 0,
     },
     second: {
-        rich: 0.0004, first: 0.002, coop: 0.0012, drone: 0.0005, alien: 0,
-        deeper: 0, third_wave: 0,
+        rich: 0, first: 0.0117, second: 0, coop: 0.0112, drone: 0.0032, alien: 0, deeper: 0, third_wave: 0,
     },
     coop: {
-        rich: 0.0003, first: 0.001, second: 0.001, drone: 0.0006, alien: 0,
-        deeper: 0, third_wave: 0,
+        rich: 0, first: 0.0007, second: 0.011, coop: 0, drone: 0.0033, alien: 0, deeper: 0, third_wave: 0,
     },
     drone: {
-        rich: 0, first: 0.0003, second: 0.0004, coop: 0.0008, alien: 0,
-        deeper: 0, third_wave: 0,
+        rich: 0, first: 0.01, second: 0.0104, coop: 0.0108, drone: 0, alien: 0, deeper: 0, third_wave: 0,
     },
     alien: {
-        rich: 0, first: 0, second: 0, coop: 0, drone: 0, deeper: 0.0004,
-        third_wave: 0,
+        rich: 0, first: 0, second: 0, coop: 0, drone: 0, alien: 0, deeper: 0.0104, third_wave: 0,
     },
     deeper: {
-        rich: 0, first: 0, second: 0, coop: 0, drone: 0, alien: 0.0004,
-        third_wave: 0,
+        rich: 0, first: 0, second: 0, coop: 0, drone: 0, alien: 0.00795, deeper: 0, third_wave: 0,
     },
     third_wave: {
-        rich: 0, first: 0.0004, second: 0.0006, coop: 0.0004, drone: 0,
-        alien: 0, deeper: 0,
+        rich: 0, first: 0.0101, second: 0.0106, coop: 0.0104, drone: 0, alien: 0, deeper: 0, third_wave: 0,
     },
 }
+
 
 /**
  * IG prosperity → each stratum block in that IG's home district only.
@@ -336,51 +329,46 @@ var PROSPERITY_IG_HOME_DISTRICT_LINKS = [
         ig: 'Soylent',
         district: 'Vats',
         toStrata: {
-            rich: 0.001, first: 0.001, second: 0.0015, coop: 0.002,
-            drone: 0.009, alien: 0, deeper: 0.0005, third_wave: 0,
+            rich: 0.0109, first: 0.0049, second: 0.0115, coop: 0.012, drone: 0.0057, alien: 0, deeper: 0.0026, third_wave: 0,
         },
     },
     {
         ig: 'Magrail',
         district: 'Railyard',
         toStrata: {
-            rich: 0.001, first: 0.0012, second: 0.001, coop: 0.0035,
-            drone: 0.008, alien: 0, deeper: 0.0005, third_wave: 0,
+            rich: 0, first: 0.0052, second: 0.00965, coop: 0.0135, drone: 0.0058, alien: 0, deeper: 0.00155, third_wave: 0,
         },
     },
     {
         ig: 'Brazos',
         district: 'Limelight',
         toStrata: {
-            rich: 0.0012, first: 0.004, second: 0.0015, coop: 0.002,
-            drone: 0.008, alien: 0, deeper: 0.0005, third_wave: 0,
+            rich: 0.0112, first: 0.0071, second: 0.0115, coop: 0.012, drone: 0.006, alien: 0, deeper: 0.0026, third_wave: 0,
         },
     },
     {
         ig: 'Families',
         district: 'Pitts',
         toStrata: {
-            rich: 0, first: 0.002, second: 0.004, coop: 0.002,
-            drone: 0, alien: 0, deeper: 0.0008, third_wave: 0,
+            rich: 0, first: 0.01015, second: 0.014, coop: 0.012, drone: 0, alien: 0, deeper: 0.00095, third_wave: 0,
         },
     },
     {
         ig: 'Edges',
         district: 'Railyard',
         toStrata: {
-            rich: 0.0008, first: 0.0025, second: 0.003, coop: 0.0015,
-            drone: 0.0025, alien: 0, deeper: 0.0005, third_wave: 0,
+            rich: 0, first: 0.0012, second: 0.01055, coop: 0.0115, drone: 0, alien: 0, deeper: 0.0012, third_wave: 0,
         },
     },
     {
         ig: 'Sharks',
         district: 'Deeps',
         toStrata: {
-            rich: 0.0006, first: 0.001, second: 0.001, coop: 0.0008,
-            drone: 0, alien: 0.003, deeper: 0.005, third_wave: 0,
+            rich: 0.0106, first: 0.011, second: 0.011, coop: 0.0108, drone: 0, alien: 0.0011, deeper: 0.015, third_wave: 0,
         },
     },
 ]
+
 
 /** All strata wired in Docks trade spill (per-stratum multiplier × base coeff). */
 var PROSPERITY_DOCKS_TRADE_STRATA = {
@@ -758,7 +746,59 @@ function economy_tick(){
 // Economic asset API: economic_assets_runtime.scene.dry
 
 
+var CONTRACTING_VISITS_PER_PHASE = 2
+
+var CONTRACT_PATRONAGE_FLAGS = [
+    'contract_big3_docks',
+    'contract_big3_vats',
+    'contract_big3_railyard',
+    'contract_big3_limelight',
+    'contract_wealthy_docks',
+    'contract_wealthy_aurora',
+    'contract_coop_aurora',
+    'contract_coop_pitts',
+    'contract_coop_deeps',
+    'contract_coop_docks'
+]
+var FAIR_LEAD_OVER_PATRONAGE = 3
+
+/** Forced honest bidding when fair contracts lead patronage (excl. outside corps) by this many. */
+function syncContractFairChainComplete() {
+    var patronageCount = 0
+    for (var i = 0; i < CONTRACT_PATRONAGE_FLAGS.length; i++) {
+        if ((Number(Q[CONTRACT_PATRONAGE_FLAGS[i]]) || 0) >= 1) {
+            patronageCount += 1
+        }
+    }
+    Q.contract_patronage_count = patronageCount
+    var fairCount = Number(Q.fair_contract_uses) || 0
+    var outsideCount = Number(Q.contract_outside) || 0
+    var totalAwards = outsideCount + fairCount + patronageCount
+    Q.contract_award_total = totalAwards
+    Q.contract_outside_below_quarter = (totalAwards < 1 || outsideCount * 4 < totalAwards) ? 1 : 0
+    Q.contract_fair_chain_complete = (fairCount >= patronageCount + FAIR_LEAD_OVER_PATRONAGE) ? 1 : 0
+    return Q.contract_fair_chain_complete
+}
+
+/** Grant 2 contracting draws per phase; unused visits bank for later phases. */
+function syncContractingAllowance() {
+    var phase = Number(Q.phase)
+    if (isNaN(phase) || phase < 1) { phase = 1 }
+    var through = Number(Q.contracting_allowance_through_phase)
+    if (isNaN(through) || through < 0) { through = 0 }
+    if (phase > through) {
+        var grant = (phase - through) * CONTRACTING_VISITS_PER_PHASE
+        Q.contracting_visits_remaining = (Number(Q.contracting_visits_remaining) || 0) + grant
+        Q.contracting_allowance_through_phase = phase
+    }
+    if (Q.contracting_visits_remaining == null || isNaN(Number(Q.contracting_visits_remaining))) {
+        Q.contracting_visits_remaining = 0
+    }
+    return Number(Q.contracting_visits_remaining) || 0
+}
+
 function monthly_tick_phase1() {
+    syncContractingAllowance()
     organize_tick()
     trade_level_tick()
     economy_tick()
@@ -770,11 +810,40 @@ function monthly_tick_phase1() {
     if (typeof Q.processMonthlyHousing === 'function') {
         Q.processMonthlyHousing()
     }
+    if (typeof Q.tabulateBudget === 'function') {
+        Q.tabulateBudget()
+    }
     syncProsperityDisplays()
+    if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+}
+
+/** Add amount to every voter block in one district; sync prosperity displays. */
+function bumpDistrictProsperity(districtId, amount) {
+    var state = Q.electionV2
+    if (!state || !state.blocks) { return false }
+    var bump = Number(amount)
+    if (isNaN(bump) || bump === 0) { return false }
+    for (var i = 0; i < state.blocks.length; i++) {
+        var block = state.blocks[i]
+        if (block.district.id !== districtId) { continue }
+        block.prosperity = clampProsperity(
+            (block.prosperity ?? PROSPERITY_BLOCK_BASELINE) + bump
+        )
+    }
+    if (typeof Q.qified_block_prosperity === 'function') {
+        Q.qified_block_prosperity()
+    }
+    if (typeof Q.syncStratumProsperityAverages === 'function') {
+        Q.syncStratumProsperityAverages()
+    }
+    return true
 }
 
 Q.monthly_tick_phase1 = monthly_tick_phase1
+Q.syncContractingAllowance = syncContractingAllowance
+Q.syncContractFairChainComplete = syncContractFairChainComplete
 Q.applyStratumProsperityBumps = applyStratumProsperityBumps
+Q.bumpDistrictProsperity = bumpDistrictProsperity
 Q.applyProsperityConnections = applyProsperityConnections
 Q.syncProsperityDisplays = syncProsperityDisplays
 

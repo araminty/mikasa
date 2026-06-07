@@ -2,7 +2,7 @@ title: Municipal AI
 new-page: true
 is-card: true
 card-image: img/asteroid.jpg
-tags: party_affairs
+tags: city_affairs
 
 = Municipal AI
 
@@ -15,6 +15,7 @@ Every working assistant here is a {!<span class="tooltip-text" title="AIs that b
 - @open_maintenance
 - @contract_audit
 - @corp_clerks
+- @return
 
 @open_maintenance
 title: Deploy open municipal models for grid and life-support

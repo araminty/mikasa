@@ -3,7 +3,7 @@ max-visits: 1
 is-card: true
 card-image: img/asteroid.jpg
 new-page: true
-tags: party_affairs
+tags: local_organizing
 view-if: month < 6 and year = 2300
 
 Magical passages between Mikasa and the arcane Otherworld have existed since soon after colonization.  The links between Mikasa and the Otherworld are not the most accessible or best travelled in the solar system but the Otherworlder population is proportonally large compared to the small population of Mikasa.  The situation hasn't drawn much notice to date except for the thriving {!<span class="tooltip-text" style="color:rgba(149, 139, 0, 1);" title="An non human sentient race from the otherworld, commonly called 'Elves' due to the cultural legacy of 20th century author and Otherworld explorer J.R.R. Tolkein.">Kwendi</span>!} resturaunt culture in the Docks district.
@@ -12,6 +12,7 @@ Otherworld migration has changed of late.  There are a larger number of otherwor
 
 -@problem: Another crisis to deal with...
 -@opportunity: ...or another opportunity to sieze?
+- @return
 
 
 @problem

@@ -1,6 +1,13 @@
 title: Limelight
 new-page: true
+on-arrival: {!
+if (typeof Q.syncDistrictDisplays === 'function') { Q.syncDistrictDisplays('Limelight') }
+!}
 
 = Limelight
+
+Crime level: [+ limelight_crime : crime +] ([+ limelight_crime +])
+Prosperity level: [+ limelight_prosperity : prosperity +] ([+ limelight_prosperity +])
+Political Dominance: [+ limelight_dominant_party : party +]
 
 - @main: Return to main

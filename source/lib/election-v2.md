@@ -10,7 +10,7 @@ How council seats are simulated, projected, and committed in play.
 |------|-------------------|
 | Election engine, `DISTRICT_POPULATIONS`, `DISTRICT_ELECTION_MONTH`, `Q.update_projections`, `Q.runScheduledElections` | `source/scenes/election_runtime.scene.dry` |
 | Electorate stack → poll modifiers | `source/scenes/electorate_runtime.scene.dry` |
-| Month tick / prosperity connections | `source/scenes/cards/organizing/organize_phase_tick.scene.dry` |
+| Month tick / prosperity connections | `source/scenes/cards/local_organizing/organize_phase_tick.scene.dry` |
 | Housing stock, tax, economic holdings report | `source/scenes/economic_assets_runtime.scene.dry` |
 | Election-night UI | `source/scenes/events/scheduled_elections.scene.dry`, `status.scene.dry` |
 
@@ -59,7 +59,7 @@ Electorate shifts from story cards: stacks on `Q` → `Q.electorateModifierCatal
 | `source/scenes/status.scene.dry` | Poll / seat UI |
 | `source/scenes/election_simulation.scene.dry` | Debug special scene (population table) |
 | `source/scenes/economic_assets_runtime.scene.dry` | Homes inventory, housing tax, Jacobs holdings report |
-| `source/scenes/cards/organizing/organize_phase_tick.scene.dry` | Monthly prosperity connections + tick orchestration |
+| `source/scenes/cards/local_organizing/organize_phase_tick.scene.dry` | Monthly prosperity connections + tick orchestration |
 | `source/lib/election-v2.js` | Node CLI only — not compiled into the game |
 | `source/lib/election-world-data.js` | Node copy of district populations — not compiled into the game |
 

@@ -1,0 +1,31 @@
+title: Subsidize Pitts mining
+new-page: true
+on-arrival: {!
+Q.placeholder_metal_demand = 0
+// to be done: figure out if Mikasa has metal refining capacity that is currently using imported ores.  This would be if there are more assets of some to be determined type then twice the number of reopened mines
+!}
+
+The mines of the Pitts have been closed for decades ever since the deposits of chromium were exhausted.  There are abundent deposits of basic raw materials like iron and carbon ores but the solar system market for such products is already well served by higher grade deposits on other asteroids.  It could be possible to reopen the mines as a subsidized industry.  [? if placeholder_metal_demand: Because of the growth in the city metal industries, the subsidies needed would be smaller. ?][? if placeholder_metal_demand = 0: However the local metal industry on Mikasa is too small to create a local market for these ores. ?]  While this would be a money losing enterprise, it would serve to enhance the economic self sufficiency of Mikasa and make us less vulnerable to blockade.  The syndicates are another consideration, an industry operating out of the Pitts would be very vulnerable to their extortion.
+
+- @yes_mines: Subsidize mining
+- @no_mines: Not right now
+- @pitts: Return to Pitts
+
+@yes_mines
+title: Subsidize mining
+
+We've reopened the mines.  Hopefully we can keep the syndicates out.
+
+on-arrival: pitts_mines_subsidized = 1
+
+- @pitts: Return to Pitts
+
+@no_mines
+title: Not right now
+
+We can't invest in this right now.
+
+- @pitts: Return to Pitts
+
+@pitts
+go-to: pitts

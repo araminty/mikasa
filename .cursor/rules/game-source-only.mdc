@@ -18,7 +18,7 @@ All **game behavior** changes belong in:
 | `election_runtime.scene.dry` | `election-v2.js`, `election-world-data.js` (populations only) |
 | `electorate_runtime.scene.dry` | — |
 | `economic_assets_runtime.scene.dry` | `economic-asset-name-catalog.js` (reference only) |
-| `cards/organizing/organize_phase_tick.scene.dry` | — |
+| `cards/local_organizing/organize_phase_tick.scene.dry` | — |
 
 After editing a runtime scene, run `npm run make-html`. Use `npm run simulate-election:v2 -- --from-scene` to test election logic extracted from `election_runtime.scene.dry`, not from `election-v2.js` alone.
 

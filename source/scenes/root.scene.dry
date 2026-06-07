@@ -4,7 +4,7 @@ go-to: start_menu if started = 0; to_setup_functions if started = 1
 on-arrival: {!
 
 // MIKASA_BUILD_STAMP
-Q.build_time_label = '2026-06-02 15:15:41 local';
+Q.build_time_label = '2026-06-06 19:55:01 local';
 // /MIKASA_BUILD_STAMP
 
 if (Q.started && !Q.economic_assets_runtime_ready) {
@@ -30,8 +30,25 @@ Build: [+ build_time_label +]
 
 - @start: Start game
 - @election_simulation: Election simulation
+- @dev_cable_neg: Cable break negotiations (dev)
 - @credits: Credits
 - @game_over.achievements
+
+@dev_cable_neg
+title: Cable break negotiations (dev)
+on-arrival: {!
+Q.started = 1;
+Q.year = 2301;
+Q.month = 6;
+Q.cable_neg_ready = 0;
+Q.soylent_leverage = 1;
+Q.soylent_reprisal = 1;
+Q.brazos_leverage = 1;
+Q.brazos_reprisal = 1;
+Q.magrail_leverage = 1;
+Q.magrail_reprisal = 1;
+!}
+go-to: cable_break_negotiations
 
 @start
 on-arrival: {!
@@ -43,6 +60,7 @@ Q.month_actions = 0;
 Q.parochialism = 25;
 Q.parochial_radicalism = 0.65; // moderate radicalism → ~35% clawed back to Dems, rest stays on H
 Q.third_wave_on_society = 0;
+Q.mikasa_journey_leg = 0;
 
 Q.prosperity_soylent = 10;
 Q.prosperity_magrail = 10;

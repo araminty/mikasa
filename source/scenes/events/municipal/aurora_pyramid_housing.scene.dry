@@ -1,0 +1,43 @@
+title: Aurora Pyramid Requisition
+subtitle: Housing emergency
+priority: 2
+max-visits: 1
+tags: event
+new-page: true
+view-if: month >= 8 and year = 2302 and third_wave_on_society = 1 and aurora_pyramid_housing_event = 0
+on-arrival: aurora_pyramid_housing_event = 1
+
+The refugee wave has outstripped every spare bunk in Mikasa.  Squatter camps spread through Aurora's public corridors while the city council argues over budgets it does not really have.  Finally someone points at the obvious landmark: the forbidden Aurora Pyramid, hollow and half-ruined since the bank vanished, yet still plumbed, still on the municipal grid, and still tall enough to swallow a small district's worth of people.
+
+Independent contractors and long-term squatters protest that the pyramid is *their* commons now.  The Aurora district council — one of the few bodies with real local legitimacy — votes to requisition it anyway.  Engineers estimate the structure can be partitioned into several public housing sites without waiting for megacorp salvage rights to clear.
+
+- @public_housing: Requisition the pyramid for public housing
+- @defer: Stall — keep negotiating with the squatters
+- @ica_lease: Lease the pyramid to the Independent Contractors Association
+
+@public_housing
+title: Requisition the pyramid for public housing
+on-arrival: {!
+aurora_pyramid_public_housing = 1;
+Q.addHome({ id: 'aurora_pyramid_atrium', name: 'Grand atrium housing block', district: 'Aurora', ownerType: 'public', owner: 'city', housingFor: 'third_wave', major: true });
+Q.addHome({ id: 'aurora_pyramid_vault_tiers', name: 'Vault tier dormitories', district: 'Aurora', ownerType: 'public', owner: 'city', housingFor: 'third_wave', major: true });
+Q.addHome({ id: 'aurora_pyramid_apex_wings', name: 'Apex wing public suites', district: 'Aurora', ownerType: 'public', owner: 'city', housingFor: 'third_wave', major: false });
+Q.addHome({ id: 'aurora_pyramid_basement', name: 'Basement grav-bunk housing', district: 'Aurora', ownerType: 'public', owner: 'city', housingFor: 'third_wave', major: false });
+Q.addHome({ id: 'aurora_pyramid_threshold_lake', name: 'Threshold lake dormitories', district: 'Aurora', ownerType: 'public', owner: 'city', housingFor: 'alien', major: true });
+!}
+
+Work crews seal the worst structural cracks, strip out bank-era security hardpoints, and partition the pyramid's vast interior into dormitory stacks.  Third-wave refugees fill the upper tiers; Otherworld arrivals get the dormitories terraced around the pyramid's small artificial lake — the swim-through gate that still links Aurora to the Otherworld.  Children still shout in the echoing halls — but now they do it under city leases instead of squatter truces.
+
+[? if jovian_refugee_prepare = 1: Relief organizers credit the earlier refugee-prep push for having survey teams ready. ?]
+
+@defer
+title: Stall — keep negotiating with the squatters
+on-arrival: aurora_pyramid_housing_deferred = 1
+
+The council kicks the decision down the road.  Squatters and ICA freelancers keep the pyramid as a patchwork commune while refugees pile up in Aurora's parks.  TODO: follow-up event or timed re-trigger when `aurora_pyramid_housing_deferred = 1`.
+
+@ica_lease
+title: Lease the pyramid to the Independent Contractors Association
+on-arrival: aurora_pyramid_ica_lease = 1
+
+The Independent Contractors Association wins a long-term lease and promises "adaptive mixed-use redevelopment."  TODO: `Q.addAsset` workshop sites instead of public homes; electorate modifiers for Aurora independents vs refugee advocates.

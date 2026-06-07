@@ -1,0 +1,69 @@
+The population will be covered by two different kind of demographics, stratum and interest groups.
+
+Interest groups are a minority of the population and draw their membership from the stratum.  Thus the stratum will have two population figures: 1) raw_population 2) non_ig_population.  The non_ig_population is simply the raw population minus the part who are borrowed by the interest groups.   When stratum population is used to calculate votes or changes in affluence, the non_ig_population will be used.
+
+The votes and affluence of IG members are completely independent of their original stratum membership and not impacted by the affluence or voting behavior of their origin group.  While the people are "borrowed" from the stratum and might return to the stratum (if the IG shrinks) they are effectively in a different stratum with different behaviors.  
+
+All assets will belong to the interest groups (and current assets held by stratum will be reassigned to the coops/guilds in a revision of the setup).  Housing can belong to IG or strata, the drones wont own any housing (living in corporate housing).  The cooperatives might have a special rule where their assets also count towards housing at a 1-1 ratio.
+
+The "conversion" will be tracked within the stratum voters blocks.  The stratum voterblocks will have a property giving the population of that voter block which are members of each of the interest groups.  The non_ig_population of the stratum and the population of the interest groups will be calculated from these numbers every month.  This will take place before affluence and election calculations.
+
+There will be no overlap between interest groups memberships.
+
+Some groups will be bundled in displays of affluence/polling/votes but they will be tracked individually
+
+The stratum will be:
+Shareholders (just the ones living in mikasa, most are off world and not part of the simulation)
+First Wave
+Second Wave
+Third Wave
+Deepers
+(possibly clans but not implementing them right now)
+Otherworlders, aka "aliens"
+
+The interest groups will be:
+(Business) Owners (the richest members of non-Shareholder strata)
+(other) Gold (the members who aren't in business owners, the two groups together vote in gold guild elections with it weighted so each groups count for about half.  (This is because among the gold guilds which aren't being explicitly split out, the owners dominate some and the medical professionals others))
+White Guild members
+Blue Guild members
+Drones for the three megacorps (three groups but bundled together in various displays)  (membership of drones is synonymous with employment by the megacorps so their number of employees will increase or decrease by changing the ig_membership of voters blocks.)
+Members of the three syndicates (likewise bundled)
+Cooperatives
+
+Rules / Invariants (implementation targets):
+
+1) Population conservation per voter block:
+raw_population(block) = non_ig_population(block) + sum(ig_membership[ig] for all ig)
+All membership values must be >= 0, and non_ig_population must never be negative.
+
+2) IG exclusivity:
+Each person can belong to at most one IG at a time. If multiple transfers are requested in the same month, apply priority rules and cap to block population.
+
+3) Monthly processing order:
+a) Apply event/card effects that change ig_membership.
+b) Recompute non_ig_population and IG totals from block memberships.
+c) Apply affluence/prosperity updates.
+d) Run polling/election tabulation.
+e) Write display/report values.
+
+4) District attribution:
+IG members inherited from a voter block stay in that block's district for voting/tabulation unless a migration rule explicitly moves them.
+
+5) Drone employment conversion:
+Corporate IG membership implies drone status for voting and affluence.
+If a member exits a corporate IG, they immediately return to their origin stratum behavior in the same district.
+
+6) Bundling rule:
+Bundling (e.g. all corp drones, all syndicates) is display-only unless explicitly noted. Core simulation keeps per-IG values.
+
+7) Gold seat weighting:
+For Gold guild elections, Business Owners and Other Gold each contribute 50% of the weighted vote before seat assignment.
+
+8) Asset ownership rule:
+Non-housing assets are IG-owned.
+Housing can be IG-owned or stratum-owned.
+Drones own no housing directly (corporate housing only).
+Coop asset-to-housing conversion uses a 1:1 ratio unless rebalanced later.
+
+9) Shareholder boundary:
+Only in-Mikasa shareholders are in stratum population; off-world shareholders are excluded from district population and elections.

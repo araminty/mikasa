@@ -12,6 +12,7 @@
     "simulate-election": "node scripts/simulate-election.js",
     "simulate-election:v2": "node scripts/simulate-election.js --v2",
     "simulate-prosperity": "node scripts/simulate-prosperity-months.js",
+    "optimize-prosperity": "node scripts/optimize-prosperity-balance.js",
     "export-landscape-geometry": "node scripts/export-landscape-geometry.js"
   },
   "repository": {

@@ -2,7 +2,7 @@ title: Cooperatives organizing
 new-page: true
 is-card: true
 card-image: img/asteroid.jpg
-tags: organize_phase
+tags: local_organizing
 view_if: organizing_unlock = 1
 
 The cooperatives are the bedrock of the non-corporate economy on Mikasa.  Cooperatives tend to be semi-insular groups that live together, strive for self sufficiency and have an established trade to bring in outside revenues.
@@ -10,6 +10,7 @@ The cooperatives are the bedrock of the non-corporate economy on Mikasa.  Cooper
 -@markets
 -@mother
 -@investment
+- @return
 
 # dendry: choices above lacked @subscenes — stubs below until written
 

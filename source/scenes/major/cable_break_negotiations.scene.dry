@@ -1,0 +1,1320 @@
+title: Ceasefire Negotiations
+subtitle: The megacorps need a referee — we set the price
+max-visits: 1
+new-page: true
+tags: event
+on-arrival: {!
+Q.cableNegEnsureApi = function() {
+// --- reprisal knobs (edit here to rebalance demands) ---
+// Leverage all three megacorps receive when negotiations open (accept if leverage > reprisal).
+CABLE_NEG_LEVERAGE_BOOST = 5
+
+// Police jurisdiction — reprisal on the corp that loses district security.
+CABLE_NEG_REPR_VATS_SOYLENT = 2          // @take_vats_police
+CABLE_NEG_REPR_RAILYARD_MAGRAIL = 2      // @take_railyard_police
+CABLE_NEG_REPR_DOCKS_SOYLENT = 1           // @take_docks_police (each belligerent)
+CABLE_NEG_REPR_DOCKS_MAGRAIL = 1
+CABLE_NEG_REPR_LIMELIGHT_BRAZOS = 3      // @take_limelight_police (needs Vats/Railyard/Docks)
+
+// Rival schadenfreude — reprisal lowered on corps that enjoy a rival's setback (always < gross raise).
+CABLE_NEG_RELIEF_VATS_MAGRAIL = 1        // Magrail likes Soylent losing Vats security
+CABLE_NEG_RELIEF_RAILYARD_SOYLENT = 1    // Soylent likes Magrail losing Railyard security
+CABLE_NEG_RELIEF_DOCKS_BRAZOS = 1        // Brazos likes both belligerents grumbling over Docks
+CABLE_NEG_RELIEF_LIMELIGHT_SOYLENT = 1   // Belligerents like Brazos humiliated on Limelight
+CABLE_NEG_RELIEF_LIMELIGHT_MAGRAIL = 1
+CABLE_NEG_RELIEF_TAX_BELL_BRAZOS = 1     // Brazos exempt / enjoys belligerents-only security tax
+CABLE_NEG_RELIEF_TRIALS_MIXED_BRAZOS = 1 // Brazos likes city–corp panel binding the fighters
+
+// Police payroll — reprisal on each megacorp when city absorbs corp security wages.
+CABLE_NEG_REPR_PAY_2X_EACH = 1           // @pay_city_2x
+CABLE_NEG_REPR_PAY_6X_EACH = 2           // @pay_city_6x
+CABLE_NEG_REPR_PAY_6X_MATCH_EACH = 3     // @pay_city_6x_match (includes city police raise)
+CABLE_NEG_REPR_PAY_10X_SOYLENT = 1       // @pay_corp_10x (match corp payscale — asymmetric)
+CABLE_NEG_REPR_PAY_10X_MAGRAIL = 1
+CABLE_NEG_REPR_PAY_10X_BRAZOS = 2
+
+// Security tax — reprisal on taxed corps (requires payroll demand first).
+CABLE_NEG_REPR_TAX_HALF_BELL_SOYLENT = 1   // @tax_half_belligerents
+CABLE_NEG_REPR_TAX_HALF_BELL_MAGRAIL = 1
+CABLE_NEG_REPR_TAX_FULL_BELL_SOYLENT = 2   // @tax_full_belligerents
+CABLE_NEG_REPR_TAX_FULL_BELL_MAGRAIL = 2
+CABLE_NEG_REPR_TAX_HALF_ALL_EACH = 1       // @tax_half_all_three
+CABLE_NEG_REPR_TAX_FULL_ALL_SOYLENT = 1    // @tax_full_all_three
+CABLE_NEG_REPR_TAX_FULL_ALL_MAGRAIL = 1
+CABLE_NEG_REPR_TAX_FULL_ALL_BRAZOS = 2
+
+// Disband corp security — reprisal on each megacorp (incompatible with jurisdiction transfer).
+CABLE_NEG_REPR_DISBAND_CITY_SOYLENT = 3   // @disband_city_police
+CABLE_NEG_REPR_DISBAND_CITY_MAGRAIL = 3
+CABLE_NEG_REPR_DISBAND_CITY_BRAZOS = 2
+CABLE_NEG_REPR_DISBAND_MIL_SOYLENT = 2     // @disband_militia
+CABLE_NEG_REPR_DISBAND_MIL_MAGRAIL = 2
+CABLE_NEG_REPR_DISBAND_MIL_BRAZOS = 1
+
+// Civil rights — equal reprisal on all three (@demand_civil_rights).
+CABLE_NEG_REPR_CIVIL_RIGHTS_EACH = 2
+
+// Ceasefire trials — reprisal on corps that lose control of mercenary justice.
+CABLE_NEG_REPR_TRIALS_CITY_SOYLENT = 2   // @trials_city_judges
+CABLE_NEG_REPR_TRIALS_CITY_MAGRAIL = 2
+CABLE_NEG_REPR_TRIALS_CITY_BRAZOS = 1
+CABLE_NEG_REPR_TRIALS_MIXED_SOYLENT = 1  // @trials_mixed_panel
+CABLE_NEG_REPR_TRIALS_MIXED_MAGRAIL = 1
+
+// Judicial review — reprisal on all three (requires trial rules first).
+CABLE_NEG_REPR_JUDGE_2_EACH = 1          // @review_2_city_3_corp
+CABLE_NEG_REPR_JUDGE_4_EACH = 2          // @review_4_city_3_corp
+
+// Infrastructure cap — reprisal on all three.
+CABLE_NEG_REPR_INFRA_GENEROUS_EACH = 1   // @infra_cap_generous
+CABLE_NEG_REPR_INFRA_FAIR_EACH = 2       // @infra_cap_fair
+
+// Prior-leverage demands — reprisal on the targeted megacorp only.
+CABLE_NEG_REPR_EDU_ENROLL_EACH = 1       // @demand_education_enroll_*
+CABLE_NEG_REPR_EDU_PAY_EACH = 1          // @demand_education_pay_* (needs enrollment)
+CABLE_NEG_REPR_LAND_TAX_EACH = 2         // @demand_land_tax_*
+
+Q.cableNegLeverageBoost = CABLE_NEG_LEVERAGE_BOOST
+Q.CABLE_NEG_REPR_VATS_SOYLENT = CABLE_NEG_REPR_VATS_SOYLENT
+Q.CABLE_NEG_REPR_RAILYARD_MAGRAIL = CABLE_NEG_REPR_RAILYARD_MAGRAIL
+Q.CABLE_NEG_REPR_DOCKS_SOYLENT = CABLE_NEG_REPR_DOCKS_SOYLENT
+Q.CABLE_NEG_REPR_DOCKS_MAGRAIL = CABLE_NEG_REPR_DOCKS_MAGRAIL
+Q.CABLE_NEG_REPR_LIMELIGHT_BRAZOS = CABLE_NEG_REPR_LIMELIGHT_BRAZOS
+Q.CABLE_NEG_RELIEF_VATS_MAGRAIL = CABLE_NEG_RELIEF_VATS_MAGRAIL
+Q.CABLE_NEG_RELIEF_RAILYARD_SOYLENT = CABLE_NEG_RELIEF_RAILYARD_SOYLENT
+Q.CABLE_NEG_RELIEF_DOCKS_BRAZOS = CABLE_NEG_RELIEF_DOCKS_BRAZOS
+Q.CABLE_NEG_RELIEF_LIMELIGHT_SOYLENT = CABLE_NEG_RELIEF_LIMELIGHT_SOYLENT
+Q.CABLE_NEG_RELIEF_LIMELIGHT_MAGRAIL = CABLE_NEG_RELIEF_LIMELIGHT_MAGRAIL
+Q.CABLE_NEG_RELIEF_TAX_BELL_BRAZOS = CABLE_NEG_RELIEF_TAX_BELL_BRAZOS
+Q.CABLE_NEG_RELIEF_TRIALS_MIXED_BRAZOS = CABLE_NEG_RELIEF_TRIALS_MIXED_BRAZOS
+Q.CABLE_NEG_REPR_PAY_2X_EACH = CABLE_NEG_REPR_PAY_2X_EACH
+Q.CABLE_NEG_REPR_PAY_6X_EACH = CABLE_NEG_REPR_PAY_6X_EACH
+Q.CABLE_NEG_REPR_PAY_6X_MATCH_EACH = CABLE_NEG_REPR_PAY_6X_MATCH_EACH
+Q.CABLE_NEG_REPR_PAY_10X_SOYLENT = CABLE_NEG_REPR_PAY_10X_SOYLENT
+Q.CABLE_NEG_REPR_PAY_10X_MAGRAIL = CABLE_NEG_REPR_PAY_10X_MAGRAIL
+Q.CABLE_NEG_REPR_PAY_10X_BRAZOS = CABLE_NEG_REPR_PAY_10X_BRAZOS
+Q.CABLE_NEG_REPR_TAX_HALF_BELL_SOYLENT = CABLE_NEG_REPR_TAX_HALF_BELL_SOYLENT
+Q.CABLE_NEG_REPR_TAX_HALF_BELL_MAGRAIL = CABLE_NEG_REPR_TAX_HALF_BELL_MAGRAIL
+Q.CABLE_NEG_REPR_TAX_FULL_BELL_SOYLENT = CABLE_NEG_REPR_TAX_FULL_BELL_SOYLENT
+Q.CABLE_NEG_REPR_TAX_FULL_BELL_MAGRAIL = CABLE_NEG_REPR_TAX_FULL_BELL_MAGRAIL
+Q.CABLE_NEG_REPR_TAX_HALF_ALL_EACH = CABLE_NEG_REPR_TAX_HALF_ALL_EACH
+Q.CABLE_NEG_REPR_TAX_FULL_ALL_SOYLENT = CABLE_NEG_REPR_TAX_FULL_ALL_SOYLENT
+Q.CABLE_NEG_REPR_TAX_FULL_ALL_MAGRAIL = CABLE_NEG_REPR_TAX_FULL_ALL_MAGRAIL
+Q.CABLE_NEG_REPR_TAX_FULL_ALL_BRAZOS = CABLE_NEG_REPR_TAX_FULL_ALL_BRAZOS
+Q.CABLE_NEG_REPR_DISBAND_CITY_SOYLENT = CABLE_NEG_REPR_DISBAND_CITY_SOYLENT
+Q.CABLE_NEG_REPR_DISBAND_CITY_MAGRAIL = CABLE_NEG_REPR_DISBAND_CITY_MAGRAIL
+Q.CABLE_NEG_REPR_DISBAND_CITY_BRAZOS = CABLE_NEG_REPR_DISBAND_CITY_BRAZOS
+Q.CABLE_NEG_REPR_DISBAND_MIL_SOYLENT = CABLE_NEG_REPR_DISBAND_MIL_SOYLENT
+Q.CABLE_NEG_REPR_DISBAND_MIL_MAGRAIL = CABLE_NEG_REPR_DISBAND_MIL_MAGRAIL
+Q.CABLE_NEG_REPR_DISBAND_MIL_BRAZOS = CABLE_NEG_REPR_DISBAND_MIL_BRAZOS
+Q.CABLE_NEG_REPR_CIVIL_RIGHTS_EACH = CABLE_NEG_REPR_CIVIL_RIGHTS_EACH
+Q.CABLE_NEG_REPR_TRIALS_CITY_SOYLENT = CABLE_NEG_REPR_TRIALS_CITY_SOYLENT
+Q.CABLE_NEG_REPR_TRIALS_CITY_MAGRAIL = CABLE_NEG_REPR_TRIALS_CITY_MAGRAIL
+Q.CABLE_NEG_REPR_TRIALS_CITY_BRAZOS = CABLE_NEG_REPR_TRIALS_CITY_BRAZOS
+Q.CABLE_NEG_REPR_TRIALS_MIXED_SOYLENT = CABLE_NEG_REPR_TRIALS_MIXED_SOYLENT
+Q.CABLE_NEG_REPR_TRIALS_MIXED_MAGRAIL = CABLE_NEG_REPR_TRIALS_MIXED_MAGRAIL
+Q.CABLE_NEG_REPR_JUDGE_2_EACH = CABLE_NEG_REPR_JUDGE_2_EACH
+Q.CABLE_NEG_REPR_JUDGE_4_EACH = CABLE_NEG_REPR_JUDGE_4_EACH
+Q.CABLE_NEG_REPR_INFRA_GENEROUS_EACH = CABLE_NEG_REPR_INFRA_GENEROUS_EACH
+Q.CABLE_NEG_REPR_INFRA_FAIR_EACH = CABLE_NEG_REPR_INFRA_FAIR_EACH
+Q.CABLE_NEG_REPR_EDU_ENROLL_EACH = CABLE_NEG_REPR_EDU_ENROLL_EACH
+Q.CABLE_NEG_REPR_EDU_PAY_EACH = CABLE_NEG_REPR_EDU_PAY_EACH
+Q.CABLE_NEG_REPR_LAND_TAX_EACH = CABLE_NEG_REPR_LAND_TAX_EACH
+if (Q._cable_neg_api) return
+Q._cable_neg_api = 1
+Q.cableNegReprisalAdd = function(corp, delta) {
+    Q[corp + '_reprisal'] = (Number(Q[corp + '_reprisal']) || 0) + delta
+}
+Q.cableNegReprisalAddEach = function(delta) {
+    Q.cableNegReprisalAdd('soylent', delta)
+    Q.cableNegReprisalAdd('magrail', delta)
+    Q.cableNegReprisalAdd('brazos', delta)
+}
+Q.cableNegReprisalSub = function(corp, delta) {
+    Q[corp + '_reprisal'] = Math.max(0, (Number(Q[corp + '_reprisal']) || 0) - delta)
+}
+Q.cableNegEffectiveRelief = function(downs, grossUp) {
+    var i, grossDown = 0, out = []
+    downs = downs || []
+    if (grossUp < 2) { return out }
+    for (i = 0; i < downs.length; i++) {
+        if (downs[i].n > 0) { out.push({ corp: downs[i].corp, n: downs[i].n }) }
+    }
+    for (i = 0; i < out.length; i++) { grossDown += out[i].n }
+    if (grossDown >= grossUp) {
+        var budget = grossUp - 1
+        for (i = 0; i < out.length; i++) {
+            if (budget <= 0) { out[i].n = 0 }
+            else if (out[i].n > budget) { out[i].n = budget; budget = 0 }
+            else { budget -= out[i].n }
+        }
+    }
+    return out
+}
+Q.cableNegApplyWithRivalRelief = function(ups, downs) {
+    var i, grossUp = 0
+    ups = ups || []
+    for (i = 0; i < ups.length; i++) { grossUp += ups[i].n }
+    downs = Q.cableNegEffectiveRelief(downs, grossUp)
+    for (i = 0; i < ups.length; i++) { Q.cableNegReprisalAdd(ups[i].corp, ups[i].n) }
+    for (i = 0; i < downs.length; i++) {
+        if (downs[i].n > 0) { Q.cableNegReprisalSub(downs[i].corp, downs[i].n) }
+    }
+}
+Q.cableNegUndoWithRivalRelief = function(ups, downs) {
+    var i, grossUp = 0
+    ups = ups || []
+    for (i = 0; i < ups.length; i++) { grossUp += ups[i].n }
+    downs = Q.cableNegEffectiveRelief(downs, grossUp)
+    for (i = 0; i < ups.length; i++) { Q.cableNegReprisalSub(ups[i].corp, ups[i].n) }
+    for (i = 0; i < downs.length; i++) {
+        if (downs[i].n > 0) { Q.cableNegReprisalAdd(downs[i].corp, downs[i].n) }
+    }
+}
+Q.cableNegApplyVatsPolice = function() {
+    Q.cableNegApplyWithRivalRelief(
+        [{ corp: 'soylent', n: Q.CABLE_NEG_REPR_VATS_SOYLENT }],
+        [{ corp: 'magrail', n: Q.CABLE_NEG_RELIEF_VATS_MAGRAIL }]
+    )
+}
+Q.cableNegClearVatsPolice = function() {
+    Q.cableNegUndoWithRivalRelief(
+        [{ corp: 'soylent', n: Q.CABLE_NEG_REPR_VATS_SOYLENT }],
+        [{ corp: 'magrail', n: Q.CABLE_NEG_RELIEF_VATS_MAGRAIL }]
+    )
+}
+Q.cableNegApplyRailyardPolice = function() {
+    Q.cableNegApplyWithRivalRelief(
+        [{ corp: 'magrail', n: Q.CABLE_NEG_REPR_RAILYARD_MAGRAIL }],
+        [{ corp: 'soylent', n: Q.CABLE_NEG_RELIEF_RAILYARD_SOYLENT }]
+    )
+}
+Q.cableNegClearRailyardPolice = function() {
+    Q.cableNegUndoWithRivalRelief(
+        [{ corp: 'magrail', n: Q.CABLE_NEG_REPR_RAILYARD_MAGRAIL }],
+        [{ corp: 'soylent', n: Q.CABLE_NEG_RELIEF_RAILYARD_SOYLENT }]
+    )
+}
+Q.cableNegApplyDocksPolice = function() {
+    Q.cableNegApplyWithRivalRelief(
+        [
+            { corp: 'soylent', n: Q.CABLE_NEG_REPR_DOCKS_SOYLENT },
+            { corp: 'magrail', n: Q.CABLE_NEG_REPR_DOCKS_MAGRAIL }
+        ],
+        [{ corp: 'brazos', n: Q.CABLE_NEG_RELIEF_DOCKS_BRAZOS }]
+    )
+}
+Q.cableNegClearDocksPolice = function() {
+    Q.cableNegUndoWithRivalRelief(
+        [
+            { corp: 'soylent', n: Q.CABLE_NEG_REPR_DOCKS_SOYLENT },
+            { corp: 'magrail', n: Q.CABLE_NEG_REPR_DOCKS_MAGRAIL }
+        ],
+        [{ corp: 'brazos', n: Q.CABLE_NEG_RELIEF_DOCKS_BRAZOS }]
+    )
+}
+Q.cableNegApplyLimelightPolice = function() {
+    Q.cableNegApplyWithRivalRelief(
+        [{ corp: 'brazos', n: Q.CABLE_NEG_REPR_LIMELIGHT_BRAZOS }],
+        [
+            { corp: 'soylent', n: Q.CABLE_NEG_RELIEF_LIMELIGHT_SOYLENT },
+            { corp: 'magrail', n: Q.CABLE_NEG_RELIEF_LIMELIGHT_MAGRAIL }
+        ]
+    )
+}
+Q.cableNegClearLimelightPolice = function() {
+    Q.cableNegUndoWithRivalRelief(
+        [{ corp: 'brazos', n: Q.CABLE_NEG_REPR_LIMELIGHT_BRAZOS }],
+        [
+            { corp: 'soylent', n: Q.CABLE_NEG_RELIEF_LIMELIGHT_SOYLENT },
+            { corp: 'magrail', n: Q.CABLE_NEG_RELIEF_LIMELIGHT_MAGRAIL }
+        ]
+    )
+}
+Q.cableNegApplyTaxHalfBelligerents = function() {
+    Q.cableNegApplyWithRivalRelief(
+        [
+            { corp: 'soylent', n: Q.CABLE_NEG_REPR_TAX_HALF_BELL_SOYLENT },
+            { corp: 'magrail', n: Q.CABLE_NEG_REPR_TAX_HALF_BELL_MAGRAIL }
+        ],
+        [{ corp: 'brazos', n: Q.CABLE_NEG_RELIEF_TAX_BELL_BRAZOS }]
+    )
+}
+Q.cableNegClearTaxHalfBelligerents = function() {
+    Q.cableNegUndoWithRivalRelief(
+        [
+            { corp: 'soylent', n: Q.CABLE_NEG_REPR_TAX_HALF_BELL_SOYLENT },
+            { corp: 'magrail', n: Q.CABLE_NEG_REPR_TAX_HALF_BELL_MAGRAIL }
+        ],
+        [{ corp: 'brazos', n: Q.CABLE_NEG_RELIEF_TAX_BELL_BRAZOS }]
+    )
+}
+Q.cableNegApplyTaxFullBelligerents = function() {
+    Q.cableNegApplyWithRivalRelief(
+        [
+            { corp: 'soylent', n: Q.CABLE_NEG_REPR_TAX_FULL_BELL_SOYLENT },
+            { corp: 'magrail', n: Q.CABLE_NEG_REPR_TAX_FULL_BELL_MAGRAIL }
+        ],
+        [{ corp: 'brazos', n: Q.CABLE_NEG_RELIEF_TAX_BELL_BRAZOS }]
+    )
+}
+Q.cableNegClearTaxFullBelligerents = function() {
+    Q.cableNegUndoWithRivalRelief(
+        [
+            { corp: 'soylent', n: Q.CABLE_NEG_REPR_TAX_FULL_BELL_SOYLENT },
+            { corp: 'magrail', n: Q.CABLE_NEG_REPR_TAX_FULL_BELL_MAGRAIL }
+        ],
+        [{ corp: 'brazos', n: Q.CABLE_NEG_RELIEF_TAX_BELL_BRAZOS }]
+    )
+}
+Q.cableNegApplyTrialsMixed = function() {
+    Q.cableNegApplyWithRivalRelief(
+        [
+            { corp: 'soylent', n: Q.CABLE_NEG_REPR_TRIALS_MIXED_SOYLENT },
+            { corp: 'magrail', n: Q.CABLE_NEG_REPR_TRIALS_MIXED_MAGRAIL }
+        ],
+        [{ corp: 'brazos', n: Q.CABLE_NEG_RELIEF_TRIALS_MIXED_BRAZOS }]
+    )
+}
+Q.cableNegClearTrialsMixed = function() {
+    Q.cableNegUndoWithRivalRelief(
+        [
+            { corp: 'soylent', n: Q.CABLE_NEG_REPR_TRIALS_MIXED_SOYLENT },
+            { corp: 'magrail', n: Q.CABLE_NEG_REPR_TRIALS_MIXED_MAGRAIL }
+        ],
+        [{ corp: 'brazos', n: Q.CABLE_NEG_RELIEF_TRIALS_MIXED_BRAZOS }]
+    )
+}
+Q.cableNegClearCorpTax = function() {
+    var t = Number(Q.cable_neg_corp_tax) || 0
+    if (t === 1) { Q.cableNegClearTaxHalfBelligerents() }
+    else if (t === 2) { Q.cableNegClearTaxFullBelligerents() }
+    else if (t === 3) {
+        Q.cableNegReprisalSub('soylent', Q.CABLE_NEG_REPR_TAX_HALF_ALL_EACH)
+        Q.cableNegReprisalSub('magrail', Q.CABLE_NEG_REPR_TAX_HALF_ALL_EACH)
+        Q.cableNegReprisalSub('brazos', Q.CABLE_NEG_REPR_TAX_HALF_ALL_EACH)
+    } else if (t === 4) {
+        Q.cableNegReprisalSub('soylent', Q.CABLE_NEG_REPR_TAX_FULL_ALL_SOYLENT)
+        Q.cableNegReprisalSub('magrail', Q.CABLE_NEG_REPR_TAX_FULL_ALL_MAGRAIL)
+        Q.cableNegReprisalSub('brazos', Q.CABLE_NEG_REPR_TAX_FULL_ALL_BRAZOS)
+    }
+    Q.cable_neg_corp_tax = 0
+    Q.cable_neg_corp_tax_fund = 0
+    Q.cable_neg_brazos_tax_exempt = 0
+}
+Q.cableNegHasPoliceTransfer = function() {
+    return Q.cable_neg_police_vats === 1 || Q.cable_neg_police_railyard === 1
+        || Q.cable_neg_police_docks === 1 || Q.cable_neg_police_limelight === 1
+}
+Q.cableNegEffectivePolicePay = function() {
+    var pay = Number(Q.cable_neg_police_pay) || 0
+    if (pay > 0) { return pay }
+    return Q.cableNegHasPoliceTransfer() ? 1 : 0
+}
+Q.cableNegApplyPolicePayReprisal = function(pay) {
+    pay = Number(pay) || 0
+    if (pay === 1) {
+        Q.cableNegReprisalAddEach(Q.CABLE_NEG_REPR_PAY_2X_EACH)
+    } else if (pay === 2) {
+        Q.cableNegReprisalAddEach(Q.CABLE_NEG_REPR_PAY_6X_EACH)
+    } else if (pay === 3) {
+        Q.cableNegReprisalAddEach(Q.CABLE_NEG_REPR_PAY_6X_MATCH_EACH)
+    } else if (pay === 4) {
+        Q.cableNegReprisalAdd('soylent', Q.CABLE_NEG_REPR_PAY_10X_SOYLENT)
+        Q.cableNegReprisalAdd('magrail', Q.CABLE_NEG_REPR_PAY_10X_MAGRAIL)
+        Q.cableNegReprisalAdd('brazos', Q.CABLE_NEG_REPR_PAY_10X_BRAZOS)
+    }
+}
+Q.cableNegClearPolicePayReprisal = function(pay) {
+    pay = Number(pay) || 0
+    if (pay === 1) {
+        Q.cableNegReprisalSub('soylent', Q.CABLE_NEG_REPR_PAY_2X_EACH)
+        Q.cableNegReprisalSub('magrail', Q.CABLE_NEG_REPR_PAY_2X_EACH)
+        Q.cableNegReprisalSub('brazos', Q.CABLE_NEG_REPR_PAY_2X_EACH)
+    } else if (pay === 2) {
+        Q.cableNegReprisalSub('soylent', Q.CABLE_NEG_REPR_PAY_6X_EACH)
+        Q.cableNegReprisalSub('magrail', Q.CABLE_NEG_REPR_PAY_6X_EACH)
+        Q.cableNegReprisalSub('brazos', Q.CABLE_NEG_REPR_PAY_6X_EACH)
+    } else if (pay === 3) {
+        Q.cableNegReprisalSub('soylent', Q.CABLE_NEG_REPR_PAY_6X_MATCH_EACH)
+        Q.cableNegReprisalSub('magrail', Q.CABLE_NEG_REPR_PAY_6X_MATCH_EACH)
+        Q.cableNegReprisalSub('brazos', Q.CABLE_NEG_REPR_PAY_6X_MATCH_EACH)
+    } else if (pay === 4) {
+        Q.cableNegReprisalSub('soylent', Q.CABLE_NEG_REPR_PAY_10X_SOYLENT)
+        Q.cableNegReprisalSub('magrail', Q.CABLE_NEG_REPR_PAY_10X_MAGRAIL)
+        Q.cableNegReprisalSub('brazos', Q.CABLE_NEG_REPR_PAY_10X_BRAZOS)
+    }
+}
+Q.cableNegSyncPolicePayReprisal = function() {
+    var effective = Q.cableNegEffectivePolicePay()
+    var applied = Number(Q.cable_neg_police_pay_applied) || 0
+    Q.cable_neg_police_pay_effective = effective
+    if (effective === applied) { return }
+    if (applied > 0) { Q.cableNegClearPolicePayReprisal(applied) }
+    if (effective > 0) { Q.cableNegApplyPolicePayReprisal(effective) }
+    Q.cable_neg_police_pay_applied = effective
+}
+Q.cableNegClearPolicePay = function() {
+    Q.cable_neg_police_pay = 0
+    if ((Number(Q.cable_neg_corp_tax) || 0) > 0) { Q.cableNegClearCorpTax() }
+    Q.cableNegSyncPolicePayReprisal()
+}
+Q.cableNegClearJudgeReview = function() {
+    var j = Number(Q.cable_neg_judge_review) || 0
+    if (j === 2) {
+        Q.cableNegReprisalSub('soylent', Q.CABLE_NEG_REPR_JUDGE_2_EACH)
+        Q.cableNegReprisalSub('magrail', Q.CABLE_NEG_REPR_JUDGE_2_EACH)
+        Q.cableNegReprisalSub('brazos', Q.CABLE_NEG_REPR_JUDGE_2_EACH)
+    } else if (j === 4) {
+        Q.cableNegReprisalSub('soylent', Q.CABLE_NEG_REPR_JUDGE_4_EACH)
+        Q.cableNegReprisalSub('magrail', Q.CABLE_NEG_REPR_JUDGE_4_EACH)
+        Q.cableNegReprisalSub('brazos', Q.CABLE_NEG_REPR_JUDGE_4_EACH)
+    }
+    Q.cable_neg_judge_review = 0
+}
+Q.cableNegClearTrials = function() {
+    if ((Number(Q.cable_neg_judge_review) || 0) > 0) { Q.cableNegClearJudgeReview() }
+    var t = Number(Q.cable_neg_trials) || 0
+    if (t === 1) {
+        Q.cableNegReprisalSub('soylent', Q.CABLE_NEG_REPR_TRIALS_CITY_SOYLENT)
+        Q.cableNegReprisalSub('magrail', Q.CABLE_NEG_REPR_TRIALS_CITY_MAGRAIL)
+        Q.cableNegReprisalSub('brazos', Q.CABLE_NEG_REPR_TRIALS_CITY_BRAZOS)
+    } else if (t === 2) {
+        Q.cableNegClearTrialsMixed()
+    }
+    Q.cable_neg_trials = 0
+}
+Q.cableNegClearEducationPayCorp = function(corp) {
+    if (Q['cable_neg_' + corp + '_education_pay'] === 1) {
+        Q.cableNegReprisalSub(corp, Q.CABLE_NEG_REPR_EDU_PAY_EACH)
+        Q['cable_neg_' + corp + '_education_pay'] = 0
+    }
+}
+Q.cableNegClearEducationEnrollCorp = function(corp) {
+    Q.cableNegClearEducationPayCorp(corp)
+    if (Q['cable_neg_' + corp + '_education_enroll'] === 1) {
+        Q.cableNegReprisalSub(corp, Q.CABLE_NEG_REPR_EDU_ENROLL_EACH)
+        Q['cable_neg_' + corp + '_education_enroll'] = 0
+    }
+}
+Q.cableNegClearLandTaxCorp = function(corp) {
+    if (Q['cable_neg_' + corp + '_land_tax'] === 1) {
+        Q.cableNegReprisalSub(corp, Q.CABLE_NEG_REPR_LAND_TAX_EACH)
+        Q['cable_neg_' + corp + '_land_tax'] = 0
+    }
+}
+Q.cableNegSyncCorpStances = function() {
+    function stanceFor(corp) {
+        var margin = (Number(Q[corp + '_leverage']) || 0) - (Number(Q[corp + '_reprisal']) || 0)
+        var cat = 1
+        if (margin > 3) { cat = 4 }
+        else if (margin >= 2) { cat = 3 }
+        else if (margin >= 1) { cat = 2 }
+        Q['cable_neg_stance_' + corp] = cat
+    }
+    stanceFor('soylent')
+    stanceFor('magrail')
+    stanceFor('brazos')
+}
+}
+Q.cableNegEnsureApi()
+if (Q.cable_neg_ready != 1) {
+    Q.cable_neg_ready = 1
+    Q.cable_neg_leverage_boost = Q.cableNegLeverageBoost
+    Q.soylent_leverage = (Number(Q.soylent_leverage) || 0) + Q.cable_neg_leverage_boost
+    Q.magrail_leverage = (Number(Q.magrail_leverage) || 0) + Q.cable_neg_leverage_boost
+    Q.brazos_leverage = (Number(Q.brazos_leverage) || 0) + Q.cable_neg_leverage_boost
+
+    Q.cable_neg_prior_soylent = (Number(Q.soylent_leverage) || 0) > Q.cable_neg_leverage_boost ? 1 : 0
+    Q.cable_neg_prior_magrail = (Number(Q.magrail_leverage) || 0) > Q.cable_neg_leverage_boost ? 1 : 0
+    Q.cable_neg_prior_brazos = (Number(Q.brazos_leverage) || 0) > Q.cable_neg_leverage_boost ? 1 : 0
+    Q.cable_neg_prior_leverage = (
+        Q.cable_neg_prior_soylent === 1
+        || Q.cable_neg_prior_magrail === 1
+        || Q.cable_neg_prior_brazos === 1
+    ) ? 1 : 0
+
+    Q.cable_neg_police_vats = 0
+    Q.cable_neg_police_railyard = 0
+    Q.cable_neg_police_docks = 0
+    Q.cable_neg_police_limelight = 0
+    Q.cable_neg_police_pay = 0
+    Q.cable_neg_police_pay_applied = 0
+    Q.cable_neg_police_pay_effective = 0
+    Q.cable_neg_corp_tax = 0
+    Q.cable_neg_corp_tax_fund = 0
+    Q.cable_neg_brazos_tax_exempt = 0
+    Q.cable_neg_civil_rights = 0
+    Q.cable_neg_trials = 0
+    Q.cable_neg_judge_review = 0
+    Q.cable_neg_disband = 0
+    Q.cable_neg_soylent_education_enroll = 0
+    Q.cable_neg_magrail_education_enroll = 0
+    Q.cable_neg_brazos_education_enroll = 0
+    Q.cable_neg_soylent_education_pay = 0
+    Q.cable_neg_magrail_education_pay = 0
+    Q.cable_neg_brazos_education_pay = 0
+    Q.cable_neg_soylent_land_tax = 0
+    Q.cable_neg_magrail_land_tax = 0
+    Q.cable_neg_brazos_land_tax = 0
+    Q.cable_neg_infra_cap = 0
+}
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+
+The tether rupture left Community Soylent and Magrail Combine willing to talk — but only through us.  Brazos Zaibatsu sits at the table too, ostensibly as a neutral party but really as a party interested in screwing them both.  They need a neutral enforcer for the ceasefire; we need to decide what that costs them.
+
+Leverage (after crisis boost): Soylent [+ soylent_leverage +] / reprisal [+ soylent_reprisal +]; Magrail [+ magrail_leverage +] / [+ magrail_reprisal +]; Brazos [+ brazos_leverage +] / [+ brazos_reprisal +].
+
+Any package needs **two megacorps** to accept (leverage still above reprisal after our demands).  A third who refuses may strike back immediately if their reprisal exceeds their leverage.
+
+- @terms_menu: Review and add demands
+- @finalize_deal: Close the bargain
+
+@terms_menu
+title: Terms on the table
+subtitle: Pick demands, then finalize when ready
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegSyncPolicePayReprisal()
+Q.cableNegSyncCorpStances()
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+
+= At the table
+
+{!<span style="color: #44b88f;">Community Soylent</span>!}: [+ cable_neg_stance_soylent : cable_neg_stance +] (leverage [+ soylent_leverage +], reprisal [+ soylent_reprisal +]).
+
+{!<span style="color: #44b88f;">Magrail Combine</span>!}: [+ cable_neg_stance_magrail : cable_neg_stance +] (leverage [+ magrail_leverage +], reprisal [+ magrail_reprisal +]).
+
+{!<span style="color: #44b88f;">Brazos Zaibatsu</span>!}: [+ cable_neg_stance_brazos : cable_neg_stance +] (leverage [+ brazos_leverage +], reprisal [+ brazos_reprisal +]).
+
+= Demands on the table
+
+{!<table style="width:100%; border-collapse:collapse; font-size:0.9em; margin:0.25em 0;">!}
+[? if cable_neg_police_vats = 1: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ Vats corporate police → city jurisdiction</td></tr>!} ?]
+[? if cable_neg_police_railyard = 1: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ Railyard corporate police → city</td></tr>!} ?]
+[? if cable_neg_police_docks = 1: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ Docks corporate police → city</td></tr>!} ?]
+[? if cable_neg_police_limelight = 1: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ Limelight corporate police → city</td></tr>!} ?]
+[? if cable_neg_police_pay_effective > 0 and cable_neg_police_pay = 0: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ Transferred police at city payscale (2× poverty — default)</td></tr>!} ?]
+[? if cable_neg_police_pay = 1: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ Police payroll at city payscale (2× poverty)</td></tr>!} ?]
+[? if cable_neg_police_pay = 2: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ Police payroll at 6× poverty level</td></tr>!} ?]
+[? if cable_neg_police_pay = 3: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ Police payroll at 6× poverty + city police raise</td></tr>!} ?]
+[? if cable_neg_police_pay = 4: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ Police payroll at corporate security scale (10× poverty)</td></tr>!} ?]
+[? if cable_neg_corp_tax = 1: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ Security tax — half cost, Soylent &amp; Magrail</td></tr>!} ?]
+[? if cable_neg_corp_tax = 2: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ Security tax — full cost, Soylent &amp; Magrail</td></tr>!} ?]
+[? if cable_neg_corp_tax = 3: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ Security tax — half cost, all three megacorps</td></tr>!} ?]
+[? if cable_neg_corp_tax = 4: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ Security tax — full cost, all three megacorps</td></tr>!} ?]
+[? if cable_neg_civil_rights = 1: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ Civil-rights enforcement restored</td></tr>!} ?]
+[? if cable_neg_trials > 0: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ Ceasefire trial rules</td></tr>!} ?]
+[? if cable_neg_judge_review > 0: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ Judicial review panel</td></tr>!} ?]
+[? if cable_neg_disband > 0: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ Disband corp security (replace with city/militia)</td></tr>!} ?]
+[? if cable_neg_soylent_education_enroll = 1: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ <span style="color: #44b88f;">Soylent</span>: employee children in city schools</td></tr>!} ?]
+[? if cable_neg_magrail_education_enroll = 1: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ <span style="color: #44b88f;">Magrail</span>: employee children in city schools</td></tr>!} ?]
+[? if cable_neg_brazos_education_enroll = 1: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ <span style="color: #44b88f;">Brazos</span>: employee children in city schools</td></tr>!} ?]
+[? if cable_neg_soylent_education_pay = 1: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ <span style="color: #44b88f;">Soylent</span>: funds that schooling</td></tr>!} ?]
+[? if cable_neg_magrail_education_pay = 1: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ <span style="color: #44b88f;">Magrail</span>: funds that schooling</td></tr>!} ?]
+[? if cable_neg_brazos_education_pay = 1: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ <span style="color: #44b88f;">Brazos</span>: funds that schooling</td></tr>!} ?]
+[? if cable_neg_soylent_land_tax = 1: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ <span style="color: #44b88f;">Soylent</span>: land tax on holdings</td></tr>!} ?]
+[? if cable_neg_magrail_land_tax = 1: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ <span style="color: #44b88f;">Magrail</span>: land tax on holdings</td></tr>!} ?]
+[? if cable_neg_brazos_land_tax = 1: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ <span style="color: #44b88f;">Brazos</span>: land tax on holdings</td></tr>!} ?]
+[? if cable_neg_infra_cap = 1: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ Generous cap on corp city-infrastructure use</td></tr>!} ?]
+[? if cable_neg_infra_cap = 2: {!<tr><td style="text-align:left; padding:0.15em 0;">✓ Fair cap on corp city-infrastructure use</td></tr>!} ?]
+{!</table>!}
+
+- @take_vats_police: Vats corporate police → city
+- @take_railyard_police: Railyard corporate police → city
+- @take_docks_police: Docks corporate police → city
+- @take_limelight_police: Limelight corporate police → city
+- @police_funding: Payscale for transfered police
+- @corporate_tax: Tax megacorps to pay for security
+- @disband_corp_police: Disband police instead of transferring
+- @civil_rights: Enforce civil-rights laws again
+- @ceasefire_trials: Trials for ceasefire violations
+- @judge_review: Review city judges
+- @infra_cap: Cap megacorp use of city infrastructure
+- @prior_leverage_demands: Non-security demands (prior leverage)
+- @withdraw_demands: Remove a demand from the package
+- @finalize_deal: Close the bargain
+
+@withdraw_demands
+title: Remove a demand
+subtitle: Pull terms off the table to lower corporate reprisal
+view-if: cable_neg_police_vats = 1 or cable_neg_police_railyard = 1 or cable_neg_police_docks = 1 or cable_neg_police_limelight = 1 or cable_neg_police_pay > 0 or cable_neg_corp_tax > 0 or cable_neg_civil_rights = 1 or cable_neg_trials > 0 or cable_neg_judge_review > 0 or cable_neg_disband > 0 or cable_neg_soylent_education_enroll = 1 or cable_neg_magrail_education_enroll = 1 or cable_neg_brazos_education_enroll = 1 or cable_neg_soylent_education_pay = 1 or cable_neg_magrail_education_pay = 1 or cable_neg_brazos_education_pay = 1 or cable_neg_soylent_land_tax = 1 or cable_neg_magrail_land_tax = 1 or cable_neg_brazos_land_tax = 1 or cable_neg_infra_cap > 0
+
+Dependent terms drop together — security tax if payroll goes; judicial review if trial rules go; tuition if enrollment goes.
+
+- @wd_corp_tax: Withdraw security tax
+- @wd_police_pay: Withdraw police payroll demand
+- @wd_limelight_police: Withdraw Limelight police transfer
+- @wd_vats_police: Withdraw Vats police transfer
+- @wd_railyard_police: Withdraw Railyard police transfer
+- @wd_docks_police: Withdraw Docks police transfer
+- @wd_disband: Withdraw disband-corp-security demand
+- @wd_civil_rights: Withdraw civil-rights enforcement
+- @wd_judge_review: Withdraw judicial review panel
+- @wd_trials: Withdraw ceasefire trial rules
+- @wd_infra_cap: Withdraw infrastructure cap
+- @wd_education_pay_soylent: Withdraw Soylent schooling levy
+- @wd_education_pay_magrail: Withdraw Magrail schooling levy
+- @wd_education_pay_brazos: Withdraw Brazos schooling levy
+- @wd_education_enroll_soylent: Withdraw Soylent school enrollment
+- @wd_education_enroll_magrail: Withdraw Magrail school enrollment
+- @wd_education_enroll_brazos: Withdraw Brazos school enrollment
+- @wd_land_tax_soylent: Withdraw Soylent land tax
+- @wd_land_tax_magrail: Withdraw Magrail land tax
+- @wd_land_tax_brazos: Withdraw Brazos land tax
+- @terms_menu
+
+@wd_corp_tax
+title: Withdraw security tax
+choose-if: cable_neg_corp_tax > 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegClearCorpTax()
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@wd_police_pay
+title: Withdraw police payroll demand
+choose-if: cable_neg_police_pay > 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegClearPolicePay()
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@wd_limelight_police
+title: Withdraw Limelight police transfer
+choose-if: cable_neg_police_limelight = 1
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_police_limelight = 0
+Q.cableNegClearLimelightPolice()
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@wd_vats_police
+title: Withdraw Vats police transfer
+choose-if: cable_neg_police_vats = 1 and cable_neg_police_limelight = 0
+unavailable-subtitle: Withdraw Limelight police first.
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_police_vats = 0
+Q.cableNegClearVatsPolice()
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@wd_railyard_police
+title: Withdraw Railyard police transfer
+choose-if: cable_neg_police_railyard = 1 and cable_neg_police_limelight = 0
+unavailable-subtitle: Withdraw Limelight police first.
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_police_railyard = 0
+Q.cableNegClearRailyardPolice()
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@wd_docks_police
+title: Withdraw Docks police transfer
+choose-if: cable_neg_police_docks = 1 and cable_neg_police_limelight = 0
+unavailable-subtitle: Withdraw Limelight police first.
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_police_docks = 0
+Q.cableNegClearDocksPolice()
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@wd_disband
+title: Withdraw disband-corp-security demand
+choose-if: cable_neg_disband > 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+var d = Number(Q.cable_neg_disband) || 0
+if (d === 1) {
+    Q.cableNegReprisalSub('soylent', Q.CABLE_NEG_REPR_DISBAND_CITY_SOYLENT)
+    Q.cableNegReprisalSub('magrail', Q.CABLE_NEG_REPR_DISBAND_CITY_MAGRAIL)
+    Q.cableNegReprisalSub('brazos', Q.CABLE_NEG_REPR_DISBAND_CITY_BRAZOS)
+} else if (d === 2) {
+    Q.cableNegReprisalSub('soylent', Q.CABLE_NEG_REPR_DISBAND_MIL_SOYLENT)
+    Q.cableNegReprisalSub('magrail', Q.CABLE_NEG_REPR_DISBAND_MIL_MAGRAIL)
+    Q.cableNegReprisalSub('brazos', Q.CABLE_NEG_REPR_DISBAND_MIL_BRAZOS)
+}
+Q.cable_neg_disband = 0
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@wd_civil_rights
+title: Withdraw civil-rights enforcement
+choose-if: cable_neg_civil_rights = 1
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_civil_rights = 0
+Q.cableNegReprisalSub('soylent', Q.CABLE_NEG_REPR_CIVIL_RIGHTS_EACH)
+Q.cableNegReprisalSub('magrail', Q.CABLE_NEG_REPR_CIVIL_RIGHTS_EACH)
+Q.cableNegReprisalSub('brazos', Q.CABLE_NEG_REPR_CIVIL_RIGHTS_EACH)
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@wd_judge_review
+title: Withdraw judicial review panel
+choose-if: cable_neg_judge_review > 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegClearJudgeReview()
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@wd_trials
+title: Withdraw ceasefire trial rules
+choose-if: cable_neg_trials > 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegClearTrials()
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@wd_infra_cap
+title: Withdraw infrastructure cap
+choose-if: cable_neg_infra_cap > 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+var c = Number(Q.cable_neg_infra_cap) || 0
+if (c === 1) {
+    Q.cableNegReprisalSub('soylent', Q.CABLE_NEG_REPR_INFRA_GENEROUS_EACH)
+    Q.cableNegReprisalSub('magrail', Q.CABLE_NEG_REPR_INFRA_GENEROUS_EACH)
+    Q.cableNegReprisalSub('brazos', Q.CABLE_NEG_REPR_INFRA_GENEROUS_EACH)
+} else if (c === 2) {
+    Q.cableNegReprisalSub('soylent', Q.CABLE_NEG_REPR_INFRA_FAIR_EACH)
+    Q.cableNegReprisalSub('magrail', Q.CABLE_NEG_REPR_INFRA_FAIR_EACH)
+    Q.cableNegReprisalSub('brazos', Q.CABLE_NEG_REPR_INFRA_FAIR_EACH)
+}
+Q.cable_neg_infra_cap = 0
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@wd_education_pay_soylent
+title: Withdraw Soylent schooling levy
+choose-if: cable_neg_soylent_education_pay = 1
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegClearEducationPayCorp('soylent')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@wd_education_pay_magrail
+title: Withdraw Magrail schooling levy
+choose-if: cable_neg_magrail_education_pay = 1
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegClearEducationPayCorp('magrail')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@wd_education_pay_brazos
+title: Withdraw Brazos schooling levy
+choose-if: cable_neg_brazos_education_pay = 1
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegClearEducationPayCorp('brazos')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@wd_education_enroll_soylent
+title: Withdraw Soylent school enrollment
+choose-if: cable_neg_soylent_education_enroll = 1
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegClearEducationEnrollCorp('soylent')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@wd_education_enroll_magrail
+title: Withdraw Magrail school enrollment
+choose-if: cable_neg_magrail_education_enroll = 1
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegClearEducationEnrollCorp('magrail')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@wd_education_enroll_brazos
+title: Withdraw Brazos school enrollment
+choose-if: cable_neg_brazos_education_enroll = 1
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegClearEducationEnrollCorp('brazos')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@wd_land_tax_soylent
+title: Withdraw Soylent land tax
+choose-if: cable_neg_soylent_land_tax = 1
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegClearLandTaxCorp('soylent')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@wd_land_tax_magrail
+title: Withdraw Magrail land tax
+choose-if: cable_neg_magrail_land_tax = 1
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegClearLandTaxCorp('magrail')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@wd_land_tax_brazos
+title: Withdraw Brazos land tax
+choose-if: cable_neg_brazos_land_tax = 1
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegClearLandTaxCorp('brazos')
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@take_vats_police
+title: Vats corporate police → city
+choose-if: cable_neg_police_vats = 0
+unavailable-subtitle: Already demanded.
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_police_vats = 1
+Q.cableNegApplyVatsPolice()
+!}
+go-to: terms_menu
+
+@take_railyard_police
+title: Railyard corporate police → city
+choose-if: cable_neg_police_railyard = 0
+unavailable-subtitle: Already demanded.
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_police_railyard = 1
+Q.cableNegApplyRailyardPolice()
+!}
+go-to: terms_menu
+
+@take_docks_police
+title: Docks corporate police → city
+choose-if: cable_neg_police_docks = 0
+unavailable-subtitle: Already demanded.
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_police_docks = 1
+Q.cableNegApplyDocksPolice()
+!}
+go-to: terms_menu
+
+@take_limelight_police
+title: Limelight corporate police → city
+choose-if: cable_neg_police_limelight = 0 and cable_neg_police_vats = 1 and cable_neg_police_railyard = 1 and cable_neg_police_docks = 1
+unavailable-subtitle: [? if cable_neg_police_limelight = 1: Already demanded. ?][? if cable_neg_police_vats = 0: Need Vats, Railyard, and Docks first. ?]
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_police_limelight = 1
+Q.cableNegApplyLimelightPolice()
+!}
+go-to: terms_menu
+
+@police_funding
+title: Payroll for transferred police
+
+If we absorb corporate security, someone pays them.  Without a separate demand, transferred police are assumed to stay on **city payscale (2× poverty)**.  Corporate scale is ruinous; higher city scales are merely expensive.
+
+- @pay_city_2x: City payscale (2× poverty level)
+- @pay_city_6x: City pays 6× poverty level
+- @pay_city_6x_match: 6× poverty + raise city police to match
+- @pay_corp_10x: Same payscale as corp security (10× poverty)
+- @terms_menu
+
+@pay_city_2x
+title: City payscale (2× poverty)
+choose-if: cable_neg_police_pay = 0 and (cable_neg_police_vats = 1 or cable_neg_police_railyard = 1 or cable_neg_police_docks = 1 or cable_neg_police_limelight = 1)
+unavailable-subtitle: Pick a jurisdiction transfer first, or payroll already set.
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_police_pay = 1
+Q.cableNegSyncPolicePayReprisal()
+!}
+go-to: terms_menu
+
+@pay_city_6x
+title: City pays 6× poverty level
+choose-if: cable_neg_police_pay = 0 and (cable_neg_police_vats = 1 or cable_neg_police_railyard = 1 or cable_neg_police_docks = 1 or cable_neg_police_limelight = 1)
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_police_pay = 2
+Q.cableNegSyncPolicePayReprisal()
+!}
+go-to: terms_menu
+
+@pay_city_6x_match
+title: 6× poverty + raise city police to match
+choose-if: cable_neg_police_pay = 0 and (cable_neg_police_vats = 1 or cable_neg_police_railyard = 1 or cable_neg_police_docks = 1 or cable_neg_police_limelight = 1)
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_police_pay = 3
+Q.cableNegSyncPolicePayReprisal()
+!}
+go-to: terms_menu
+
+@pay_corp_10x
+title: Match corporate security payscale (10× poverty)
+choose-if: cable_neg_police_pay = 0 and (cable_neg_police_vats = 1 or cable_neg_police_railyard = 1 or cable_neg_police_docks = 1 or cable_neg_police_limelight = 1)
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_police_pay = 4
+Q.cableNegSyncPolicePayReprisal()
+!}
+go-to: terms_menu
+
+@corporate_tax
+title: Corporate tax to fund security
+
+We can levy a security tax on the megacorps — up to the full cost of transferred police payroll, or half if we want an easier vote.  Who pays depends on whether Brazos is exempt.
+
+- @tax_half_belligerents: Half cost — Soylent & Magrail only
+- @tax_full_belligerents: Full cost — Soylent & Magrail only
+- @tax_half_all_three: Half cost — all three megacorps
+- @tax_full_all_three: Full cost — all three megacorps
+- @terms_menu
+
+@tax_half_belligerents
+title: Half payroll — tax Soylent & Magrail
+subtitle: Brazos exempt; belligerents split the bill
+choose-if: cable_neg_corp_tax = 0 and cable_neg_police_pay_effective > 0
+unavailable-subtitle: Set a police payroll demand first, or tax already chosen.
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_corp_tax = 1
+Q.cable_neg_corp_tax_fund = 1
+Q.cable_neg_brazos_tax_exempt = 1
+Q.cableNegApplyTaxHalfBelligerents()
+!}
+go-to: terms_menu
+
+@tax_full_belligerents
+title: Full payroll — tax Soylent & Magrail
+subtitle: Brazos exempt; belligerents fund all transferred police
+choose-if: cable_neg_corp_tax = 0 and cable_neg_police_pay_effective > 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_corp_tax = 2
+Q.cable_neg_corp_tax_fund = 2
+Q.cable_neg_brazos_tax_exempt = 1
+Q.cableNegApplyTaxFullBelligerents()
+!}
+go-to: terms_menu
+
+@tax_half_all_three
+title: Half payroll — tax all three megacorps
+subtitle: Shared levy; city still covers half the cost
+choose-if: cable_neg_corp_tax = 0 and cable_neg_police_pay_effective > 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_corp_tax = 3
+Q.cable_neg_corp_tax_fund = 1
+Q.cable_neg_brazos_tax_exempt = 0
+Q.cableNegReprisalAddEach(Q.CABLE_NEG_REPR_TAX_HALF_ALL_EACH)
+!}
+go-to: terms_menu
+
+@tax_full_all_three
+title: Full payroll — tax all three megacorps
+subtitle: Security tax covers the entire transferred payroll
+choose-if: cable_neg_corp_tax = 0 and cable_neg_police_pay_effective > 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_corp_tax = 4
+Q.cable_neg_corp_tax_fund = 2
+Q.cable_neg_brazos_tax_exempt = 0
+Q.cableNegReprisalAdd('soylent', Q.CABLE_NEG_REPR_TAX_FULL_ALL_SOYLENT)
+Q.cableNegReprisalAdd('magrail', Q.CABLE_NEG_REPR_TAX_FULL_ALL_MAGRAIL)
+Q.cableNegReprisalAdd('brazos', Q.CABLE_NEG_REPR_TAX_FULL_ALL_BRAZOS)
+!}
+go-to: terms_menu
+
+@disband_corp_police
+title: Disband corporate police instead of transfer
+
+Alternative to jurisdiction: dissolve megacorp security outright and substitute city forces or militia.
+
+- @disband_city_police: Disband → city police
+- @disband_militia: Disband → militia replacement
+- @terms_menu
+
+@disband_city_police
+title: Disband corp security; city police replace them
+choose-if: cable_neg_disband = 0 and cable_neg_police_vats = 0 and cable_neg_police_railyard = 0 and cable_neg_police_docks = 0
+unavailable-subtitle: Incompatible with jurisdiction transfer, or already disbanding.
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegClearPolicePay()
+Q.cable_neg_disband = 1
+Q.cableNegReprisalAdd('soylent', Q.CABLE_NEG_REPR_DISBAND_CITY_SOYLENT)
+Q.cableNegReprisalAdd('magrail', Q.CABLE_NEG_REPR_DISBAND_CITY_MAGRAIL)
+Q.cableNegReprisalAdd('brazos', Q.CABLE_NEG_REPR_DISBAND_CITY_BRAZOS)
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@disband_militia
+title: Disband corp security; militia replaces them
+choose-if: cable_neg_disband = 0 and cable_neg_police_vats = 0 and cable_neg_police_railyard = 0 and cable_neg_police_docks = 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegClearPolicePay()
+Q.cable_neg_disband = 2
+Q.cableNegReprisalAdd('soylent', Q.CABLE_NEG_REPR_DISBAND_MIL_SOYLENT)
+Q.cableNegReprisalAdd('magrail', Q.CABLE_NEG_REPR_DISBAND_MIL_MAGRAIL)
+Q.cableNegReprisalAdd('brazos', Q.CABLE_NEG_REPR_DISBAND_MIL_BRAZOS)
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: terms_menu
+
+@civil_rights
+title: Enforce civil-rights laws again
+
+Corporate extraterritoriality has gutted municipal civil-rights enforcement for decades.  Restoring it unlocks real government-affairs work — if we can get the votes.
+
+- @demand_civil_rights: Insist on city civil-rights enforcement
+- @terms_menu
+
+@demand_civil_rights
+title: Restore municipal civil-rights enforcement
+choose-if: cable_neg_civil_rights = 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_civil_rights = 1
+Q.cableNegReprisalAddEach(Q.CABLE_NEG_REPR_CIVIL_RIGHTS_EACH)
+!}
+go-to: terms_menu
+
+@ceasefire_trials
+title: Trials for ceasefire violations
+
+Who judges corporate mercenaries who break the truce?
+
+- @trials_city_judges: City judges only
+- @trials_mixed_panel: 3 corporate + 2 city judges
+- @terms_menu
+
+@trials_city_judges
+title: City judges try ceasefire violations
+choose-if: cable_neg_trials = 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_trials = 1
+Q.cableNegReprisalAdd('soylent', Q.CABLE_NEG_REPR_TRIALS_CITY_SOYLENT)
+Q.cableNegReprisalAdd('magrail', Q.CABLE_NEG_REPR_TRIALS_CITY_MAGRAIL)
+Q.cableNegReprisalAdd('brazos', Q.CABLE_NEG_REPR_TRIALS_CITY_BRAZOS)
+!}
+go-to: terms_menu
+
+@trials_mixed_panel
+title: Mixed panel (3 corp, 2 city judges)
+choose-if: cable_neg_trials = 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_trials = 2
+Q.cableNegApplyTrialsMixed()
+!}
+go-to: terms_menu
+
+@judge_review
+title: Review city judges
+
+Requires having demanded city or mixed ceasefire trials first.
+
+- @review_2_city_3_corp: Review panel — 2 city, 3 corporate evaluators
+- @review_4_city_3_corp: Review panel — 4 city, 3 corporate evaluators
+- @terms_menu
+
+@review_2_city_3_corp
+title: Judicial review (2 city / 3 corporate)
+choose-if: cable_neg_judge_review = 0 and cable_neg_trials > 0
+unavailable-subtitle: Demand ceasefire trial rules first.
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_judge_review = 2
+Q.cableNegReprisalAddEach(Q.CABLE_NEG_REPR_JUDGE_2_EACH)
+!}
+go-to: terms_menu
+
+@review_4_city_3_corp
+title: Judicial review (4 city / 3 corporate)
+choose-if: cable_neg_judge_review = 0 and cable_neg_trials > 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_judge_review = 4
+Q.cableNegReprisalAddEach(Q.CABLE_NEG_REPR_JUDGE_4_EACH)
+!}
+go-to: terms_menu
+
+@infra_cap
+title: Cap megacorp use of city infrastructure
+
+The megacorps treat municipal life-support trunks, gravity-grid connectors, and transit corridors as free annexes.  We can demand formal allotments and force cutbacks above the cap.
+
+- @infra_cap_generous: Generous allotment
+- @infra_cap_fair: Fair allotment
+- @terms_menu
+
+@infra_cap_generous
+title: Generous infrastructure allotment
+subtitle: High quotas before cutbacks bite — easier to sell at the table
+choose-if: cable_neg_infra_cap = 0
+unavailable-subtitle: Infrastructure cap already set.
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_infra_cap = 1
+Q.cableNegReprisalAddEach(Q.CABLE_NEG_REPR_INFRA_GENEROUS_EACH)
+!}
+go-to: terms_menu
+
+@infra_cap_fair
+title: Fair infrastructure allotment
+subtitle: Quotas tied to headcount and taxes — a harder bargain
+choose-if: cable_neg_infra_cap = 0
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_infra_cap = 2
+Q.cableNegReprisalAddEach(Q.CABLE_NEG_REPR_INFRA_FAIR_EACH)
+!}
+go-to: terms_menu
+
+@prior_leverage_demands
+title: Demands from earlier leverage
+view-if: cable_neg_prior_leverage = 1
+subtitle: Only on megacorps we already had leverage over before the rupture
+
+Pick a corporation — non-security terms apply to that megacorp only.
+
+- @prior_leverage_soylent: Community Soylent
+- @prior_leverage_magrail: Magrail Combine
+- @prior_leverage_brazos: Brazos Zaibatsu
+- @terms_menu
+
+@prior_leverage_soylent
+title: Prior leverage — Community Soylent
+view-if: cable_neg_prior_soylent = 1
+subtitle: Spend pre-rupture leverage on Soylent alone
+
+- @demand_education_enroll_soylent: Enroll Soylent employees' children in city schools
+- @demand_education_pay_soylent: Soylent pays for that education
+- @demand_land_tax_soylent: Land tax on Soylent holdings for general revenue
+- @prior_leverage_demands
+
+@prior_leverage_magrail
+title: Prior leverage — Magrail Combine
+view-if: cable_neg_prior_magrail = 1
+subtitle: Spend pre-rupture leverage on Magrail alone
+
+- @demand_education_enroll_magrail: Enroll Magrail employees' children in city schools
+- @demand_education_pay_magrail: Magrail pays for that education
+- @demand_land_tax_magrail: Land tax on Magrail holdings for general revenue
+- @prior_leverage_demands
+
+@prior_leverage_brazos
+title: Prior leverage — Brazos Zaibatsu
+view-if: cable_neg_prior_brazos = 1
+subtitle: Spend pre-rupture leverage on Brazos alone
+
+- @demand_education_enroll_brazos: Enroll Brazos employees' children in city schools
+- @demand_education_pay_brazos: Brazos pays for that education
+- @demand_land_tax_brazos: Land tax on Brazos holdings for general revenue
+- @prior_leverage_demands
+
+@demand_education_enroll_soylent
+title: Enroll Soylent children in city education
+choose-if: cable_neg_soylent_education_enroll = 0 and cable_neg_prior_soylent = 1
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_soylent_education_enroll = 1
+Q.cableNegReprisalAdd('soylent', Q.CABLE_NEG_REPR_EDU_ENROLL_EACH)
+!}
+go-to: prior_leverage_soylent
+
+@demand_education_enroll_magrail
+title: Enroll Magrail children in city education
+choose-if: cable_neg_magrail_education_enroll = 0 and cable_neg_prior_magrail = 1
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_magrail_education_enroll = 1
+Q.cableNegReprisalAdd('magrail', Q.CABLE_NEG_REPR_EDU_ENROLL_EACH)
+!}
+go-to: prior_leverage_magrail
+
+@demand_education_enroll_brazos
+title: Enroll Brazos children in city education
+choose-if: cable_neg_brazos_education_enroll = 0 and cable_neg_prior_brazos = 1
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_brazos_education_enroll = 1
+Q.cableNegReprisalAdd('brazos', Q.CABLE_NEG_REPR_EDU_ENROLL_EACH)
+!}
+go-to: prior_leverage_brazos
+
+@demand_education_pay_soylent
+title: Soylent pays for municipal schooling
+choose-if: cable_neg_soylent_education_pay = 0 and cable_neg_soylent_education_enroll = 1
+unavailable-subtitle: Demand Soylent enrollment first.
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_soylent_education_pay = 1
+Q.cableNegReprisalAdd('soylent', Q.CABLE_NEG_REPR_EDU_PAY_EACH)
+!}
+go-to: prior_leverage_soylent
+
+@demand_education_pay_magrail
+title: Magrail pays for municipal schooling
+choose-if: cable_neg_magrail_education_pay = 0 and cable_neg_magrail_education_enroll = 1
+unavailable-subtitle: Demand Magrail enrollment first.
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_magrail_education_pay = 1
+Q.cableNegReprisalAdd('magrail', Q.CABLE_NEG_REPR_EDU_PAY_EACH)
+!}
+go-to: prior_leverage_magrail
+
+@demand_education_pay_brazos
+title: Brazos pays for municipal schooling
+choose-if: cable_neg_brazos_education_pay = 0 and cable_neg_brazos_education_enroll = 1
+unavailable-subtitle: Demand Brazos enrollment first.
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_brazos_education_pay = 1
+Q.cableNegReprisalAdd('brazos', Q.CABLE_NEG_REPR_EDU_PAY_EACH)
+!}
+go-to: prior_leverage_brazos
+
+@demand_land_tax_soylent
+title: Land tax on Soylent holdings
+choose-if: cable_neg_soylent_land_tax = 0 and cable_neg_prior_soylent = 1
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_soylent_land_tax = 1
+Q.cableNegReprisalAdd('soylent', Q.CABLE_NEG_REPR_LAND_TAX_EACH)
+!}
+go-to: prior_leverage_soylent
+
+@demand_land_tax_magrail
+title: Land tax on Magrail holdings
+choose-if: cable_neg_magrail_land_tax = 0 and cable_neg_prior_magrail = 1
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_magrail_land_tax = 1
+Q.cableNegReprisalAdd('magrail', Q.CABLE_NEG_REPR_LAND_TAX_EACH)
+!}
+go-to: prior_leverage_magrail
+
+@demand_land_tax_brazos
+title: Land tax on Brazos holdings
+choose-if: cable_neg_brazos_land_tax = 0 and cable_neg_prior_brazos = 1
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cable_neg_brazos_land_tax = 1
+Q.cableNegReprisalAdd('brazos', Q.CABLE_NEG_REPR_LAND_TAX_EACH)
+!}
+go-to: prior_leverage_brazos
+
+@finalize_deal
+title: Close the bargain
+on-arrival: {!
+Q.cableNegEnsureApi()
+Q.cableNegSyncPolicePayReprisal()
+Q.cableNegAccepts = function(corp) {
+    var L = Number(Q[corp + '_leverage']) || 0
+    var R = Number(Q[corp + '_reprisal']) || 0
+    return L > R ? 1 : 0
+}
+var votes = (
+    Q.cableNegAccepts('soylent')
+    + Q.cableNegAccepts('magrail')
+    + Q.cableNegAccepts('brazos')
+)
+Q.cable_neg_votes = votes
+Q.cable_neg_soylent_accepts = Q.cableNegAccepts('soylent')
+Q.cable_neg_magrail_accepts = Q.cableNegAccepts('magrail')
+Q.cable_neg_brazos_accepts = Q.cableNegAccepts('brazos')
+
+if (votes >= 2) {
+    Q.cable_neg_deal = 1
+    Q.cable_break_peace = 1
+    if (Q.cable_neg_civil_rights === 1) { Q.civil_rights_unlock = 1 }
+    if (Q.cable_neg_police_vats === 1 || Q.cable_neg_police_railyard === 1 || Q.cable_neg_police_docks === 1 || Q.cable_neg_police_limelight === 1) {
+        Q.corp_police_city_jurisdiction = 1
+    }
+    if (Q.cable_neg_police_pay_effective > 0) {
+        Q.corp_police_pay_level = Q.cable_neg_police_pay_effective
+    }
+    if (Q.cable_neg_infra_cap > 0) {
+        Q.corp_infra_cap = Q.cable_neg_infra_cap
+    }
+    if (Q.cable_neg_corp_tax > 0) {
+        Q.corp_security_tax = Q.cable_neg_corp_tax
+        Q.corp_security_tax_fund = Q.cable_neg_corp_tax_fund
+        Q.brazos_security_tax_exempt = Q.cable_neg_brazos_tax_exempt
+    }
+    // TODO: apply budget revenue from corp_security_tax_fund × police payroll cost
+    // TODO: set militia vs city replacement flags from cable_neg_disband
+} else {
+    Q.cable_neg_deal = 0
+    Q.cable_break_peace = 0
+}
+
+if (Q.cable_neg_soylent_accepts === 0 && (Number(Q.soylent_reprisal) || 0) > (Number(Q.soylent_leverage) || 0)) {
+    Q.soylent_leverage = Math.max(0, (Number(Q.soylent_leverage) || 0) - 1)
+}
+if (Q.cable_neg_magrail_accepts === 0 && (Number(Q.magrail_reprisal) || 0) > (Number(Q.magrail_leverage) || 0)) {
+    Q.magrail_leverage = Math.max(0, (Number(Q.magrail_leverage) || 0) - 1)
+}
+if (Q.cable_neg_brazos_accepts === 0 && (Number(Q.brazos_reprisal) || 0) > (Number(Q.brazos_leverage) || 0)) {
+    Q.brazos_leverage = Math.max(0, (Number(Q.brazos_leverage) || 0) - 1)
+}
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+go-to: deal_won if cable_neg_deal = 1; deal_failed if cable_neg_deal = 0
+
+@deal_won
+title: Ceasefire signed
+
+[? if cable_neg_votes = 3: All three megacorps signed — a rare unanimous municipal victory. ?]
+[? if cable_neg_votes = 2: Two megacorps signed; the holdout will remember what we extracted. ?]
+
+The ceasefire holds on paper.  City enforcement begins where we demanded jurisdiction; the solar exchanges breathe easier for a day.
+
+- @return
+
+@deal_failed
+title: Talks collapse
+
+We could not get two megacorps to swallow the package — leverage fell short of reprisal.  Soylent [? if cable_neg_soylent_accepts = 1: signed ?][? if cable_neg_soylent_accepts = 0: walked ?]; Magrail [? if cable_neg_magrail_accepts = 1: signed ?][? if cable_neg_magrail_accepts = 0: walked ?]; Brazos [? if cable_neg_brazos_accepts = 1: signed ?][? if cable_neg_brazos_accepts = 0: walked ?].
+
+Violence in the Vats and Railyard may continue until someone blinks.
+
+- @return

@@ -1,6 +1,13 @@
 title: The Vats
 new-page: true
+on-arrival: {!
+if (typeof Q.syncDistrictDisplays === 'function') { Q.syncDistrictDisplays('Vats') }
+!}
 
 = The Vats
+
+Crime level: [+ vats_crime : crime +] ([+ vats_crime +])
+Prosperity level: [+ vats_prosperity : prosperity +] ([+ vats_prosperity +])
+Political Dominance: [+ vats_dominant_party : party +]
 
 - @main: Return to main

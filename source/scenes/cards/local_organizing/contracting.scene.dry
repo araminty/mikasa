@@ -1,0 +1,298 @@
+title: Contracts and suppliers
+new-page: true
+is-card: true
+card-image: img/asteroid.jpg
+tags: local_organizing, city_affairs
+view-if: contracting_visits_remaining >= 1
+on-arrival: {!
+if (typeof Q.syncContractingAllowance === 'function') { Q.syncContractingAllowance(); }
+var contractingLeft = Number(Q.contracting_visits_remaining) || 0;
+if (contractingLeft > 0) { Q.contracting_visits_remaining = contractingLeft - 1; }
+if (typeof Q.syncContractFairChainComplete === 'function') { Q.syncContractFairChainComplete(); }
+!}
+
+Mikasa government contracts are a swamp of favor trading and graft.  By revoking old contracts we can make spending more efficient... and have the opportunity to make our own network of favors.  How should we develop these contracts?
+
+- @outside_corporations
+- @big_3
+- @local_wealthy
+- @cooperatives
+- @fair_bidding: Have honest and fair bidding
+- @return
+
+@fair_bidding
+title: Have honest and fair bidding
+subtitle: [? if contract_fair_chain_complete = 1 and contract_outside_below_quarter = 1: But we have reasonable grounds to favor domestic contractors ?][? if contract_fair_chain_complete = 1 and contract_outside_below_quarter = 0: We've implemented technocratic awards ?][? if contract_fair_chain_complete = 0 and fair_contract_uses = 0: It's just crazy enough to work ?]
+on-arrival: {!
+var fairUses = Number(Q.fair_contract_uses) || 0;
+var MIKASA_DISTRICTS = ['Docks', 'Aurora', 'Vats', 'Railyard', 'Pitts', 'Limelight', 'Deeps'];
+function fairSlotOpen(reg, fair) {
+    return (Number(Q[reg]) || 0) < 1 && (Number(Q[fair]) || 0) < 1;
+}
+var fairSlots = [
+    { n: 1, reg: 'contract_coop_pitts', fair: 'contract_fair_coop_pitts', asset: { id: 'pitts_coop_contract_workshop', name: 'Pitts coop guild workshop', district: 'Pitts', ownerType: 'stratum', owner: 'coop', kind: 'workshop', major: false } },
+    { n: 2, reg: 'contract_big3_limelight', fair: 'contract_fair_big3_limelight', asset: { id: 'limelight_brazos_contract_studio', name: 'Brazos municipal contract studio', district: 'Limelight', ownerType: 'ig', owner: 'Brazos', kind: 'factory', major: false } },
+    { n: 3, reg: 'contract_big3_railyard', fair: 'contract_fair_big3_railyard', asset: { id: 'railyard_magrail_contract_depot', name: 'Magrail municipal contract depot', district: 'Railyard', ownerType: 'ig', owner: 'Magrail', kind: 'factory', major: false } },
+    { n: 4, reg: 'contract_big3_vats', fair: 'contract_fair_big3_vats', asset: { id: 'vats_soylent_contract_yard', name: 'Soylent municipal contract yard', district: 'Vats', ownerType: 'ig', owner: 'Soylent', kind: 'factory', major: false } },
+    { n: 5, reg: 'contract_coop_aurora', fair: 'contract_fair_coop_aurora', asset: { id: 'aurora_coop_contract_workshop', name: 'Aurora coop contract workshop', district: 'Aurora', ownerType: 'stratum', owner: 'coop', kind: 'workshop', major: false } },
+    { n: 6, reg: 'contract_wealthy_docks', fair: 'contract_fair_wealthy_docks', asset: { id: 'docks_wealthy_contract_office', name: 'Docks shareholder contract office', district: 'Docks', ownerType: 'stratum', owner: 'rich', kind: 'office', major: false } },
+    { n: 7, reg: 'contract_wealthy_aurora', fair: 'contract_fair_wealthy_aurora', asset: { id: 'aurora_wealthy_contract_office', name: 'Aurora boutique contract office', district: 'Aurora', ownerType: 'stratum', owner: 'rich', kind: 'office', major: false } }
+];
+var picked = null;
+for (var i = 0; i < fairSlots.length; i++) {
+    if (fairSlotOpen(fairSlots[i].reg, fairSlots[i].fair)) { picked = fairSlots[i]; break; }
+}
+Q.contract_fair_slot = 0;
+if (picked) {
+    Q.contract_fair_slot = picked.n;
+    Q[picked.fair] = 1;
+    if (typeof Q.addAsset === 'function') { Q.addAsset(picked.asset); }
+    if (typeof Q.bumpDistrictProsperity === 'function') {
+        for (var d = 0; d < MIKASA_DISTRICTS.length; d++) {
+            Q.bumpDistrictProsperity(MIKASA_DISTRICTS[d], 0.01);
+        }
+    }
+    if (typeof Q.queueBudgetExpense === 'function') {
+        Q.queueBudgetExpense(2, 'contract_award', 'Fair-bid municipal contracts');
+    }
+} else {
+    Q.contract_fair_exhausted = (Number(Q.contract_fair_exhausted) || 0) + 1;
+    if (typeof Q.bumpDistrictProsperity === 'function') {
+        for (var d2 = 0; d2 < MIKASA_DISTRICTS.length; d2++) {
+            Q.bumpDistrictProsperity(MIKASA_DISTRICTS[d2], 0.02);
+        }
+    }
+    if (typeof Q.queueBudgetExpense === 'function') {
+        Q.queueBudgetExpense(1, 'contract_award', 'Fair-bid contract administration');
+    }
+}
+Q.fair_contract_uses = fairUses + 1;
+if (typeof Q.syncContractFairChainComplete === 'function') { Q.syncContractFairChainComplete(); }
+!}
+go-to: fair_result
+
+@fair_result
+title: Fair bid award
+
+[? if fair_contract_uses = 1: We make the bidding process more honest the Caeser's wife.  Bidding parties have to send a representative to submit a bid on old fashioned paper at a closed room meeting for contracts that are awarded by Dutch auction.  Agreeing to rigorous audits is a requirement for entry. ?]
+
+[? if contract_fair_slot = 1: Surprisingly the Cooperatives from the Pitts do very well in the first round of contracts.  The contracts are a lifeline for them and they make aggressively cheap bids.  The corporations cry foul but we have extensively verified the Cooperatives ability to fill the contracts. ?]
+
+[? if contract_fair_slot = 2: Technocratic reviewers rank Brazos Limelight studios highest on price, safety, and past performance.  The award is posted to the municipal ledger before lobbyists can rewrite the shortlist.  Brazos gets the contract studio; rivals grumble but the can't find any irregularities. ?]
+
+[? if contract_fair_slot = 3: Magrail's Railyard depot bids beat the field on logistics and bond backing.  Freight-adjacent contract labor will expand on schedule — chosen by spreadsheet, not by which executive bought dinner last week. ?]
+
+[? if contract_fair_slot = 4: Community Soylent's Vats compound posts the winning composite score.  Compound managers accept the yard order with strained grace; the public sees a megacorp win that at least survived open metrics. ?]
+
+[? if contract_fair_slot = 5: Aurora coop yards edge out the remaining bidders on fabrication capacity and worker retention.  Guild brokers citywide note that municipal business went to a local workshop on merit — a modest precedent, even if the margins are thin. ?]
+
+[? if contract_fair_slot = 6: Docks rentier workshops top the neutral rubric on solvency and subcontractor depth.  Shareholders pocket the prime line items while the award memo stresses audit trails over patronage. ?]
+
+[? if contract_fair_slot = 7: A local magnate does well in the bidding this round.  A little surprisingly, they plan an expansion in Aurora not the docks. ?]
+
+[? if contract_fair_slot = 0: At this point fair and transparent bidding is a well established tradition.  In the increasingly competitive market, contracts are getting awarded throughout the city with no area in particular profiting. ?]
+
+@outside_corporations
+view-if: contract_fair_chain_complete = 0
+title: Outside corporation suppliers
+subtitle: They offer competitive pricing
+on-arrival: {!
+contract_outside += 1;
+if (typeof Q.queueBudgetExpense === 'function') {
+    Q.queueBudgetExpense(2, 'contract_award', 'Outside supplier contracts');
+}
+!}
+
+We steer contracts toward offstation suppliers with no permanent Mikasa footprint.  The Big 3 are a little annoyed but would be much angrier if they realized this lets us cultivate outside relationships that could be used against them one day.
+
+@big_3
+view-if: contract_fair_chain_complete = 0
+title: Big Three suppliers
+
+Community Soylent, Magrail Combine, and Brazos Zaibatsu all want the paperwork routed their way.  We can split the award across the neutral Docks hub — calming everyone a little — or concentrate work in one corp's home district and make a real friend there.
+
+- @big_3_docks: Split contracts through the Docks hub
+- @big_3_vats: Concentrate in the Vats (Community Soylent)
+- @big_3_railyard: Concentrate in the Railyard (Magrail Combine)
+- @big_3_limelight: Concentrate in the Limelight (Brazos Zaibatsu)
+- @return
+
+@big_3_docks
+title: Split contracts through the Docks hub
+subtitle: Spread the work; lower antagonism with all three megacorps
+on-arrival: {!
+contract_big3_docks = 1;
+soylent_reprisal = Math.max(0, (Number(Q.soylent_reprisal) || 0) - 1);
+magrail_reprisal = Math.max(0, (Number(Q.magrail_reprisal) || 0) - 1);
+brazos_reprisal = Math.max(0, (Number(Q.brazos_reprisal) || 0) - 1);
+if (typeof Q.addAsset === 'function') {
+    Q.addAsset({ id: 'docks_big3_contract_hub', name: 'Docks trilateral contract hub', district: 'Docks', ownerType: 'public', owner: 'city', kind: 'office', major: false });
+}
+if (typeof Q.bumpDistrictProsperity === 'function') { Q.bumpDistrictProsperity('Docks', 0.06); }
+if (typeof Q.queueBudgetExpense === 'function') { Q.queueBudgetExpense(3, 'contract_award', 'Municipal contract award'); }
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes(); }
+!}
+
+Clerks at the Docks hub process a three-way split.  None of the megacorps are thrilled, but none can claim we played favorites.  Trade clerks and corporate drones both see a little more steady work.
+
+@big_3_vats
+title: Concentrate in the Vats
+subtitle: Favor Community Soylent; antagonize Magrail and Brazos
+on-arrival: {!
+contract_big3_vats = 1;
+Q.soylent_leverage = (Number(Q.soylent_leverage) || 0) + 1;
+Q.magrail_reprisal = (Number(Q.magrail_reprisal) || 0) + 1;
+Q.brazos_reprisal = (Number(Q.brazos_reprisal) || 0) + 1;
+if (typeof Q.addAsset === 'function') {
+    Q.addAsset({ id: 'vats_soylent_contract_yard', name: 'Soylent municipal contract yard', district: 'Vats', ownerType: 'ig', owner: 'Soylent', kind: 'factory', major: false });
+}
+if (typeof Q.bumpDistrictProsperity === 'function') { Q.bumpDistrictProsperity('Vats', 0.08); }
+if (typeof Q.queueBudgetExpense === 'function') { Q.queueBudgetExpense(3, 'contract_award', 'Municipal contract award'); }
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes(); }
+!}
+
+Soylent compound managers take victory laps while rival corp liaisons file angry protests.  Vats employment ticks up; drone households tied to Soylent notice the difference first.
+
+@big_3_railyard
+title: Concentrate in the Railyard
+subtitle: Favor Magrail Combine; antagonize Soylent and Brazos
+on-arrival: {!
+contract_big3_railyard = 1;
+Q.magrail_leverage = (Number(Q.magrail_leverage) || 0) + 1;
+Q.soylent_reprisal = (Number(Q.soylent_reprisal) || 0) + 1;
+Q.brazos_reprisal = (Number(Q.brazos_reprisal) || 0) + 1;
+if (typeof Q.addAsset === 'function') {
+    Q.addAsset({ id: 'railyard_magrail_contract_depot', name: 'Magrail municipal contract depot', district: 'Railyard', ownerType: 'ig', owner: 'Magrail', kind: 'factory', major: false });
+}
+if (typeof Q.bumpDistrictProsperity === 'function') { Q.bumpDistrictProsperity('Railyard', 0.08); }
+if (typeof Q.queueBudgetExpense === 'function') { Q.queueBudgetExpense(3, 'contract_award', 'Municipal contract award'); }
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes(); }
+!}
+
+Magrail foremen expand shift schedules; Soylent and Brazos quietly route their complaints through syndicate channels.  The Railyard hums with freight-adjacent contract labor.
+
+@big_3_limelight
+title: Concentrate in the Limelight
+subtitle: Favor Brazos Zaibatsu; antagonize Soylent and Magrail
+on-arrival: {!
+contract_big3_limelight = 1;
+Q.brazos_leverage = (Number(Q.brazos_leverage) || 0) + 1;
+Q.soylent_reprisal = (Number(Q.soylent_reprisal) || 0) + 1;
+Q.magrail_reprisal = (Number(Q.magrail_reprisal) || 0) + 1;
+if (typeof Q.addAsset === 'function') {
+    Q.addAsset({ id: 'limelight_brazos_contract_studio', name: 'Brazos municipal contract studio', district: 'Limelight', ownerType: 'ig', owner: 'Brazos', kind: 'factory', major: false });
+}
+if (typeof Q.bumpDistrictProsperity === 'function') { Q.bumpDistrictProsperity('Limelight', 0.08); }
+if (typeof Q.queueBudgetExpense === 'function') { Q.queueBudgetExpense(3, 'contract_award', 'Municipal contract award'); }
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes(); }
+!}
+
+Brazos showcase halls pick up maintenance and fit-out work.  The other two megacorps treat the award as a deliberate snub — useful leverage if we meant to pick a side.
+
+@local_wealthy
+view-if: contract_fair_chain_complete = 0
+title: Local wealthy contractors
+
+Shareholder-adjacent workshops and Docks rentiers both bid for the same municipal line items.  Either cluster works; the city's moneyed strata gossip about the award no matter which district hosts the signing ceremony.
+
+- @wealthy_docks: Award through Docks firms
+- @wealthy_aurora: Award through Aurora firms
+- @return
+
+@wealthy_docks
+title: Award through Docks firms
+subtitle: Prosperity in the Docks; shareholders citywide take notice
+on-arrival: {!
+contract_wealthy_docks = 1;
+Q.rich_bump = 0.05;
+if (typeof Q.addAsset === 'function') {
+    Q.addAsset({ id: 'docks_wealthy_contract_office', name: 'Docks shareholder contract office', district: 'Docks', ownerType: 'stratum', owner: 'rich', kind: 'office', major: false });
+}
+if (typeof Q.applyStratumProsperityBumps === 'function') { Q.applyStratumProsperityBumps(); }
+if (typeof Q.bumpDistrictProsperity === 'function') { Q.bumpDistrictProsperity('Docks', 0.05); }
+if (typeof Q.queueBudgetExpense === 'function') { Q.queueBudgetExpense(3, 'contract_award', 'Municipal contract award'); }
+!}
+
+Docks shareholders pocket the prime subcontracts while their cousins in other districts still benefit from the spending ripple.  The old money crowd approves of government that pays on time.
+
+@wealthy_aurora
+title: Award through Aurora firms
+subtitle: Prosperity in Aurora; shareholders citywide take notice
+on-arrival: {!
+contract_wealthy_aurora = 1;
+Q.rich_bump = 0.05;
+if (typeof Q.addAsset === 'function') {
+    Q.addAsset({ id: 'aurora_wealthy_contract_office', name: 'Aurora boutique contract office', district: 'Aurora', ownerType: 'stratum', owner: 'rich', kind: 'office', major: false });
+}
+if (typeof Q.applyStratumProsperityBumps === 'function') { Q.applyStratumProsperityBumps(); }
+if (typeof Q.bumpDistrictProsperity === 'function') { Q.bumpDistrictProsperity('Aurora', 0.05); }
+if (typeof Q.queueBudgetExpense === 'function') { Q.queueBudgetExpense(3, 'contract_award', 'Municipal contract award'); }
+!}
+
+Aurora's boutique fabricators and logistics brokers land the contracts.  Wealthy households across Mikasa still feel the downstream orders — and remember who signed the checks.
+
+@cooperatives
+view-if: contract_fair_chain_complete = 0
+title: Local cooperatives and guilds
+
+Cooperative workshops and guild ateliers can absorb small-batch municipal orders if we place the work where they already live.  Every site gives the local guilds a little more clout citywide.
+
+- @coop_aurora: Aurora cooperatives
+- @coop_pitts: Pitts cooperatives and Seven Families workshops
+- @coop_deeps: Deeps cooperatives
+- @coop_docks: Docks cooperatives and freight guilds
+- @return
+
+@coop_aurora
+title: Aurora cooperatives
+on-arrival: {!
+contract_coop_aurora = 1;
+if (typeof Q.addAsset === 'function') {
+    Q.addAsset({ id: 'aurora_coop_contract_workshop', name: 'Aurora coop contract workshop', district: 'Aurora', ownerType: 'stratum', owner: 'coop', kind: 'workshop', major: false });
+}
+if (typeof Q.bumpDistrictProsperity === 'function') { Q.bumpDistrictProsperity('Aurora', 0.06); }
+if (typeof Q.queueBudgetExpense === 'function') { Q.queueBudgetExpense(3, 'contract_award', 'Municipal contract award'); }
+!}
+
+Aurora coop yards pick up fabrication and life-support maintenance orders.  Guild brokers in other districts note that municipal business is no longer reserved for megacorp vendors.
+
+@coop_pitts
+title: Pitts cooperatives and guild workshops
+on-arrival: {!
+contract_coop_pitts = 1;
+Q.families_leverage = (Number(Q.families_leverage) || 0) + 1;
+if (typeof Q.addAsset === 'function') {
+    Q.addAsset({ id: 'pitts_coop_contract_workshop', name: 'Pitts coop guild workshop', district: 'Pitts', ownerType: 'stratum', owner: 'coop', kind: 'workshop', major: false });
+}
+if (typeof Q.bumpDistrictProsperity === 'function') { Q.bumpDistrictProsperity('Pitts', 0.07); }
+if (typeof Q.queueBudgetExpense === 'function') { Q.queueBudgetExpense(3, 'contract_award', 'Municipal contract award'); }
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes(); }
+!}
+
+Pitts cooperative machine shops and syndicate-tolerant guild floors share the workload.  The Seven Families treat the contract as recognition; coop members treat it as proof the city can hire locally.
+
+@coop_deeps
+title: Deeps cooperatives
+on-arrival: {!
+contract_coop_deeps = 1;
+if (typeof Q.addAsset === 'function') {
+    Q.addAsset({ id: 'deeps_coop_contract_workshop', name: 'Deeps sealed contract workshop', district: 'Deeps', ownerType: 'stratum', owner: 'coop', kind: 'workshop', major: false });
+}
+if (typeof Q.bumpDistrictProsperity === 'function') { Q.bumpDistrictProsperity('Deeps', 0.06); }
+if (typeof Q.queueBudgetExpense === 'function') { Q.queueBudgetExpense(3, 'contract_award', 'Municipal contract award'); }
+!}
+
+Deepers' insulated workshops take contracts on their own terms — sealed bids, air-gapped ledgers, no corp middleware.  The district's prosperity tick rises without much fanfare outside the Deeps.
+
+@coop_docks
+title: Docks cooperatives and freight guilds
+on-arrival: {!
+contract_coop_docks = 1;
+if (typeof Q.addAsset === 'function') {
+    Q.addAsset({ id: 'docks_coop_contract_workshop', name: 'Docks coop contract workshop', district: 'Docks', ownerType: 'stratum', owner: 'coop', kind: 'workshop', major: false });
+}
+if (typeof Q.bumpDistrictProsperity === 'function') { Q.bumpDistrictProsperity('Docks', 0.05); }
+if (typeof Q.queueBudgetExpense === 'function') { Q.queueBudgetExpense(3, 'contract_award', 'Municipal contract award'); }
+!}
+
+Cooperative guild halls and Docks workshop yards split liner-traffic and freight orders.  Prosperity in the Docks inches up; guild fixers elsewhere file the precedent away for next quarter's negotiations.

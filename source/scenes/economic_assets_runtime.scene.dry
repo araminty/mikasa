@@ -1601,7 +1601,50 @@ function applyDestroyedHomeProsperity(state, ledger) {
     return changed
 }
 
-function applyHousingTaxRevenue() {
+/** Recurring monthly municipal debits (template — raise amounts as policies go live). */
+var BUDGET_RECURRING_EXPENSES = [
+    { id: 'baseline_admin', label: 'Municipal administration', amount: 0 },
+    { id: 'grid_maintenance', label: 'Grid and life-support maintenance', amount: 0 },
+    { id: 'public_safety', label: 'Police and public safety payroll', amount: 0 },
+]
+
+function sumBudgetRecurringExpenses() {
+    var catalog = Q.budgetRecurringExpenses || BUDGET_RECURRING_EXPENSES
+    var total = 0
+    for (var i = 0; i < catalog.length; i++) {
+        var row = catalog[i]
+        var amt = Number(row.amount)
+        if (!isNaN(amt) && amt > 0) { total += amt }
+    }
+    return total
+}
+
+function sumBudgetQueuedExpenses() {
+    var queue = Q.budgetExpenseQueue || []
+    var total = 0
+    for (var j = 0; j < queue.length; j++) {
+        var amt = Number(queue[j].amount)
+        if (!isNaN(amt) && amt > 0) { total += amt }
+    }
+    return total
+}
+
+/** One-shot costs (cards, events) applied on the next Q.tabulateBudget(). */
+function queueBudgetExpense(amount, sourceId, label) {
+    amount = Number(amount)
+    if (isNaN(amount) || amount <= 0) { return false }
+    if (!Q.budgetExpenseQueue) { Q.budgetExpenseQueue = [] }
+    Q.budgetExpenseQueue.push({
+        amount: amount,
+        source: sourceId || 'misc',
+        label: label || sourceId || 'misc',
+        month: Q.month,
+        year: Q.year,
+    })
+    return true
+}
+
+function computeHousingTaxRevenue() {
     ensureEconomicAssets()
     ensureHousingInventory()
     var revenue = 0
@@ -1621,16 +1664,42 @@ function applyHousingTaxRevenue() {
         revenue += HOUSING_TAX_BASE_PER_HOME * mult * ownerPros
     }
 
-    Q.monthly_housing_tax = Math.round(revenue * 1000) / 1000
-    if (Q.budget != null && !isNaN(Number(Q.budget))) {
-        Q.budget = Number(Q.budget) + Q.monthly_housing_tax
+    return Math.round(revenue * 1000) / 1000
+}
+
+/**
+ * Monthly budget rollup: housing tax revenue minus recurring + queued expenses.
+ * Event bonuses (e.g. dundalk_reform budget += 2) stay as direct Q.budget edits.
+ */
+function tabulateBudget(opts) {
+    opts = opts || {}
+    ensureEconomicAssets()
+    ensureHousingInventory()
+
+    var revenue = computeHousingTaxRevenue()
+    var recurring = sumBudgetRecurringExpenses()
+    var queued = sumBudgetQueuedExpenses()
+    var expenses = recurring + queued
+    var net = revenue - expenses
+
+    Q.monthly_housing_tax = revenue
+    Q.monthly_budget_revenue = revenue
+    Q.monthly_budget_recurring_expenses = Math.round(recurring * 1000) / 1000
+    Q.monthly_budget_queued_expenses = Math.round(queued * 1000) / 1000
+    Q.monthly_budget_expenses = Math.round(expenses * 1000) / 1000
+    Q.monthly_budget_net = Math.round(net * 1000) / 1000
+
+    if (opts.apply !== false) {
+        Q.budget = Math.round(((Number(Q.budget) || 0) + net) * 1000) / 1000
+        Q.budgetExpenseQueue = []
     }
-    return revenue > 0
+
+    return { revenue: revenue, expenses: expenses, net: net }
 }
 
 /**
  * Borrow surplus, destroyed-home prosperity hit, prosperity-scaled builds,
- * unoccupied counters, housing tax → Q.budget.
+ * unoccupied counters. Budget rollup: Q.tabulateBudget() after this.
  */
 function processMonthlyHousing() {
     var state = Q.electionV2
@@ -1659,7 +1728,6 @@ function processMonthlyHousing() {
         reconcileHousingBucket(cb)
     }
 
-    if (applyHousingTaxRevenue()) { changed = true }
     roundAllHousingInventory()
     return changed
 }
@@ -2255,6 +2323,10 @@ Q.renderEconomicAssetsReport = renderEconomicAssetsReport
 Q.updateJacobsAssetsReport = updateJacobsAssetsReport
 Q.applyEconomicAssetProsperity = applyEconomicAssetProsperity
 Q.processMonthlyHousing = processMonthlyHousing
+Q.tabulateBudget = tabulateBudget
+Q.queueBudgetExpense = queueBudgetExpense
+Q.computeHousingTaxRevenue = computeHousingTaxRevenue
+Q.budgetRecurringExpenses = BUDGET_RECURRING_EXPENSES
 Q.redistributeBlockHousingSurplus = redistributeBlockHousingSurplus
 Q.seedStarterEconomicAssets = seedStarterEconomicAssets
 

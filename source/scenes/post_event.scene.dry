@@ -3,6 +3,12 @@ new-page: true
 on-arrival: {!
 
 // MIKASA_POST_EVENT_TICK_BEGIN
+if (typeof Q.monthly_tick_phase1 === 'function') {
+    Q.monthly_tick_phase1()
+} else {
+    if (typeof Q.processMonthlyHousing === 'function') { Q.processMonthlyHousing() }
+    if (typeof Q.tabulateBudget === 'function') { Q.tabulateBudget() }
+}
 Q.update_projections();
 
 if (typeof Q.runScheduledElections === 'function') {
@@ -30,6 +36,11 @@ if (this.ui && this.ui.show_portraits) {
 }
 
 if (typeof window !== "undefined" && window.generateBar) {
+}
+
+if (Q.year === 2302 && Q.month >= 1 && !Q.mikasa_journey_leg) {
+  this.state.jumpSceneId = 'post_event'
+  this.goToScene('mikasa_journey_inbound')
 }
 // MIKASA_POST_EVENT_TICK_END
 

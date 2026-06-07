@@ -1,6 +1,13 @@
 title: The Deeps
 new-page: true
+on-arrival: {!
+if (typeof Q.syncDistrictDisplays === 'function') { Q.syncDistrictDisplays('Deeps') }
+!}
 
 = The Deeps
+
+Crime level: [+ deeps_crime : crime +] ([+ deeps_crime +])
+Prosperity level: [+ deeps_prosperity : prosperity +] ([+ deeps_prosperity +])
+Political Dominance: [+ deeps_dominant_party : party +]
 
 - @main: Return to main

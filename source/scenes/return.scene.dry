@@ -1,2 +1,25 @@
 title: Back to main
+on-arrival: {!
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+var prevId = this.state.prevSceneId || '';
+if (!prevId || prevId === 'main' || prevId === 'return') { return; }
+var cardRootId = prevId.indexOf('.') >= 0 ? prevId.split('.')[0] : prevId;
+var cardRoot = this.game.scenes[cardRootId];
+if (!cardRoot || !cardRoot.isCard || cardRoot.isPinnedCard) { return; }
+var handSceneId = 'main';
+if (!this.state.currentHands[handSceneId]) {
+    this.state.currentHands[handSceneId] = [];
+}
+var hand = this.state.currentHands[handSceneId];
+for (var i = 0; i < hand.length; i++) {
+    if (hand[i].id === cardRootId) { return; }
+}
+var mainScene = this.game.scenes[handSceneId];
+var maxCards = (mainScene && mainScene.maxCards) || 3;
+if (hand.length >= maxCards) { return; }
+var card = { id: cardRootId, title: cardRoot.title || cardRootId };
+if (cardRoot.cardImage) { card.image = cardRoot.cardImage; }
+hand.push(card);
+this.state.lastPlayedCard = null;
+!}
 go-to: main

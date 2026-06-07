@@ -2,7 +2,7 @@ title: Media ideology
 new-page: true
 is-card: true
 card-image: img/asteroid.jpg
-tags: party_affairs
+tags: local_organizing
 
 There are few proper outlets on Mikasa, the corporations shut down any independent competition with their propoganda that is too successful.  A handful of small outlets get by under the radar of the megacorps but most independent journalists rely on annonymous online peer to peer networks to get their reporting out.  Since most members of this small community follow each other's stories, the zeitgeist of the underground media shifts from time to time.
 
@@ -11,6 +11,7 @@ Depending on what topics the underground is most interested in, different groups
 -@labor
 -@wealthy
 -@diplomatic
+- @return
 
 @labor
 title: Abusive working conditions and the need for worker protections

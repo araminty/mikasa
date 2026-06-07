@@ -1,6 +1,6 @@
 # Prosperity connection catalog
 
-Implemented in `source/scenes/cards/organizing/organize_phase_tick.scene.dry` (search `MIKASA_ORGANIZE_PHASE_TICK` / `PROSPERITY_*`). Monthly tick applies **legacy** `Q.prosperityConnectionCatalog` (decay only), then district mesh, IG home links, Docks trade, Pitts crime. Housing and destroyed-home prosperity: `source/scenes/economic_assets_runtime.scene.dry`.
+Implemented in `source/scenes/cards/local_organizing/organize_phase_tick.scene.dry` (search `MIKASA_ORGANIZE_PHASE_TICK` / `PROSPERITY_*`). Monthly tick applies **legacy** `Q.prosperityConnectionCatalog` (decay only), then district mesh, IG home links, Docks trade, Pitts crime. Housing and destroyed-home prosperity: `source/scenes/economic_assets_runtime.scene.dry`.
 
 CLI tune check: `npm run simulate-prosperity` (`scripts/simulate-prosperity-months.js`).
 

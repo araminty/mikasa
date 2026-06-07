@@ -2,7 +2,13 @@ title: The political situation
 priority: 1
 max-visits: 1
 tags: event
-on-arrival: organizing_unlock = 1; phase = 1;
+on-arrival: {!
+organizing_unlock = 1;
+phase = 1;
+Q.contracting_allowance_through_phase = 0;
+Q.contracting_visits_remaining = 0;
+if (typeof Q.syncContractingAllowance === 'function') { Q.syncContractingAllowance(); }
+!}
 
 The city government in Mikasa only holds substantial power in one section of the city: the Aurora district.  The "big 3" corporations run their home districts as fiefs.  The ganglands of the Pitts (the original mining district) are run by the syndicates to the extent they are run at all.  The wealthy Docks are controlled by a patchwork of private security forces. And finally the isolationist Deepers are stubbornly resistant to keep any and all influences of the city out.
 

@@ -1,6 +1,15 @@
 title: Aurora
 new-page: true
+on-arrival: {!
+if (typeof Q.syncDistrictDisplays === 'function') { Q.syncDistrictDisplays('Aurora') }
+!}
 
 = Aurora
+
+The Aurora lacks the cosmopolitan nature of the Docks or the material plenty of the corporate districts but it's uncrowded public areas buzz with a liveliness not seen anywhere else.  Here rich and poor, magical and mundane, human and otherworlder rub shoulders like nowhere else on Mikasa.  The landscape is dominated by the foreboding abandoned Aurora Bank pyramid but the residents have an affection for the structure whose halls echo with the shouts of children and the bustle of the transient communities eeking out an existance in it's halls.
+
+Crime level: [+ aurora_crime : crime +] ([+ aurora_crime +])
+Prosperity level: [+ aurora_prosperity : prosperity +] ([+ aurora_prosperity +])
+Political Dominance: [+ aurora_dominant_party : party +]
 
 - @main: Return to main

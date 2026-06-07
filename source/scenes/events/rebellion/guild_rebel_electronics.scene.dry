@@ -1,0 +1,43 @@
+title: Pyramid salvage briefing
+subtitle: Guild confidence
+priority: 3
+max-visits: 1
+tags: event
+new-page: true
+view-if: Gold_D >= 27 and White_D >= 27 and Blue_D >= 27 and guild_rebel_electronics_event = 0
+on-arrival: guild_rebel_electronics_event = 1
+
+Representatives from the Gold, White, and Blue guilds request a closed briefing.  With your government holding strong majorities in all three chambers, they are willing to share something the Aurora Bank left behind — and what it could mean if Mikasa ever has to fight the megacorps openly.
+
+The public story has always been that the Bank ran a catastrophic wipe on the pyramid's server farms before it vanished.  That did happen, but only to **a fraction** of the racks — enough theater to convince corporate forensic teams and creditors that the compute tiers were a total loss.  Most machines were **sabotaged more subtly**: dead on the network, useless if you plug them in blind, but not slagged.  For decades, Aurora cottage shops and Independent Contractors Association ateliers have recycled that wreckage into bespoke boards.  With guild backing, that craft could be **scaled up** into a **secret rebel electronics industry**: mass production of attack **drones** and **grav-plate nullifiers** — weapons the corporations cannot simply buy back or sanction into uselessness.
+
+Such a scale-up would **not** meaningfully improve civilian self-sufficiency.  It is a military supply chain, not food, life support, or bulk power.  It would also fail without the right inputs already present in the city — salvage silicon, substrate processing, precision assembly, metals, and whatever other industry tags the supply chain catalog requires.
+
+[? if aurora_pyramid_public_housing = 1: They warn that refugee quarters and squatters in the upper tiers have been picking through the wrong floors.  A serious program needs secured pyramid access, not just workshops in Aurora back alleys. ?]
+
+- @scale_electronics: Authorize a secret scale-up program
+- @defer_electronics: Thank them — not yet
+- @survey_only: Survey salvage tiers first; defer production
+
+@scale_electronics
+title: Authorize a secret scale-up program
+choose-if: rebel_electronics_supply_chain = 1
+unavailable-subtitle: TODO — supply chain not ready (required industry types / assets missing)
+on-arrival: {!
+rebel_electronics_program = 1
+// TODO: enable mass drone + grav-plate nullifier production; corp detection / reprisal risk
+!}
+
+The guilds begin routing covert contracts through Aurora workshops.  TODO: rebel weapons industry hooks, monthly output, discovery event.
+
+@defer_electronics
+title: Thank them — not yet
+on-arrival: rebel_electronics_deferred = 1
+
+You keep the briefing classified.  TODO: re-trigger or alternate unlock path when supply chain matures.
+
+@survey_only
+title: Survey salvage tiers first; defer production
+on-arrival: rebel_electronics_survey = 1
+
+TODO: follow-up survey event; sets rebel_electronics_supply_chain when industry prerequisites met.

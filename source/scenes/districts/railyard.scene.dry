@@ -1,6 +1,13 @@
 title: Railyard
 new-page: true
+on-arrival: {!
+if (typeof Q.syncDistrictDisplays === 'function') { Q.syncDistrictDisplays('Railyard') }
+!}
 
 = Railyard
+
+Crime level: [+ railyard_crime : crime +] ([+ railyard_crime +])
+Prosperity level: [+ railyard_prosperity : prosperity +] ([+ railyard_prosperity +])
+Political Dominance: [+ railyard_dominant_party : party +]
 
 - @main: Return to main

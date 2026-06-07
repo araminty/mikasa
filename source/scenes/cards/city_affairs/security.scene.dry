@@ -2,7 +2,7 @@ title: Security
 new-page: true
 is-card: true
 card-image: img/asteroid.jpg
-tags: govt_affairs
+tags: city_affairs
 view_if: police_reform < 4
 on-arrival: corporate_long_leash = TBD;
 
@@ -16,6 +16,7 @@ City security historically has earned little faith from the people of Mikasa.  T
 -@improve_pay
 -@organize_militias
 -@investigation
+- @return
 
 @defund
 title: Purge the ranks
