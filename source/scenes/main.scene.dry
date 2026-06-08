@@ -14,10 +14,14 @@ if (Q.prosperity_sharks == null) { Q.prosperity_sharks = 8 }
 if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
 if (typeof Q.syncContractingAllowance === 'function') { Q.syncContractingAllowance() }
 if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay() }
+if (Q.monthly_raid_report == null || Q.monthly_raid_report === '') { Q.monthly_raid_report = ' ' }
 !}
 on-display: {!
 if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay() }
 !}
+
+# monthly_raid_report — set in paramilitary tick; single space when no raids (Dendry-safe)
+[+ monthly_raid_report +]
 
 Action reserve: [+ action_reserve +]/4
 

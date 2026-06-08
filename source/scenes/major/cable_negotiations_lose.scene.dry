@@ -1,0 +1,12 @@
+title: Negotiations failed
+max-visits: 1
+new-page: true
+on-arrival: {! this.achieve('catastrophepolitik') !}
+
+The negotiations collapse.  We've fumbled a once in a lifetime opportunity.  Maybe someone else can salvage this situation, maybe no one can.  Either way, you aren't going to be the hero of this story.
+
+- @damn
+
+@damn
+title: Continue
+go-to: game_over

@@ -22,6 +22,18 @@ if (Q.year === 2302 && Q.month >= 1 && !Q.mikasa_journey_leg) {
   this.state.jumpSceneId = 'post_event'
   this.goToScene('mikasa_journey_inbound')
 }
+if (Q.militia_degrade_silent_pending === 1) {
+  this.state.jumpSceneId = 'post_event'
+  this.goToScene('militia_degrade_countdown')
+}
+if (Q.year === 2301 && Q.month === 1) {
+  var needStacy = (Number(Q.stacy_activate) || 0) < 1
+  var needCallista = (Number(Q.callista_activate) || 0) < 1
+  if (needStacy || needCallista) {
+    this.state.jumpSceneId = 'post_event'
+    this.goToScene('advisors_2301_activate')
+  }
+}
 // MIKASA_POST_EVENT_TICK_END
 
 !}

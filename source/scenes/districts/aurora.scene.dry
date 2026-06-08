@@ -12,4 +12,16 @@ Crime level: [+ aurora_crime : crime +] ([+ aurora_crime +])
 Prosperity level: [+ aurora_prosperity : prosperity +] ([+ aurora_prosperity +])
 Political Dominance: [+ aurora_dominant_party : party +]
 
+- @militia_organizing: Community militia organizing
 - @main: Return to main
+
+@militia_organizing
+title: Community militia organizing
+choose-if: phase > 0 and month_actions_remaining > 0
+unavailable-subtitle: [? if phase = 0: Community organizing has not started yet. ?][? if phase > 0 and month_actions_remaining <= 0: No organizing actions left this month. ?]
+on-arrival: {!
+Q.spendOrganizingAction();
+if (typeof Q.organizeDistrictMilitia === 'function') { Q.organizeDistrictMilitia('Aurora') }
+!}
+
+We spend the month building ward-level militia networks — drills, radios, and the slow work of turning volunteers into something the neighborhood might actually trust.

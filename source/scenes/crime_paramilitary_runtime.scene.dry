@@ -1,0 +1,1258 @@
+title: Crime paramilitary runtime
+max-visits: 1
+new-page: false
+on-arrival: {!
+
+// MIKASA_CRIME_PARAMILITARY_RUNTIME_BEGIN
+// QNM balance templates — see source/scenes/planning/crime_paramilitary.md
+
+var PUBLIC_ORDER_MORALE_THRESHOLD_BASE = {
+    secure: 0.10,
+    embattled: 0.40,
+    overwhelmed: 0.60,
+}
+var MORALE_BAND_DRIFT = {
+    secure: 0.02,
+    embattled: 0,
+    overwhelmed: -0.02,
+    collapsing: -0.04,
+}
+var MORALE_REVERT_RATE = 0.05
+var MORALE_PAY_BASE_BUMP = 0.05
+
+var PUBLIC_ORDER_CRIME_THRESHOLDS = {
+    low: 0.25,
+    moderate: 0.50,
+    high: 0.75,
+}
+var CRIME_IMMEDIATE_MULT = 5
+var CRIME_LONG_TERM_DRIFT = {
+    low: -0.05,
+    moderate: 0,
+    high: 0.05,
+    severe: 0.05,
+}
+
+var CORP_ASSET_THRESHOLDS = {
+    protected: 0.35,
+    stressed: 0.60,
+    breached: 0.85,
+}
+var CORP_ASSET_AFFLUENCE_DELTA = {
+    protected: 0.01,
+    stressed: -0.01,
+    breached: -0.03,
+    lost: -0.05,
+}
+
+var SYNDICATE_COERCION_THRESHOLDS = {
+    suppressed: 0.30,
+    contested: 0.55,
+    dominating: 0.80,
+}
+var SYNDICATE_AFFLUENCE_DELTA = {
+    suppressed: -0.01,
+    contested: 0,
+    dominating: 0.05,
+    rampant: 0.08,
+}
+var SYNDICATE_DISTRICT_WEIGHT_SLOPE = 0.65
+var SYNDICATE_DISTRICT_WEIGHT_FLOOR = 0.05
+var SYNDICATE_GAIN_SHELTERED_TAX = 0.05
+var SYNDICATE_GAIN_VULNERABLE_TAX = 0.15
+var SYNDICATE_SHELTERED_STRATA = ['rich', 'drone', 'coop', 'deeper']
+var SYNDICATE_VULNERABLE_STRATA = ['first', 'second', 'third_wave', 'alien']
+
+var RAID_PROGRESS_BONUS_DEFAULT = 0.05
+var RAID_PROGRESS_BONUS_SYNDICATE_CORP = 0.25
+var RAID_PROGRESS_SYNDICATE_CORP_MULT = 1.6
+
+var MIKASA_PARAMILITARY_DISTRICTS = [
+    'Docks', 'Aurora', 'Vats', 'Railyard', 'Pitts', 'Limelight', 'Deeps',
+]
+var MILITIA_DEGRADE_DISTRICTS = [
+    'Docks', 'Aurora', 'Vats', 'Railyard', 'Limelight', 'Deeps',
+]
+var MILITIA_DEGRADE_COUNTDOWN_MONTHS = 8
+/** Dendry-safe placeholder when no raid lines this month (not ''). */
+var MONTHLY_RAID_REPORT_EMPTY = ' '
+
+/**
+ * Per-district QNM bases at new game / missing ledger row.
+ * Strength = Quality × Numbers × Morale. See planning/paramilitary_qnm_catalog.md.
+ * Override at runtime via Q.paramilitaryQnm*Default or Q.paramilitaryDistrictQnmOverrides[district].
+ */
+var PARAMILITARY_QNM_POLICE_DEFAULT = {
+    Docks: { quality: 0.65, numbers: 0.90, morale: 0.50, loyalty: 0.45 },
+    Aurora: { quality: 0.75, numbers: 1.10, morale: 0.58, loyalty: 0.52 },
+    Vats: { quality: 0.68, numbers: 0.85, morale: 0.52, loyalty: 0.48 },
+    Railyard: { quality: 0.68, numbers: 0.85, morale: 0.52, loyalty: 0.48 },
+    Pitts: { quality: 0.60, numbers: 0.70, morale: 0.45, loyalty: 0.50 },
+    Limelight: { quality: 0.68, numbers: 0.85, morale: 0.52, loyalty: 0.48 },
+    Deeps: { quality: 0.55, numbers: 0.50, morale: 0.48, loyalty: 0.55 },
+}
+
+var PARAMILITARY_QNM_PUNKS_DEFAULT = {
+    Docks: { quality: 0.28, numbers: 1.32, morale: 0.10 },
+    Aurora: { quality: 0.22, numbers: 1.22, morale: 08 },
+    Vats: { quality: 0.24, numbers: 1.28, morale: 0.09 },
+    Railyard: { quality: 0.24, numbers: 1.28, morale: 0.09 },
+    Pitts: { quality: 0.32, numbers: 1.45, morale: 0.12 },
+    Limelight: { quality: 0.24, numbers: 1.28, morale: 0.09 },
+    Deeps: { quality: 0.30, numbers: 1.38, morale: 0.01 },
+}
+
+var PARAMILITARY_QNM_MILITIA_DEFAULT = {
+    Docks: { quality: 0.35, numbers: 0.18, morale: 0.50, loyalty: 0.85 },
+    Aurora: { quality: 0.35, numbers: 0.16, morale: 0.52, loyalty: 0.83 },
+    Vats: { quality: 0.34, numbers: 0.14, morale: 0.48, loyalty: 0.82 },
+    Railyard: { quality: 0.35, numbers: 0.15, morale: 0.50, loyalty: 0.84 },
+    Pitts: { quality: 0.32, numbers: 0.12, morale: 0.45, loyalty: 0.80 },
+    Limelight: { quality: 0.34, numbers: 0.14, morale: 0.49, loyalty: 0.83 },
+    Deeps: { quality: 0.33, numbers: 0.01, morale: 0.47, loyalty: 0.86 },
+}
+
+/** Deeps-only indigenous law enforcement (Deepers' own guard — not city militia). */
+var PARAMILITARY_QNM_DEEPER_MILITIA_DEFAULT = {
+    Deeps: { quality: 0.58, numbers: 0.38, morale: 0.90, loyalty: 0.95 },
+}
+
+/** Bump sizes when community defense / volunteer patrol cards fire (all districts). */
+var MILITIA_ORGANIZING_NUMBERS_BUMP = 0.12
+var MILITIA_ORGANIZING_MAX_LEVEL = 3
+var MILITIA_PATROL_NUMBERS_BUMP = 0.08
+var MILITIA_DISTRICT_ORGANIZING_FOCUS_MORALE = 0.05
+var MILITIA_DISTRICT_ORGANIZING_SPILLOVER_MORALE = 0.01
+var MILITIA_DISTRICT_ORGANIZING_FOCUS_NUMBERS = 0.10
+
+/** Deeps city police start below baseline until residents grudgingly accept patrols. */
+var DEEPS_POLICE_ISOLATION_START_MORALE = 0.10
+var DEEPS_POLICE_ACCEPTANCE_THRESHOLD = 0.20
+
+/**
+ * Syndicate muscle home footprint (slow institutional QNM — not monthly rank growth from R).
+ * Mirrors IG home districts in PROSPERITY_IG_HOME_DISTRICT_LINKS.
+ */
+var PARAMILITARY_SYNDICATE_HOME_DEFAULT = [
+    { ig: 'Families', district: 'Pitts', quality: 0.42, numbers: 0.38, morale: 0.52, loyalty: 0.72 },
+    { ig: 'Edges', district: 'Railyard', quality: 0.38, numbers: 0.28, morale: 0.48, loyalty: 0.65 },
+    { ig: 'Sharks', district: 'Deeps', quality: 0.40, numbers: 0.30, morale: 0.50, loyalty: 0.68 },
+]
+
+/**
+ * Corporate police home-district bases (asset guard / corp LE — separate from city police row).
+ */
+var PARAMILITARY_CORP_POLICE_HOME_DEFAULT = [
+    { ig: 'Soylent', district: 'Vats', quality: 0.78, numbers: 1.20, morale: 0.58, loyalty: 0.62 },
+    { ig: 'Magrail', district: 'Railyard', quality: 0.76, numbers: 1.15, morale: 0.56, loyalty: 0.60 },
+    { ig: 'Brazos', district: 'Limelight', quality: 0.77, numbers: 1.18, morale: 0.57, loyalty: 0.61 },
+]
+
+/** Ambient watch LE scale from district prosperity (future public LE sum). Coeff × pop-weighted prosperity. */
+var PARAMILITARY_WATCH_DEFAULT = {
+    prosperityCoeff: 0.008,
+    parochialismCoeff: 0.0004,
+}
+
+function paramilitaryDistrictIds() {
+    return Q.paramilitaryDistrictIds || MIKASA_PARAMILITARY_DISTRICTS
+}
+
+function lookupParamilitaryQnmDefault(table, district) {
+    if (!table) {
+        return { quality: 0, numbers: 0, morale: 0, loyalty: 0 }
+    }
+    var row = table[district]
+    if (!row) {
+        row = table._default || { quality: 0, numbers: 0, morale: 0, loyalty: 0 }
+    }
+    return {
+        quality: Number(row.quality) || 0,
+        numbers: Number(row.numbers) || 0,
+        morale: Number(row.morale) || 0,
+        loyalty: row.loyalty != null ? Number(row.loyalty) : 0,
+    }
+}
+
+function defaultPoliceQnm(district) {
+    var table = Q.paramilitaryQnmPoliceDefault || PARAMILITARY_QNM_POLICE_DEFAULT
+    return lookupParamilitaryQnmDefault(table, district)
+}
+
+function defaultMilitiaQnm(district) {
+    var table = Q.paramilitaryQnmMilitiaDefault || PARAMILITARY_QNM_MILITIA_DEFAULT
+    return lookupParamilitaryQnmDefault(table, district)
+}
+
+function defaultDeeperMilitiaQnm(district) {
+    if (district !== 'Deeps') { return null }
+    var table = Q.paramilitaryQnmDeeperMilitiaDefault || PARAMILITARY_QNM_DEEPER_MILITIA_DEFAULT
+    return lookupParamilitaryQnmDefault(table, district)
+}
+
+function defaultPunkQnm(district) {
+    var table = Q.paramilitaryQnmPunksDefault || PARAMILITARY_QNM_PUNKS_DEFAULT
+    var row = lookupParamilitaryQnmDefault(table, district)
+    return {
+        quality: row.quality,
+        numbers: row.numbers,
+        morale: row.morale,
+    }
+}
+
+function qnmStrength(qnm) {
+    if (!qnm) { return 0 }
+    var q = Number(qnm.quality != null ? qnm.quality : qnm.q)
+    var n = Number(qnm.numbers != null ? qnm.numbers : qnm.n)
+    var m = Number(qnm.morale != null ? qnm.morale : qnm.m)
+    if (isNaN(q)) { q = 0 }
+    if (isNaN(n)) { n = 0 }
+    if (isNaN(m)) { m = 0 }
+    return q * n * m
+}
+
+function dominanceRatio(offense, defense) {
+    var num = Number(offense)
+    var den = Number(defense)
+    if (isNaN(num)) { num = 0 }
+    if (isNaN(den) || den <= 0) {
+        return num > 0 ? Infinity : 0
+    }
+    return num / den
+}
+
+/** Missing/invalid Q.police_pay → write 2× poverty default onto Q and return it. */
+function ensurePolicePay() {
+    var p = Number(Q.police_pay)
+    if (Q.police_pay == null || isNaN(p)) {
+        Q.police_pay = 2
+        return 2
+    }
+    return p
+}
+
+/** Cable neg payroll demand level → Q.police_pay (poverty multiple). */
+function policePayFromCableNegLevel(level) {
+    var n = Number(level) || 0
+    if (n === 4) { return 10 }
+    if (n === 3) { return 8 }
+    if (n === 2) { return 6 }
+    if (n === 1) { return 2 }
+    return ensurePolicePay()
+}
+
+function deriveMoraleThresholds(policePay) {
+    var p = Number(policePay)
+    if (isNaN(p)) { p = ensurePolicePay() }
+    var payTerm = 0.05 * p
+    return {
+        secure: PUBLIC_ORDER_MORALE_THRESHOLD_BASE.secure + payTerm,
+        embattled: PUBLIC_ORDER_MORALE_THRESHOLD_BASE.embattled + payTerm,
+        overwhelmed: PUBLIC_ORDER_MORALE_THRESHOLD_BASE.overwhelmed + payTerm,
+        policePay: p,
+    }
+}
+
+function publicOrderMoraleBand(ratio, thresholds) {
+    var t = thresholds || deriveMoraleThresholds(ensurePolicePay())
+    var r = Number(ratio)
+    if (isNaN(r) || r < t.secure) { return 'secure' }
+    if (r < t.embattled) { return 'embattled' }
+    if (r < t.overwhelmed) { return 'overwhelmed' }
+    return 'collapsing'
+}
+
+function moraleBandDrift(band) {
+    var d = MORALE_BAND_DRIFT[band]
+    return d != null ? d : 0
+}
+
+function moraleRevertDelta(current, base, rate) {
+    var c = Number(current)
+    var b = Number(base)
+    var r = rate != null ? Number(rate) : MORALE_REVERT_RATE
+    if (isNaN(c) || isNaN(b)) { return 0 }
+    if (isNaN(r)) { r = MORALE_REVERT_RATE }
+    return (b - c) * r
+}
+
+function moraleBaseAfterPayChange(prevPay, newPay, prevBase) {
+    var oldP = Number(prevPay)
+    var newP = Number(newPay)
+    var base = Number(prevBase)
+    if (isNaN(base)) { base = 0 }
+    if (isNaN(oldP) || isNaN(newP) || newP <= oldP) { return base }
+    return base + MORALE_PAY_BASE_BUMP * (newP - oldP)
+}
+
+function clampMoraleByLoyalty(morale, loyalty) {
+    var m = Number(morale)
+    var l = Number(loyalty)
+    if (isNaN(m)) { m = 0 }
+    if (isNaN(l)) { return m }
+    return m > l ? l : m
+}
+
+function crimeLongTermDrift(band) {
+    var d = CRIME_LONG_TERM_DRIFT[band]
+    return d != null ? d : 0
+}
+
+function computeDistrictCrime(balance, prevLongTerm) {
+    var ratio = Number(balance.ratio)
+    if (isNaN(ratio)) { ratio = 0 }
+    var band = balance.crimeBand
+    var immediate = CRIME_IMMEDIATE_MULT * ratio
+    var longTerm = Number(prevLongTerm) || 0
+    var drift = crimeLongTermDrift(band)
+    longTerm = longTerm + drift
+    if (longTerm < 0) { longTerm = 0 }
+    var combined = immediate + longTerm
+    if (combined < 0) { combined = 0 }
+    return {
+        band: band,
+        ratio: ratio,
+        immediate: immediate,
+        longTerm: longTerm,
+        longTermDrift: drift,
+        combined: combined,
+        demSupportPenalty: combined,
+    }
+}
+
+function syndicateDistrictWeight(assetShare) {
+    var p = Number(assetShare)
+    if (isNaN(p) || p < 0) { p = 0 }
+    if (p > 1) { p = 1 }
+    return p * SYNDICATE_DISTRICT_WEIGHT_SLOPE + SYNDICATE_DISTRICT_WEIGHT_FLOOR
+}
+
+function corpAssetAffluenceDelta(band) {
+    var d = CORP_ASSET_AFFLUENCE_DELTA[band]
+    return d != null ? d : 0
+}
+
+function syndicateAffluenceDelta(band) {
+    var d = SYNDICATE_AFFLUENCE_DELTA[band]
+    return d != null ? d : 0
+}
+
+function publicOrderCrimeBand(ratio) {
+    var r = Number(ratio)
+    if (isNaN(r) || r < PUBLIC_ORDER_CRIME_THRESHOLDS.low) { return 'low' }
+    if (r < PUBLIC_ORDER_CRIME_THRESHOLDS.moderate) { return 'moderate' }
+    if (r < PUBLIC_ORDER_CRIME_THRESHOLDS.high) { return 'high' }
+    return 'severe'
+}
+
+function corpAssetBand(ratio) {
+    var r = Number(ratio)
+    if (isNaN(r) || r < CORP_ASSET_THRESHOLDS.protected) { return 'protected' }
+    if (r < CORP_ASSET_THRESHOLDS.stressed) { return 'stressed' }
+    if (r < CORP_ASSET_THRESHOLDS.breached) { return 'breached' }
+    return 'lost'
+}
+
+function syndicateCoercionBand(ratio) {
+    var r = Number(ratio)
+    if (isNaN(r) || r < SYNDICATE_COERCION_THRESHOLDS.suppressed) { return 'suppressed' }
+    if (r < SYNDICATE_COERCION_THRESHOLDS.contested) { return 'contested' }
+    if (r < SYNDICATE_COERCION_THRESHOLDS.dominating) { return 'dominating' }
+    return 'rampant'
+}
+
+function conflictIntensityBand(meanStrength) {
+    var m = Number(meanStrength)
+    if (isNaN(m) || m < 50) { return 'skirmish' }
+    if (m < 150) { return 'firefight' }
+    if (m < 300) { return 'war' }
+    return 'total_war'
+}
+
+function orderCrimeDivisor(le, crime) {
+    var L = Number(le)
+    var C = Number(crime)
+    if (isNaN(L) || L <= 0) { L = 1 }
+    if (isNaN(C) || C <= 0) { C = 1 }
+    return L / C
+}
+
+/**
+ * Public order: combined LE vs outlaw mass in a district.
+ * opts: { le, outlawMass }
+ */
+function calcPublicOrderBalance(opts) {
+    opts = opts || {}
+    var le = Number(opts.le) || 0
+    var outlawMass = Number(opts.outlawMass) || 0
+    var policePay = opts.policePay != null ? opts.policePay : ensurePolicePay()
+    if (isNaN(Number(policePay))) { policePay = ensurePolicePay() }
+    var moraleThresholds = deriveMoraleThresholds(policePay)
+    var ratio = dominanceRatio(outlawMass, le)
+    return {
+        le: le,
+        outlawMass: outlawMass,
+        ratio: ratio,
+        policePay: policePay,
+        moraleThresholds: moraleThresholds,
+        moraleBand: publicOrderMoraleBand(ratio, moraleThresholds),
+        crimeBand: publicOrderCrimeBand(ratio),
+    }
+}
+
+function applyPublicOrderMoraleEffects(balance, ctx) {
+    ctx = ctx || {}
+    var band = balance.moraleBand
+    var drift = moraleBandDrift(band)
+    var militiaMult = ctx.militiaMoraleMultiplier != null ? Number(ctx.militiaMoraleMultiplier) : 1.5
+    var effects = {
+        band: band,
+        bandDrift: drift,
+        policeMoraleDelta: drift,
+        militiaMoraleDelta: drift * militiaMult,
+    }
+    if (ctx.policeMorale != null && ctx.policeMoraleBase != null) {
+        effects.policeRevertDelta = moraleRevertDelta(ctx.policeMorale, ctx.policeMoraleBase, ctx.revertRate)
+    }
+    if (ctx.blockPositivePoliceRecovery) {
+        if (effects.policeMoraleDelta > 0) { effects.policeMoraleDelta = 0 }
+        if (effects.policeRevertDelta > 0) { effects.policeRevertDelta = 0 }
+    }
+    if (ctx.militiaMorale != null && ctx.militiaMoraleBase != null) {
+        effects.militiaRevertDelta = moraleRevertDelta(ctx.militiaMorale, ctx.militiaMoraleBase, ctx.revertRate)
+    }
+    if (band === 'collapsing') {
+        effects.civilOrderCollapse = true
+    }
+    return effects
+}
+
+function applyPublicOrderCrimeEffects(balance, ctx) {
+    ctx = ctx || {}
+    var crime = computeDistrictCrime(balance, ctx.longTermCrime)
+    var modifier = Number(ctx.crimeModifier) || 0
+    var combined = crime.combined + modifier
+    if (combined < 0) { combined = 0 }
+    var effects = {
+        band: crime.band,
+        immediateCrime: crime.immediate,
+        longTermCrime: crime.longTerm,
+        longTermDrift: crime.longTermDrift,
+        districtCrime: combined,
+        demSupportPenalty: combined,
+    }
+    if (combined < 2.5) {
+        effects.crimeTier = 1
+    } else if (combined < 5) {
+        effects.crimeTier = 2
+    } else if (combined < 7.5) {
+        effects.crimeTier = 3
+    } else {
+        effects.crimeTier = 4
+    }
+    return effects
+}
+
+/**
+ * Corp asset guard: local corp police vs outlaw mass threatening holdings.
+ * opts: { corpPolice, outlawMass }
+ */
+function calcCorpAssetBalance(opts) {
+    opts = opts || {}
+    var corpPolice = Number(opts.corpPolice) || 0
+    var outlawMass = Number(opts.outlawMass) || 0
+    var ratio = dominanceRatio(outlawMass, corpPolice)
+    return {
+        corpPolice: corpPolice,
+        outlawMass: outlawMass,
+        ratio: ratio,
+        band: corpAssetBand(ratio),
+    }
+}
+
+function applyCorpAssetBalanceEffects(balance, ctx) {
+    ctx = ctx || {}
+    var band = balance.band
+    var rawDelta = corpAssetAffluenceDelta(band)
+    var share = Number(ctx.assetShare)
+    if (isNaN(share) || share < 0) { share = 0 }
+    if (share > 1) { share = 1 }
+    var scaledDelta = rawDelta * share
+    return {
+        band: band,
+        rawAffluenceDelta: rawDelta,
+        assetShare: share,
+        affluenceDelta: scaledDelta,
+    }
+}
+
+/**
+ * Syndicate street coercion: syndicate vs LE (+ optional war ally counted on LE side).
+ * opts: { syndicateStrength, le, warAllyStrength }
+ */
+function calcSyndicateCoercionBalance(opts) {
+    opts = opts || {}
+    var syndicate = Number(opts.syndicateStrength) || 0
+    var le = Number(opts.le) || 0
+    var ally = Number(opts.warAllyStrength) || 0
+    var effectiveLe = le + ally
+    var ratio = dominanceRatio(syndicate, effectiveLe)
+    return {
+        syndicateStrength: syndicate,
+        le: le,
+        warAllyStrength: ally,
+        effectiveLe: effectiveLe,
+        ratio: ratio,
+        band: syndicateCoercionBand(ratio),
+    }
+}
+
+function applySyndicateCoercionEffects(balance, ctx) {
+    ctx = ctx || {}
+    var band = balance.band
+    var rawDelta = syndicateAffluenceDelta(band)
+    var share = Number(ctx.assetShare)
+    if (isNaN(share) || share < 0) { share = 0 }
+    if (share > 1) { share = 1 }
+    var weight = syndicateDistrictWeight(share)
+    var scaledDelta = rawDelta * weight
+    var shelteredTax = 0
+    var vulnerableTax = 0
+    if (scaledDelta > 0) {
+        shelteredTax = scaledDelta * SYNDICATE_GAIN_SHELTERED_TAX
+        vulnerableTax = scaledDelta * SYNDICATE_GAIN_VULNERABLE_TAX
+    }
+    return {
+        band: band,
+        rawAffluenceDelta: rawDelta,
+        assetShare: share,
+        districtWeight: weight,
+        affluenceDelta: scaledDelta,
+        shelteredStratumLoss: shelteredTax,
+        vulnerableStratumLoss: vulnerableTax,
+        shelteredStrata: SYNDICATE_SHELTERED_STRATA,
+        vulnerableStrata: SYNDICATE_VULNERABLE_STRATA,
+    }
+}
+
+/**
+ * Open conflict attrition intensity from arithmetic mean of two QNM strengths.
+ * opts: { strengthA, strengthB }
+ */
+function calcConflictIntensityBalance(opts) {
+    opts = opts || {}
+    var a = Number(opts.strengthA) || 0
+    var b = Number(opts.strengthB) || 0
+    var mean = (a + b) / 2
+    return {
+        strengthA: a,
+        strengthB: b,
+        mean: mean,
+        band: conflictIntensityBand(mean),
+    }
+}
+
+function applyConflictIntensityEffects(balance, ctx) {
+    ctx = ctx || {}
+    var effects = {
+        numbersAttritionA: 0,
+        numbersAttritionB: 0,
+        moraleAttritionA: 0,
+        moraleAttritionB: 0,
+        collateral: 0,
+        band: balance.band,
+    }
+    switch (balance.band) {
+        case 'skirmish':
+            effects.numbersAttritionA = 0.5
+            effects.numbersAttritionB = 0.5
+            effects.moraleAttritionA = 0.25
+            effects.moraleAttritionB = 0.25
+            effects.collateral = 0.1
+            break
+        case 'firefight':
+            effects.numbersAttritionA = 1
+            effects.numbersAttritionB = 1
+            effects.moraleAttritionA = 0.5
+            effects.moraleAttritionB = 0.5
+            effects.collateral = 0.25
+            break
+        case 'war':
+            effects.numbersAttritionA = 2
+            effects.numbersAttritionB = 2
+            effects.moraleAttritionA = 1
+            effects.moraleAttritionB = 1
+            effects.collateral = 0.5
+            break
+        case 'total_war':
+            effects.numbersAttritionA = 4
+            effects.numbersAttritionB = 4
+            effects.moraleAttritionA = 2
+            effects.moraleAttritionB = 2
+            effects.collateral = 1
+            break
+        default:
+            break
+    }
+    return effects
+}
+
+/**
+ * Destructive raid monthly gain for one side of a war pair.
+ * opts: { strengthSide, strengthOther, le, crime, syndicateVsCorp }
+ */
+function calcRaidProgressGain(opts) {
+    opts = opts || {}
+    var side = Number(opts.strengthSide) || 0
+    var other = Number(opts.strengthOther) || 0
+    var mean = (side + other) / 2
+    var syndicateVsCorp = !!opts.syndicateVsCorp
+    var bonusRate = syndicateVsCorp ? RAID_PROGRESS_BONUS_SYNDICATE_CORP : RAID_PROGRESS_BONUS_DEFAULT
+    var mult = syndicateVsCorp ? RAID_PROGRESS_SYNDICATE_CORP_MULT : 1
+    var divisor = orderCrimeDivisor(opts.le, opts.crime)
+    var bonus = 0
+    if (side > other && mean > 0) {
+        bonus = (side / mean - 1) * bonusRate
+    }
+    var rawGain = mean * (1 + bonus) * mult
+    var gain = divisor > 0 ? rawGain / divisor : rawGain
+    return {
+        strengthSide: side,
+        strengthOther: other,
+        mean: mean,
+        gain: gain,
+        orderDivisor: divisor,
+        syndicateVsCorp: syndicateVsCorp,
+    }
+}
+
+function raidProgressBand(progress, hasHousing, hasAssets) {
+    if (progress >= 100 && hasAssets) { return 'asset_threshold' }
+    if (progress >= 50 && hasHousing) { return 'housing_threshold' }
+    return 'building'
+}
+
+/**
+ * After progress += gain, decide housing/asset raid triggers.
+ * opts: { progress, hasHousing, hasAssets }
+ */
+function applyRaidProgressEffects(opts) {
+    opts = opts || {}
+    var progress = Number(opts.progress) || 0
+    var hasHousing = !!opts.hasHousing
+    var hasAssets = !!opts.hasAssets
+    var band = raidProgressBand(progress, hasHousing, hasAssets)
+    var effects = {
+        housingRaid: false,
+        assetRaid: false,
+        progressAfter: progress,
+        band: band,
+    }
+    switch (band) {
+        case 'building':
+            break
+        case 'housing_threshold':
+            effects.housingRaid = true
+            break
+        case 'asset_threshold':
+            if (hasHousing && progress >= 50) {
+                effects.housingRaid = true
+            }
+            effects.assetRaid = true
+            effects.progressAfter = progress - 100
+            break
+        default:
+            break
+    }
+    return effects
+}
+
+function cloneQnmRecord(src) {
+    var record = {
+        quality: src.quality,
+        numbers: src.numbers,
+        morale: src.morale,
+        loyalty: src.loyalty,
+    }
+    if (src.moraleBase != null) {
+        record.moraleBase = src.moraleBase
+    }
+    return record
+}
+
+function ensurePoliceMoraleBase(police, district) {
+    if (!police) { return }
+    var base = Number(police.moraleBase)
+    if (!isNaN(base)) { return }
+    police.moraleBase = defaultPoliceQnm(district).morale
+}
+
+function ensureQnmMoraleBase(qnm, fallbackMorale) {
+    if (!qnm) { return }
+    var base = Number(qnm.moraleBase)
+    if (!isNaN(base)) { return }
+    qnm.moraleBase = Number(fallbackMorale) || Number(qnm.morale) || 0
+}
+
+function ensureDeeperMilitiaRow(row, district) {
+    if (district !== 'Deeps' || !row) { return }
+    var base = defaultDeeperMilitiaQnm('Deeps')
+    if (!base) { return }
+    if (!row.deeper_militia) {
+        row.deeper_militia = cloneQnmRecord(base)
+        row.deeper_militia.moraleBase = base.morale
+        return
+    }
+    ensureQnmMoraleBase(row.deeper_militia, base.morale)
+}
+
+function deepsPoliceIsolated() {
+    return Number(Q.deeps_police_isolated) >= 1
+}
+
+function initDeepsPolicePosture(police) {
+    if (!police) { return }
+    var defaults = defaultPoliceQnm('Deeps')
+    police.moraleBase = defaults.morale
+    police.morale = DEEPS_POLICE_ISOLATION_START_MORALE
+}
+
+function districtLawEnforcementMass(district) {
+    var mass = districtParamilitaryStrength(district, 'police')
+        + districtParamilitaryStrength(district, 'militia')
+        + districtParamilitaryStrength(district, 'deeper_militia')
+    return mass
+}
+
+function districtOutlawMass(district) {
+    return districtParamilitaryStrength(district, 'punks')
+}
+
+function applyDistrictPoliceMoraleMonthly(district) {
+    ensureDistrictParamilitary()
+    var row = Q.districtParamilitary[district]
+    if (!row || !row.police) { return }
+    ensurePoliceMoraleBase(row.police, district)
+    var le = districtLawEnforcementMass(district)
+    var outlaw = districtOutlawMass(district)
+    var balance = calcPublicOrderBalance({ le: le, outlawMass: outlaw })
+    var ctx = {
+        policeMorale: row.police.morale,
+        policeMoraleBase: row.police.moraleBase,
+        revertRate: MORALE_REVERT_RATE,
+        blockPositivePoliceRecovery: district === 'Deeps' && deepsPoliceIsolated(),
+    }
+    var effects = applyPublicOrderMoraleEffects(balance, ctx)
+    var delta = (Number(effects.policeMoraleDelta) || 0) + (Number(effects.policeRevertDelta) || 0)
+    var m = Number(row.police.morale) + delta
+    if (isNaN(m)) { m = 0 }
+    if (m < 0) { m = 0 }
+    row.police.morale = clampMoraleByLoyalty(m, row.police.loyalty)
+}
+
+function applyDistrictDeeperMilitiaMoraleMonthly() {
+    ensureDistrictParamilitary()
+    var row = Q.districtParamilitary.Deeps
+    if (!row || !row.deeper_militia) { return }
+    var base = defaultDeeperMilitiaQnm('Deeps')
+    ensureQnmMoraleBase(row.deeper_militia, base ? base.morale : row.deeper_militia.morale)
+    var le = districtLawEnforcementMass('Deeps')
+    var outlaw = districtOutlawMass('Deeps')
+    var balance = calcPublicOrderBalance({ le: le, outlawMass: outlaw })
+    var ctx = {
+        policeMorale: row.deeper_militia.morale,
+        policeMoraleBase: row.deeper_militia.moraleBase,
+        revertRate: MORALE_REVERT_RATE,
+    }
+    var effects = applyPublicOrderMoraleEffects(balance, ctx)
+    var delta = (Number(effects.policeMoraleDelta) || 0) + (Number(effects.policeRevertDelta) || 0)
+    var m = Number(row.deeper_militia.morale) + delta
+    if (isNaN(m)) { m = 0 }
+    if (m < 0) { m = 0 }
+    row.deeper_militia.morale = clampMoraleByLoyalty(m, row.deeper_militia.loyalty)
+}
+
+function checkDeepsPoliceAcceptanceTrigger() {
+    if (!deepsPoliceIsolated()) { return }
+    ensureDistrictParamilitary()
+    var police = Q.districtParamilitary.Deeps && Q.districtParamilitary.Deeps.police
+    if (!police) { return }
+    if (Number(police.morale) > DEEPS_POLICE_ACCEPTANCE_THRESHOLD) {
+        Q.deeps_police_acceptance_ready = 1
+    }
+}
+
+function paramilitaryMoraleMonthlyTick() {
+    ensureDistrictParamilitary()
+    var districts = paramilitaryDistrictIds()
+    var i
+    for (i = 0; i < districts.length; i++) {
+        applyDistrictPoliceMoraleMonthly(districts[i])
+    }
+    applyDistrictDeeperMilitiaMoraleMonthly()
+    checkDeepsPoliceAcceptanceTrigger()
+}
+
+function bumpDistrictPoliceMorale(district, delta) {
+    ensureDistrictParamilitary()
+    var d = district || ''
+    if (!d) { return false }
+    var row = Q.districtParamilitary[d]
+    if (!row || !row.police) { return false }
+    ensurePoliceMoraleBase(row.police, d)
+    var m = Number(row.police.morale) + Number(delta)
+    if (isNaN(m)) { return false }
+    if (m < 0) { m = 0 }
+    row.police.morale = clampMoraleByLoyalty(m, row.police.loyalty)
+    checkDeepsPoliceAcceptanceTrigger()
+    return true
+}
+
+function bumpDistrictMilitiaNumbers(district, delta) {
+    ensureDistrictParamilitary()
+    var d = district || ''
+    if (!d) { return false }
+    var row = Q.districtParamilitary[d]
+    if (!row || !row.militia) { return false }
+    var n = Number(row.militia.numbers) + Number(delta)
+    if (isNaN(n) || n < 0) { n = 0 }
+    row.militia.numbers = n
+    return true
+}
+
+function bumpAllDistrictMilitiaNumbers(delta) {
+    ensureDistrictParamilitary()
+    var districts = paramilitaryDistrictIds()
+    var i
+    for (i = 0; i < districts.length; i++) {
+        bumpDistrictMilitiaNumbers(districts[i], delta)
+    }
+    return true
+}
+
+function scaleDistrictMilitiaNumbers(district, factor) {
+    ensureDistrictParamilitary()
+    var d = district || ''
+    if (!d) { return false }
+    var row = Q.districtParamilitary[d]
+    if (!row || !row.militia) { return false }
+    var mult = Number(factor)
+    if (isNaN(mult) || mult <= 0) { return false }
+    var n = Number(row.militia.numbers) * mult
+    if (isNaN(n) || n < 0) { n = 0 }
+    row.militia.numbers = n
+    return true
+}
+
+function bumpCommunityDefenseOrganizing() {
+    var level = Number(Q.community_defense_level) || 0
+    if (level >= MILITIA_ORGANIZING_MAX_LEVEL) { return false }
+    Q.community_defense_level = level + 1
+    bumpAllDistrictMilitiaNumbers(MILITIA_ORGANIZING_NUMBERS_BUMP)
+    return true
+}
+
+function bumpVolunteerPatrolDistricts() {
+    Q.volunteer_patrol_level = (Number(Q.volunteer_patrol_level) || 0) + 1
+    bumpAllDistrictMilitiaNumbers(MILITIA_PATROL_NUMBERS_BUMP)
+    return true
+}
+
+/** District map: focus ward gets numbers + morale; spillover morale elsewhere. */
+function organizeDistrictMilitia(focusDistrict) {
+    ensureDistrictParamilitary()
+    var focus = String(focusDistrict || '')
+    if (!focus) { return false }
+    var districts = paramilitaryDistrictIds()
+    var i, d
+    for (i = 0; i < districts.length; i++) {
+        d = districts[i]
+        if (d === focus) {
+            bumpDistrictMilitiaMorale(d, MILITIA_DISTRICT_ORGANIZING_FOCUS_MORALE)
+            bumpDistrictMilitiaNumbers(d, MILITIA_DISTRICT_ORGANIZING_FOCUS_NUMBERS)
+        } else {
+            bumpDistrictMilitiaMorale(d, MILITIA_DISTRICT_ORGANIZING_SPILLOVER_MORALE)
+        }
+    }
+    return true
+}
+
+function cityHasMilitiaPresence() {
+    ensureDistrictParamilitary()
+    if ((Number(Q.community_defense_level) || 0) >= 1) { return true }
+    if ((Number(Q.volunteer_patrol_level) || 0) >= 1) { return true }
+    var districts = paramilitaryDistrictIds()
+    var table = Q.paramilitaryQnmMilitiaDefault || PARAMILITARY_QNM_MILITIA_DEFAULT
+    var i, d, base, cur
+    for (i = 0; i < districts.length; i++) {
+        d = districts[i]
+        base = lookupParamilitaryQnmDefault(table, d).numbers
+        cur = Number(Q.districtParamilitary[d].militia.numbers) || 0
+        if (cur > base + 0.001) { return true }
+    }
+    return false
+}
+
+function ensureDistrictParamilitary() {
+    if (!Q.districtParamilitary || typeof Q.districtParamilitary !== 'object') {
+        Q.districtParamilitary = {}
+    }
+    var districts = paramilitaryDistrictIds()
+    var i, d, row, policeBase, militiaBase, punkBase
+    for (i = 0; i < districts.length; i++) {
+        d = districts[i]
+        policeBase = defaultPoliceQnm(d)
+        militiaBase = defaultMilitiaQnm(d)
+        punkBase = defaultPunkQnm(d)
+        row = Q.districtParamilitary[d]
+        if (!row) {
+            Q.districtParamilitary[d] = {
+                police: cloneQnmRecord(policeBase),
+                militia: cloneQnmRecord(militiaBase),
+                punks: cloneQnmRecord(punkBase),
+            }
+            ensurePoliceMoraleBase(Q.districtParamilitary[d].police, d)
+            if (d === 'Deeps' && deepsPoliceIsolated()) {
+                initDeepsPolicePosture(Q.districtParamilitary[d].police)
+            }
+            ensureDeeperMilitiaRow(Q.districtParamilitary[d], d)
+            continue
+        }
+        if (!row.police) {
+            row.police = cloneQnmRecord(policeBase)
+            ensurePoliceMoraleBase(row.police, d)
+            if (d === 'Deeps' && deepsPoliceIsolated()) {
+                initDeepsPolicePosture(row.police)
+            }
+        } else {
+            ensurePoliceMoraleBase(row.police, d)
+        }
+        if (!row.militia) { row.militia = cloneQnmRecord(militiaBase) }
+        if (!row.punks) { row.punks = cloneQnmRecord(punkBase) }
+        ensureDeeperMilitiaRow(row, d)
+    }
+}
+
+function militiaDegradeDistrict(fallback) {
+    var d = Q.militia_degrade_focus || Q.militia_degrade_district || fallback || ''
+    return d
+}
+
+function bumpDistrictMilitiaMorale(district, delta) {
+    ensureDistrictParamilitary()
+    var d = district || militiaDegradeDistrict('Aurora')
+    var row = Q.districtParamilitary[d]
+    if (!row || !row.militia) { return false }
+    var m = Number(row.militia.morale) + Number(delta)
+    if (isNaN(m)) { return false }
+    if (m < 0) { m = 0 }
+    row.militia.morale = clampMoraleByLoyalty(m, row.militia.loyalty)
+    return true
+}
+
+function bumpDistrictPunkStrength(district, mult) {
+    ensureDistrictParamilitary()
+    var d = district || militiaDegradeDistrict('Aurora')
+    var row = Q.districtParamilitary[d]
+    if (!row || !row.punks) { return false }
+    var factor = Number(mult)
+    if (isNaN(factor) || factor <= 0) { return false }
+    var n = Number(row.punks.numbers) * factor
+    if (isNaN(n) || n < 0) { n = 0 }
+    row.punks.numbers = n
+    return true
+}
+
+function districtParamilitaryStrength(district, role) {
+    ensureDistrictParamilitary()
+    var row = Q.districtParamilitary[district]
+    if (!row || !row[role]) { return 0 }
+    return qnmStrength(row[role])
+}
+
+function defuseMilitiaDegradeCountdown() {
+    Q.militia_degrade_timer = 0
+    Q.militia_degrade_district = ''
+    Q.militia_degrade_ready = 0
+}
+
+function findMilitiaOverPoliceDistrict() {
+    var best = ''
+    var bestGap = 0
+    var i, d, militia, police, gap
+    for (i = 0; i < MILITIA_DEGRADE_DISTRICTS.length; i++) {
+        d = MILITIA_DEGRADE_DISTRICTS[i]
+        militia = districtParamilitaryStrength(d, 'militia')
+        police = districtParamilitaryStrength(d, 'police')
+        if (militia > police) {
+            gap = militia - police
+            if (gap > bestGap) {
+                bestGap = gap
+                best = d
+            }
+        }
+    }
+    return best
+}
+
+/** Monthly: arm 8-month countdown when militia QNM beats police (non-Pitts); defuse if police recovers. */
+function militiaDegradeMonthlyTick() {
+    if (Number(Q.militia_auxiliary) >= 1) {
+        defuseMilitiaDegradeCountdown()
+        return
+    }
+    if (!cityHasMilitiaPresence()) {
+        defuseMilitiaDegradeCountdown()
+        return
+    }
+    ensureDistrictParamilitary()
+    var timer = Number(Q.militia_degrade_timer) || 0
+    if (timer > 0) {
+        var district = Q.militia_degrade_district || ''
+        if (district) {
+            if (districtParamilitaryStrength(district, 'police') > districtParamilitaryStrength(district, 'militia')) {
+                defuseMilitiaDegradeCountdown()
+                return
+            }
+        }
+        timer -= 1
+        Q.militia_degrade_timer = timer
+        if (timer <= 0) {
+            Q.militia_degrade_ready = 1
+        }
+        return
+    }
+    var trigger = findMilitiaOverPoliceDistrict()
+    if (trigger) {
+        Q.militia_degrade_district = trigger
+        Q.militia_degrade_timer = MILITIA_DEGRADE_COUNTDOWN_MONTHS
+        Q.militia_degrade_silent_pending = 1
+    }
+}
+
+function formatParamilitaryStrength(value) {
+    var n = Number(value)
+    if (isNaN(n)) { return '0' }
+    return String(Math.round(n * 1000) / 1000)
+}
+
+function padParamilitaryReportField(text, width) {
+    var s = String(text)
+    while (s.length < width) { s += ' ' }
+    return s
+}
+
+function collectDistrictParamilitaryReportRows() {
+    ensureDistrictParamilitary()
+    var rows = []
+    var i, d, police, militia, deeper, punks, notes
+    for (i = 0; i < MIKASA_PARAMILITARY_DISTRICTS.length; i++) {
+        d = MIKASA_PARAMILITARY_DISTRICTS[i]
+        police = districtParamilitaryStrength(d, 'police')
+        militia = districtParamilitaryStrength(d, 'militia')
+        deeper = districtParamilitaryStrength(d, 'deeper_militia')
+        punks = districtParamilitaryStrength(d, 'punks')
+        notes = []
+        if (militia > police && MILITIA_DEGRADE_DISTRICTS.indexOf(d) >= 0) {
+            notes.push('militia>police')
+        }
+        if (d === 'Deeps' && deepsPoliceIsolated()) {
+            notes.push('city police isolated')
+        }
+        if (Q.militia_degrade_district === d && (Number(Q.militia_degrade_timer) || 0) > 0) {
+            notes.push('fuse ' + Q.militia_degrade_timer + 'mo')
+        }
+        rows.push({
+            district: d,
+            police: police,
+            militia: militia,
+            deeper: deeper,
+            punks: punks,
+            notes: notes.join('; '),
+        })
+    }
+    return rows
+}
+
+function paramilitaryReportFooterText() {
+    ensurePolicePay()
+    return (
+        'Strength = quality × numbers × morale. '
+        + 'Police pay ' + (Number(Q.police_pay) || 2) + '× poverty. '
+        + 'Community defense ' + (Number(Q.community_defense_level) || 0)
+        + '/' + MILITIA_ORGANIZING_MAX_LEVEL
+        + ', volunteer patrol districts ' + (Number(Q.volunteer_patrol_level) || 0) + '. '
+        + 'Deeper guard: Deeps only. Syndicate muscle not in ledger yet — punks only on outlaw side.'
+    )
+}
+
+function formatStacyParamilitaryReportText() {
+    var rows = collectDistrictParamilitaryReportRows()
+    if (!rows.length) {
+        return 'Paramilitary ledger is not available yet.'
+    }
+    var labelWidth = 9
+    var lines = []
+    lines.push(
+        padParamilitaryReportField('District', labelWidth)
+        + '  '
+        + padParamilitaryReportField('Police', 8)
+        + '  '
+        + padParamilitaryReportField('Militia', 8)
+        + '  '
+        + padParamilitaryReportField('Deeper', 8)
+        + '  '
+        + padParamilitaryReportField('Punks', 8)
+        + '  Notes'
+    )
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i]
+        lines.push(
+            padParamilitaryReportField(row.district, labelWidth)
+            + '  '
+            + padParamilitaryReportField(formatParamilitaryStrength(row.police), 8)
+            + '  '
+            + padParamilitaryReportField(formatParamilitaryStrength(row.militia), 8)
+            + '  '
+            + padParamilitaryReportField(formatParamilitaryStrength(row.deeper), 8)
+            + '  '
+            + padParamilitaryReportField(formatParamilitaryStrength(row.punks), 8)
+            + '  '
+            + (row.notes || '')
+        )
+    }
+    lines.push('')
+    lines.push(paramilitaryReportFooterText())
+    return lines.join('\n')
+}
+
+function formatStacyParamilitaryReportHtml() {
+    var rows = collectDistrictParamilitaryReportRows()
+    if (!rows.length) {
+        return '<p><em>Paramilitary ledger is not available yet.</em></p>'
+    }
+    var html = '<table style="width:100%;border-collapse:collapse;font-size:0.85em;margin:0.25em 0;">'
+    html += '<tr><th style="text-align:left;font-weight:normal;">District</th>'
+    html += '<th style="text-align:right;font-weight:normal;">Police</th>'
+    html += '<th style="text-align:right;font-weight:normal;">Militia</th>'
+    html += '<th style="text-align:right;font-weight:normal;">Deeper</th>'
+    html += '<th style="text-align:right;font-weight:normal;">Punks</th>'
+    html += '<th style="text-align:left;font-weight:normal;">Notes</th></tr>'
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i]
+        html += '<tr><td style="text-align:left;">' + row.district + '</td>'
+        html += '<td style="text-align:right;">' + formatParamilitaryStrength(row.police) + '</td>'
+        html += '<td style="text-align:right;">' + formatParamilitaryStrength(row.militia) + '</td>'
+        html += '<td style="text-align:right;">' + formatParamilitaryStrength(row.deeper) + '</td>'
+        html += '<td style="text-align:right;">' + formatParamilitaryStrength(row.punks) + '</td>'
+        html += '<td style="text-align:left;">' + (row.notes || '') + '</td></tr>'
+    }
+    html += '</table>'
+    html += '<p style="font-size:0.85em;margin:0.35em 0 0 0;">' + paramilitaryReportFooterText() + '</p>'
+    return html
+}
+
+function findStacyParamilitaryReportRoot() {
+    var nodes = document.getElementsByClassName('stacy-paramilitary-report')
+    if (!nodes.length) { return null }
+    return nodes[nodes.length - 1]
+}
+
+function renderStacyParamilitaryReport() {
+    ensureDistrictParamilitary()
+    var attempts = 0
+    var maxAttempts = 12
+
+    function paint() {
+        var root = findStacyParamilitaryReportRoot()
+        if (!root) { return false }
+        root.innerHTML = formatStacyParamilitaryReportHtml()
+        return true
+    }
+
+    function tryPaint() {
+        if (paint()) { return }
+        attempts += 1
+        if (attempts < maxAttempts) {
+            setTimeout(tryPaint, 0)
+        }
+    }
+    tryPaint()
+}
+
+function updateStacyParamilitaryReport() {
+    ensureDistrictParamilitary()
+    Q.stacy_paramilitary_report = formatStacyParamilitaryReportText()
+}
+
+function clearMonthlyRaidReport() {
+    Q.monthly_raid_report = MONTHLY_RAID_REPORT_EMPTY
+}
+
+function setMonthlyRaidReport(text) {
+    var s = String(text == null ? '' : text)
+    Q.monthly_raid_report = s.length ? s : MONTHLY_RAID_REPORT_EMPTY
+}
+
+ensurePolicePay()
+ensureDistrictParamilitary()
+if (Q.monthly_raid_report == null || Q.monthly_raid_report === '') {
+    Q.monthly_raid_report = MONTHLY_RAID_REPORT_EMPTY
+}
+
+Q.paramilitaryDistrictIds = MIKASA_PARAMILITARY_DISTRICTS
+Q.paramilitaryQnmPoliceDefault = PARAMILITARY_QNM_POLICE_DEFAULT
+Q.paramilitaryQnmPunksDefault = PARAMILITARY_QNM_PUNKS_DEFAULT
+Q.paramilitaryQnmMilitiaDefault = PARAMILITARY_QNM_MILITIA_DEFAULT
+Q.paramilitaryQnmDeeperMilitiaDefault = PARAMILITARY_QNM_DEEPER_MILITIA_DEFAULT
+Q.districtLawEnforcementMass = districtLawEnforcementMass
+Q.paramilitarySyndicateHomeDefault = PARAMILITARY_SYNDICATE_HOME_DEFAULT
+Q.paramilitaryCorpPoliceHomeDefault = PARAMILITARY_CORP_POLICE_HOME_DEFAULT
+Q.paramilitaryWatchDefault = PARAMILITARY_WATCH_DEFAULT
+
+Q.qnmStrength = qnmStrength
+Q.dominanceRatio = dominanceRatio
+Q.ensurePolicePay = ensurePolicePay
+Q.policePayFromCableNegLevel = policePayFromCableNegLevel
+Q.deriveMoraleThresholds = deriveMoraleThresholds
+Q.moraleBandDrift = moraleBandDrift
+Q.moraleRevertDelta = moraleRevertDelta
+Q.moraleBaseAfterPayChange = moraleBaseAfterPayChange
+Q.clampMoraleByLoyalty = clampMoraleByLoyalty
+Q.computeDistrictCrime = computeDistrictCrime
+Q.syndicateDistrictWeight = syndicateDistrictWeight
+Q.calcPublicOrderBalance = calcPublicOrderBalance
+Q.applyPublicOrderMoraleEffects = applyPublicOrderMoraleEffects
+Q.applyPublicOrderCrimeEffects = applyPublicOrderCrimeEffects
+Q.calcCorpAssetBalance = calcCorpAssetBalance
+Q.applyCorpAssetBalanceEffects = applyCorpAssetBalanceEffects
+Q.calcSyndicateCoercionBalance = calcSyndicateCoercionBalance
+Q.applySyndicateCoercionEffects = applySyndicateCoercionEffects
+Q.calcConflictIntensityBalance = calcConflictIntensityBalance
+Q.applyConflictIntensityEffects = applyConflictIntensityEffects
+Q.calcRaidProgressGain = calcRaidProgressGain
+Q.applyRaidProgressEffects = applyRaidProgressEffects
+Q.ensureDistrictParamilitary = ensureDistrictParamilitary
+Q.districtParamilitaryStrength = districtParamilitaryStrength
+Q.bumpDistrictMilitiaMorale = bumpDistrictMilitiaMorale
+Q.bumpDistrictMilitiaNumbers = bumpDistrictMilitiaNumbers
+Q.organizeDistrictMilitia = organizeDistrictMilitia
+Q.bumpDistrictPunkStrength = bumpDistrictPunkStrength
+Q.militiaDegradeMonthlyTick = militiaDegradeMonthlyTick
+Q.paramilitaryMoraleMonthlyTick = paramilitaryMoraleMonthlyTick
+Q.bumpDistrictPoliceMorale = bumpDistrictPoliceMorale
+Q.deepsPoliceIsolated = deepsPoliceIsolated
+Q.clearMonthlyRaidReport = clearMonthlyRaidReport
+Q.setMonthlyRaidReport = setMonthlyRaidReport
+Q.monthlyRaidReportEmpty = MONTHLY_RAID_REPORT_EMPTY
+Q.formatStacyParamilitaryReportText = formatStacyParamilitaryReportText
+Q.formatStacyParamilitaryReportHtml = formatStacyParamilitaryReportHtml
+Q.renderStacyParamilitaryReport = renderStacyParamilitaryReport
+Q.updateStacyParamilitaryReport = updateStacyParamilitaryReport
+
+// MIKASA_CRIME_PARAMILITARY_RUNTIME_END
+
+crime_paramilitary_runtime_ready = 1
+
+!}
+go-to: jumpScene

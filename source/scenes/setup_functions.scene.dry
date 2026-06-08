@@ -25,12 +25,33 @@ var ATTITUDE_API = [
 var ORGANIZE_API = [
     'applyStratumProsperityBumps',
     'bumpDistrictProsperity',
+    'bumpBlockProsperity',
     'syncContractingAllowance',
     'syncContractFairChainComplete',
     'syncActionEconomyDisplay',
     'spendOrganizingAction',
     'beginActionEconomyMonth',
     'applyActionSurgeIfNewPhase',
+]
+var CRIME_PARAMILITARY_API = [
+    'qnmStrength',
+    'ensurePolicePay',
+    'deriveMoraleThresholds',
+    'policePayFromCableNegLevel',
+    'calcPublicOrderBalance',
+    'applyPublicOrderMoraleEffects',
+    'applyPublicOrderCrimeEffects',
+    'calcCorpAssetBalance',
+    'applyCorpAssetBalanceEffects',
+    'calcSyndicateCoercionBalance',
+    'applySyndicateCoercionEffects',
+    'calcConflictIntensityBalance',
+    'applyConflictIntensityEffects',
+    'calcRaidProgressGain',
+    'applyRaidProgressEffects',
+    'militiaDegradeMonthlyTick',
+    'updateStacyParamilitaryReport',
+    'renderStacyParamilitaryReport',
 ]
 
 function setupApiMissing(names) {
@@ -45,6 +66,7 @@ Q.setup_need_electorate = 0
 Q.setup_need_economic = 0
 Q.setup_need_attitude = 0
 Q.setup_need_organize = 0
+Q.setup_need_crime_paramilitary = 0
 
 if (setupApiMissing(ELECTION_API) || !Q.electionV2 || !Q.electionV2.blocks) {
     Q.setup_need_election = 1
@@ -65,6 +87,10 @@ if (setupApiMissing(ATTITUDE_API)) {
 if (setupApiMissing(ORGANIZE_API)) {
     Q.setup_need_organize = 1
 }
+if (setupApiMissing(CRIME_PARAMILITARY_API)) {
+    Q.setup_need_crime_paramilitary = 1
+    Q.crime_paramilitary_runtime_ready = 0
+}
 
 Q.setup_complete = (
     Q.setup_need_election === 0
@@ -72,6 +98,7 @@ Q.setup_complete = (
     && Q.setup_need_economic === 0
     && Q.setup_need_attitude === 0
     && Q.setup_need_organize === 0
+    && Q.setup_need_crime_paramilitary === 0
 ) ? 1 : 0
 
 Q.setup_boot_jump = 0
@@ -81,7 +108,10 @@ if (Q.setup_complete) {
     if (Q.economic_assets_bootstrap_return = 2 && typeof Q.assignSeatsFromInitialPolling === 'function') {
         Q.assignSeatsFromInitialPolling()
     }
-    if (Q.economic_assets_bootstrap_return = 2) {
+    if (Q.mikasa_restore_scene) {
+        this.state.jumpSceneId = Q.mikasa_restore_scene
+        Q.mikasa_restore_scene = ' '
+    } else if (Q.economic_assets_bootstrap_return = 2) {
         this.state.jumpSceneId = 'organize_phase_start'
     } else if (Q.setup_goto_main = 1) {
         this.state.jumpSceneId = 'main'
@@ -92,4 +122,4 @@ if (Q.setup_complete) {
 }
 
 !}
-go-to: jumpScene if setup_boot_jump = 1; election_runtime if setup_need_election = 1; electorate_runtime if setup_need_electorate = 1; economic_assets_runtime if setup_need_economic = 1; attitude_runtime if setup_need_attitude = 1; organize_phase_tick if setup_need_organize = 1; jumpScene
+go-to: jumpScene if setup_boot_jump = 1; election_runtime if setup_need_election = 1; electorate_runtime if setup_need_electorate = 1; economic_assets_runtime if setup_need_economic = 1; attitude_runtime if setup_need_attitude = 1; organize_phase_tick if setup_need_organize = 1; crime_paramilitary_runtime if setup_need_crime_paramilitary = 1; jumpScene

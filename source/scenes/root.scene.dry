@@ -4,7 +4,7 @@ go-to: start_menu if started = 0; to_setup_functions if started = 1
 on-arrival: {!
 
 // MIKASA_BUILD_STAMP
-Q.build_time_label = '2026-06-07 13:49:49 local';
+Q.build_time_label = '2026-06-08 15:22:03 local';
 // /MIKASA_BUILD_STAMP
 
 if (Q.started && !Q.economic_assets_runtime_ready) {
@@ -64,10 +64,21 @@ Q.actions_used_last_month = 0;
 Q.month_actions_remaining = 0;
 Q.action_surge_active = 0;
 Q.action_surge_granted_through_phase = 0;
+Q.phase = 1;
 Q.parochialism = 25;
 Q.parochial_radicalism = 0.65; // moderate radicalism → ~35% clawed back to Dems, rest stays on H
+Q.police_pay = 2; // poverty multiple; morale thresholds in crime_paramilitary_runtime
+Q.militia_degrade_timer = 0;
+Q.militia_degrade_ready = 0;
+Q.militia_degrade_district = '';
+Q.community_defense_level = 0;
+Q.volunteer_patrol_level = 0;
+Q.deeps_police_isolated = 1;
+Q.deeps_police_acceptance_ready = 0;
 Q.third_wave_on_society = 0;
 Q.mikasa_journey_leg = 0;
+Q.stacy_activate = 0;
+Q.callista_activate = 0;
 
 Q.prosperity_soylent = 10;
 Q.prosperity_magrail = 10;
@@ -121,6 +132,8 @@ Q.economicHousingInventory = [];
 Q.setup_complete = 0;
 Q.setup_boot_jump = 0;
 Q.setup_goto_main = 0;
+
+Q.monthly_raid_report = " ";
 
 !}
 set-bg: img/solar_system.jpg

@@ -1053,6 +1053,21 @@ function qified_block_prosperity(state) {
     syncStratumProsperityAverages(state)
 }
 
+/** After load, flat Q.*_pop / *_prosperity keys outlive stripped electionV2 objects. */
+function restoreBlockFieldsFromQ(state) {
+    if (!Q.started) { return }
+    for (const block of state.blocks) {
+        const popKey = block.district.id + '_' + block.demographic.id + '_pop'
+        const prosKey = block.district.id + '_' + block.demographic.id + '_prosperity'
+        if (Q[popKey] != null && !isNaN(Number(Q[popKey]))) {
+            block.population = Number(Q[popKey])
+        }
+        if (Q[prosKey] != null && !isNaN(Number(Q[prosKey]))) {
+            block.prosperity = Number(Q[prosKey])
+        }
+    }
+}
+
 /** Citywide population-weighted mean prosperity per stratum → Q.prosperity_<id>. */
 function syncStratumProsperityAverages(state) {
     for (const sid of STRATUM_IDS) {
@@ -1154,6 +1169,7 @@ function runElectionsAndWriteQ(opts) {
 Q.stratumDisplay = STRATUM_DISPLAY
 Q.districtDisplay = DISTRICT_DISPLAY
 
+restoreBlockFieldsFromQ(electionState)
 runElectionsAndWriteQ({ allDistricts: true, commitSeats: false })
 
 Q.mikasaBlockProsperityBase = MIKASA_BLOCK_PROSPERITY_BASE

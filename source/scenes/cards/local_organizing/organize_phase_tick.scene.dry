@@ -920,7 +920,7 @@ function normalMonthActionsLimit() {
 
 /** Hand banner on main (Dendrynexus reads Q.handDescription above the hand). */
 function syncMainHandActionDescription() {
-    if (Number(Q.organizing_unlock) !== 1) {
+    if ((Number(Q.phase) || 0) < 1) {
         Q.handDescription = ''
         return
     }
@@ -1015,6 +1015,12 @@ function monthly_tick_phase1() {
     if (typeof Q.cableNegPromiseMonthlyTick === 'function') {
         Q.cableNegPromiseMonthlyTick()
     }
+    if (typeof Q.militiaDegradeMonthlyTick === 'function') {
+        Q.militiaDegradeMonthlyTick()
+    }
+    if (typeof Q.paramilitaryMoraleMonthlyTick === 'function') {
+        Q.paramilitaryMoraleMonthlyTick()
+    }
     trade_level_tick()
     economy_tick()
     applyStratumProsperityBumps()
@@ -1054,11 +1060,40 @@ function bumpDistrictProsperity(districtId, amount) {
     return true
 }
 
+/** Add amount to one district × stratum voter block (e.g. Docks × first). */
+function bumpBlockProsperity(districtId, stratumId, amount) {
+    var state = Q.electionV2
+    if (!state || !state.blocks) { return false }
+    var bump = Number(amount)
+    if (isNaN(bump) || bump === 0) { return false }
+    var district = String(districtId)
+    var stratum = String(stratumId)
+    var matched = false
+    for (var i = 0; i < state.blocks.length; i++) {
+        var block = state.blocks[i]
+        if (block.district.id !== district || block.demographic.id !== stratum) { continue }
+        block.prosperity = clampProsperity(
+            (block.prosperity ?? PROSPERITY_BLOCK_BASELINE) + bump
+        )
+        matched = true
+        break
+    }
+    if (!matched) { return false }
+    if (typeof Q.qified_block_prosperity === 'function') {
+        Q.qified_block_prosperity()
+    }
+    if (typeof Q.syncStratumProsperityAverages === 'function') {
+        Q.syncStratumProsperityAverages()
+    }
+    return true
+}
+
 Q.monthly_tick_phase1 = monthly_tick_phase1
 Q.syncContractingAllowance = syncContractingAllowance
 Q.syncContractFairChainComplete = syncContractFairChainComplete
 Q.applyStratumProsperityBumps = applyStratumProsperityBumps
 Q.bumpDistrictProsperity = bumpDistrictProsperity
+Q.bumpBlockProsperity = bumpBlockProsperity
 Q.applyProsperityConnections = applyProsperityConnections
 Q.syncProsperityDisplays = syncProsperityDisplays
 Q.syncActionEconomyDisplay = syncActionEconomyDisplay

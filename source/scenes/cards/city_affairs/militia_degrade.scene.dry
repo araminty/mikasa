@@ -2,10 +2,19 @@ title: Trouble maintaining militia's
 new-page: true
 is-card: true
 card-image: img/asteroid.jpg
-tags: city_affairs
-view_if: militia >= 1 and militia_auxiliary < 1
+tags: city_affairs, event
+view_if: militia_auxiliary < 1 and militia_degrade_ready = 1
+on-arrival: {!
+Q.militia_degrade_focus = Q.militia_degrade_district || ''
+Q.militia_degrade_focus_set = Q.militia_degrade_focus ? 1 : 0
+Q.militia_degrade_ready = 0
+Q.militia_degrade_timer = 0
+Q.militia_degrade_district = ''
+!}
 
 Our militia forces are a stopgap security solution.  There are reports of members drifting away and even accusations of militias organizing protection rackets.
+
+[? if militia_degrade_focus_set = 1: The worst trouble is concentrated in the [+ militia_degrade_focus +] district, where volunteer patrols have eclipsed what the city police can hold together. ?]
 
 -@decline
 -@corrupt
@@ -14,18 +23,30 @@ Our militia forces are a stopgap security solution.  There are reports of member
 
 @decline
 title: The ranks are shrinking
-on-arrival: militia *=  2/3
+on-arrival: {!
+if (typeof Q.bumpDistrictMilitiaMorale === 'function') {
+    Q.bumpDistrictMilitiaMorale(Q.militia_degrade_focus, -0.1)
+}
+if (typeof Q.scaleDistrictMilitiaNumbers === 'function') {
+    Q.scaleDistrictMilitiaNumbers(Q.militia_degrade_focus, 2/3)
+}
+!}
 
 Damn
 
 @corrupt
 title: Crime is rising
+on-arrival: {!
+if (typeof Q.bumpDistrictPunkStrength === 'function') {
+    Q.bumpDistrictPunkStrength(Q.militia_degrade_focus, 1.25)
+}
+!}
 
 Damn
 
 @oversight
 title: Have the police oversee them
-choose-if: police_reform > 4
+choose-if: police_reform >= 4
 unavailable-subtitle: the police are too corrupt to trust
 on-arrival: militia_auxiliary = 1
 

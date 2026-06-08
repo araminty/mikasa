@@ -3,15 +3,45 @@ is-pinned-card: true
 tags: advisor, punk
 card-image: img/stacy.webp
 new-page: true
+view-if: stacy_activate = 1
 
+# Passive while stacy_toggle = 1 (TODO): monthly tick — militia loyalty up, police morale down.
+# See crime_paramilitary.md (QNM / morale drift); hook in organize_phase_tick or advisor tick.
 
 = Stacy Primogen
 
 Stacy Primogen is a second generation offspring of the Jovian supersoldier project, incubated into a plutocratic Jovian family of arms dealers, she struck out on her own to become a mercenary and influencer.  She recently has started using the catch phrase "Let's raise the stakes" in an obvious but deniable reference to the Stakeholder movement.
 
 
+- @stacy_paramilitary_survey: Street strength by district
 - @stacy_toggle_on
 - @stacy_toggle_off
+- @return
+
+@stacy_paramilitary_survey
+title: Street strength by district
+subtitle: Police, militia, deeper guard, and punk QNM by ward
+on-arrival: {!
+if (typeof Q.updateStacyParamilitaryReport === 'function') {
+    Q.updateStacyParamilitaryReport()
+} else {
+    Q.crime_paramilitary_runtime_ready = 0
+    this.state.jumpSceneId = 'stacy.stacy_paramilitary_survey'
+    this.goToScene('crime_paramilitary_runtime')
+}
+!}
+on-display: {!
+if (typeof Q.renderStacyParamilitaryReport === 'function') {
+    Q.renderStacyParamilitaryReport()
+}
+!}
+
+= Paramilitary ledger
+
+Stacy shares lets us see her competition tracking metrics.  Apparently she considers all law enforcement, community defense and petty criminals to be competition.  The information is pathologically detailed and makes it trial to assess the strength of paramilitaries throughout the city.
+
+{!<div class="stacy-paramilitary-report"></div>!}
+
 - @return
 
 @stacy_toggle_on
@@ -22,6 +52,7 @@ on-arrival: stacy_toggle = 1
 
 Stacy stirs up passions with social media and questionable energy drinks
 
+- @stacy_paramilitary_survey: Street strength by district
 - @stacy_toggle_off
 - @return
 
@@ -33,5 +64,6 @@ on-arrival: stacy_toggle = 0
 
 If Stacy doesn't have enemies available, she can always make more
 
+- @stacy_paramilitary_survey: Street strength by district
 - @stacy_toggle_on
 - @return

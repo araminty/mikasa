@@ -1,0 +1,9 @@
+title: Advisors 2301 activate
+new-page: false
+on-arrival: {!
+if ((Number(Q.stacy_activate) || 0) < 1) { Q.stacy_activate = 1 }
+if ((Number(Q.callista_activate) || 0) < 1) { Q.callista_activate = 1 }
+!}
+go-to: jumpScene
+
+# Silent: Stacy and Callista join the advisor pool at the start of 2301 unless freak_show @fixer unlocked them earlier.

@@ -3,6 +3,7 @@ is-pinned-card: true
 tags: advisor, tunnel_clans
 card-image: img/callista.webp
 new-page: true
+view-if: callista_activate = 1
 
 = Callista and Mei
 

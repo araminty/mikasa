@@ -116,11 +116,11 @@ Police defunded / purged: [+ police_defund +]
 
 Police investigated: [+ police_investigated +]
 
-Community militia: [+ militia +]
+Community defense organizing: [+ community_defense_level +]
 
 Militia auxiliary: [+ militia_auxiliary +]
 
-Militia policing streets: [+ militia_police +]
+Volunteer patrol districts: [+ volunteer_patrol_level +]
 
 @polls
 on-arrival: {! Q.update_projections(); !}

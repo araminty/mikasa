@@ -214,6 +214,12 @@ Q.electorateModifierCatalog = [
     new ElectorateModifier('magic_school_alien_D', 'magic_school', 'stratum', 'alien', 'D', 0.15),
     new ElectorateModifier('magic_school_global_D', 'magic_school', 'global', '', 'D', 0.05),
 
+    // freak_show (2300) — orci tourist attraction; otherworlders split on city response
+    new ElectorateModifier('freak_show_stop_alien_D', 'freak_show_shut_down', 'stratum', 'alien', 'D', 0.35),
+    new ElectorateModifier('freak_show_allow_alien_D', 'freak_show_allowed', 'stratum', 'alien', 'D', -0.35),
+    new ElectorateModifier('freak_show_stream_alien_otherworlders', 'freak_show_stream', 'stratum', 'alien', 'D', 3),
+    new ElectorateModifier('freak_show_stream_alien_otherworlders', 'freak_show_stream', 'stratum', 'rich', 'D', -1),
+
     // orc_marriage2 (Dec 2301) — stack set by choice; ElectorateModifier applies stratum party shifts
     new ElectorateModifier('orc_marriage_min_first_D', 'orc_marriage_minimum', 'stratum', 'first', 'D', 0.2),
     new ElectorateModifier('orc_marriage_min_alien_D', 'orc_marriage_minimum', 'stratum', 'alien', 'D', 2),
@@ -230,6 +236,11 @@ Q.electorateModifierCatalog = [
     // drone_vote_buying (Dec) — drone stratum only; G↑ or C↓ → more corp_or_abstain abstentions in status
     new ElectorateModifier('drone_bribe_boost_G', 'drone_syndicate_bribe_boost', 'stratum', 'drone', 'G', 0.2),
     new ElectorateModifier('drone_bribe_slip_C', 'drone_corp_bribe_slip', 'stratum', 'drone', 'C', -0.1),
+
+    // Syndicate affluence → citywide drone abstention / G lean (see syncSyndicateDroneWealthStacks).
+    // FUTURE: prosperity_families / edges / sharks each → own puppet-party modifier row.
+    new ElectorateModifier('drone_syndicate_wealth_G', 'drone_syndicate_wealth_bribe', 'stratum', 'drone', 'G', 0.025),
+    new ElectorateModifier('drone_syndicate_wealth_C', 'drone_syndicate_wealth_bribe', 'stratum', 'drone', 'C', -0.015),
 
     // --- otherworld event stacks (placeholder) ---
     new ElectorateModifier('otherworld_outpost_alien_D', 'otherworld_outpost', 'stratum', 'alien', 'D', 0.1),
@@ -255,8 +266,6 @@ Q.electorateModifierCatalog = [
     new ElectorateModifier('budget_auto', 'budget', 'global', '', 'D', 0),
     new ElectorateModifier('jovian_refugee_dread_auto', 'jovian_refugee_dread', 'global', '', 'D', 0),
     new ElectorateModifier('jovian_refugee_prepare_auto', 'jovian_refugee_prepare', 'global', '', 'D', 0),
-    new ElectorateModifier('militia_auto', 'militia', 'global', '', 'D', 0),
-    new ElectorateModifier('militia_police_auto', 'militia_police', 'global', '', 'D', 0),
     new ElectorateModifier('non_violence_auto', 'non_violence', 'global', '', 'D', 0),
     new ElectorateModifier('patriot_meme_strength_auto', 'patriot_meme_strength', 'global', '', 'D', 0),
 
@@ -425,11 +434,39 @@ Q.syncParochialismXenophobiaStacks = function(q) {
     q.xenophobia_clawed_back = raw * clawMult
 }
 
+/** Opening syndicate prosperity sum (Families + Edges + Sharks @ 8 each). */
+var SYNDICATE_WEALTH_BASELINE = 24
+/** Sum if each syndicate prosperity hits clamp max (20). */
+var SYNDICATE_WEALTH_MAX = 60
+
+/**
+ * Combined syndicate prosperity → drone_syndicate_wealth_bribe stack (citywide drone stratum).
+ * Cheap abstention buys: G up, effective C down. Separate from crime/LE balance.
+ * FUTURE: per-syndicate prosperity → separate puppet-party rows in catalog.
+ */
+Q.syncSyndicateDroneWealthStacks = function(q) {
+    q = q || Q
+    var f = Number(q.prosperity_families)
+    var e = Number(q.prosperity_edges)
+    var s = Number(q.prosperity_sharks)
+    if (isNaN(f)) { f = 8 }
+    if (isNaN(e)) { e = 8 }
+    if (isNaN(s)) { s = 8 }
+    var combined = f + e + s
+    q.syndicate_combined_wealth = combined
+    var span = SYNDICATE_WEALTH_MAX - SYNDICATE_WEALTH_BASELINE
+    var raw = combined <= SYNDICATE_WEALTH_BASELINE
+        ? 0
+        : ((combined - SYNDICATE_WEALTH_BASELINE) / span) * 10
+    q.drone_syndicate_wealth_bribe = raw
+}
+
 Q.applyElectorateModifiers = function() {
     var state = Q.electionV2
     if (!state) { return }
 
     Q.syncParochialismXenophobiaStacks(Q)
+    Q.syncSyndicateDroneWealthStacks(Q)
 
     state.demographicsById = state.demographicsById || Object.fromEntries(
         state.demographics.map(function(d) { return [d.id, d] })

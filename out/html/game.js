@@ -9,11 +9,185 @@
                  month: 'short',
                  day: 'numeric' };
 
+  function sanitizeForJson(value) {
+    try {
+      JSON.stringify(value);
+      return value;
+    } catch (e) {
+      return undefined;
+    }
+  }
+
+  function qualitiesForSave(qualities) {
+    var out = {};
+    var key;
+    for (key in qualities) {
+      if (!Object.prototype.hasOwnProperty.call(qualities, key)) { continue; }
+      if (typeof qualities[key] === 'function') { continue; }
+      var v = sanitizeForJson(qualities[key]);
+      if (v !== undefined) { out[key] = v; }
+    }
+    return out;
+  }
+
+  function getSerializableState(engine) {
+    var state = engine.getExportableState();
+    var copy = {};
+    var key;
+    for (key in state) {
+      if (!Object.prototype.hasOwnProperty.call(state, key)) { continue; }
+      if (key === 'qualities') {
+        copy.qualities = qualitiesForSave(state.qualities);
+        continue;
+      }
+      var v = sanitizeForJson(state[key]);
+      if (v !== undefined) { copy[key] = v; }
+    }
+    return copy;
+  }
+
+  function stringifyGameState(engine) {
+    return JSON.stringify(getSerializableState(engine));
+  }
+
+  function formatExportJson(raw) {
+    return JSON.stringify(JSON.parse(raw), null, 2);
+  }
+
+  function exportFilename(slot) {
+    var ts = localStorage[ui.save_prefix + '_timestamp_' + slot];
+    var scene = 'save';
+    if (ts) {
+      var line = ts.split('\n')[0];
+      if (line) {
+        scene = line.replace(/[^\w.-]+/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+      }
+    }
+    if (!scene) { scene = 'save'; }
+    return 'mikasa-' + scene + '-' + slot + '.json';
+  }
+
+  function mikasaBootstrapAfterLoad() {
+    window.justLoaded = true;
+    if (typeof Q === 'undefined') { return; }
+    Q.mikasa_restore_scene = ui.dendryEngine.state.sceneId;
+    ui.dendryEngine.goToScene('setup_functions');
+  }
+
   var main = function(dendryUI) {
     ui = dendryUI;
     game = ui.game;
 
-    // Add your custom code here.
+    ui.autosave = function() {
+      var oldData = localStorage[ui.save_prefix + '_a0'];
+      if (oldData) {
+        localStorage[ui.save_prefix + '_a1'] = oldData;
+        localStorage[ui.save_prefix + '_timestamp_a1'] =
+            localStorage[ui.save_prefix + '_timestamp_a0'];
+      }
+      var slot = 'a0';
+      try {
+        localStorage[ui.save_prefix + '_' + slot] = stringifyGameState(ui.dendryEngine);
+      } catch (e) {
+        console.error('autosave failed', e);
+        return;
+      }
+      var scene = ui.dendryEngine.state.sceneId;
+      var date = new Date(Date.now());
+      date = scene + '\n(' + date.toLocaleString(undefined, ui.DateOptions) + ')';
+      localStorage[ui.save_prefix + '_timestamp_' + slot] = date;
+      ui.populateSaveSlots(slot + 1, 2);
+    };
+
+    ui.quickSave = function() {
+      try {
+        localStorage[ui.save_prefix + '_q'] = stringifyGameState(ui.dendryEngine);
+      } catch (e) {
+        console.error('quickSave failed', e);
+        window.alert('Save failed.');
+        return;
+      }
+      window.alert('Saved.');
+    };
+
+    ui.saveSlot = function(slot) {
+      try {
+        localStorage[ui.save_prefix + '_' + slot] = stringifyGameState(ui.dendryEngine);
+      } catch (e) {
+        console.error('saveSlot failed', e);
+        window.alert('Save failed.');
+        return;
+      }
+      var scene = ui.dendryEngine.state.sceneId;
+      var date = new Date(Date.now());
+      date = scene + '\n(' + date.toLocaleString(undefined, ui.DateOptions) + ')';
+      localStorage[ui.save_prefix + '_timestamp_' + slot] = date;
+      ui.populateSaveSlots(slot + 1, 2);
+    };
+
+    ui.quickLoad = function() {
+      if (localStorage[ui.save_prefix + '_q']) {
+        window.justLoaded = true;
+        var saveString = localStorage[ui.save_prefix + '_q'];
+        ui.dendryEngine.setState(JSON.parse(saveString));
+        mikasaBootstrapAfterLoad();
+        window.alert('Loaded.');
+      } else {
+        window.alert('No save available.');
+      }
+    };
+
+    ui.loadSlot = function(slot) {
+      if (localStorage[ui.save_prefix + '_' + slot]) {
+        window.justLoaded = true;
+        var saveString = localStorage[ui.save_prefix + '_' + slot];
+        ui.dendryEngine.setState(JSON.parse(saveString));
+        mikasaBootstrapAfterLoad();
+        ui.hideSaveSlots();
+        window.alert('Loaded.');
+      } else {
+        window.alert('No save available.');
+      }
+    };
+
+    ui.importSave = function(doc_id) {
+      var that = ui;
+      function onFileLoad(e) {
+        window.justLoaded = true;
+        var data = e.target.result;
+        that.dendryEngine.setState(JSON.parse(data));
+        mikasaBootstrapAfterLoad();
+        that.hideSaveSlots();
+        window.alert('Loaded.');
+      }
+      var uploader = document.getElementById(doc_id);
+      var reader = new FileReader();
+      var file = uploader.files[0];
+      reader.onload = onFileLoad;
+      reader.readAsText(file);
+    };
+
+    ui.exportSlot = function(slot) {
+      var key = ui.save_prefix + '_' + slot;
+      if (!localStorage[key]) {
+        window.alert('No save available.');
+        return;
+      }
+      var data;
+      try {
+        data = formatExportJson(localStorage[key]);
+      } catch (e) {
+        console.error('exportSlot failed', e);
+        window.alert('Export failed.');
+        return;
+      }
+      var a = document.createElement('a');
+      var file = new Blob([data], {type: 'application/json'});
+      a.href = URL.createObjectURL(file);
+      a.download = exportFilename(slot);
+      a.click();
+      URL.revokeObjectURL(a.href);
+    };
   };
 
   var TITLE = "Mikasa Democracy: A future history" + '_' + "Araminty Whitesell";

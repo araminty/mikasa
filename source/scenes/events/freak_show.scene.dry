@@ -1,0 +1,37 @@
+title: Orci freak show.
+priority: 3
+tags: event
+new-page: true
+max-visits: 1
+view-if: year = 2300 and month > 4
+
+
+Travellers from the otherworld have brought back captured orci specimins which are now being used as a tourist attraction.  The otherworlder population is outraged, some of them had family members whose souls were enslaved to animate orci.  The entrepeneurs insist they have done nothing wrong, orci dont possess free will so nobody is being harmed.  Should we put a stop to this?
+
+- @stop_it
+- @allow_it
+- @fixer
+
+@stop_it
+title: Stop this disgusting exploitation
+on-arrival: {!
+if (typeof Q.bumpBlockProsperity === 'function') {
+    Q.bumpBlockProsperity('Docks', 'first', -0.05)
+}
+freak_show_shut_down += 1
+!}
+
+A public spirited lawyer named Tracy Weinersmith files a mountain of regulatory petitions which drive the orci show out of business in the interest of public safety.
+
+@allow_it
+title: There isn't a law against this
+on-arrival: freak_show_allowed += 1
+
+The courts aren't sympathetic and the oligarchic district council of the Docks has no interest in stopping this.
+
+
+@fixer
+title: The otherworlders just need to learn how to settle problems Mikasa style
+on-arrival: stacy_activate = 1; callista_activate = 1; freak_show_stream += 1; prosperity_docks -= 0.02;
+
+We help the outraged otherworlders hire some extralegal help in the form of a duo of operators called Callista and Stacy Primogen.  The two create an orci rampage which results in the orci show getting shut down on public safety grounds.  The incident ends up being extremely public due to Stacy's unorthodox choice to livestream her "rescuing" the orci until the rampage started and she quickly pivoted away from this "joke" to rescuing the people she imperiled.  Thankfully her (untrue) declaration she is working for the (nonexistant) department of public health standards is mostly assumed to be a joke.  The stream does quite well.

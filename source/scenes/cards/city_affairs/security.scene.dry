@@ -25,23 +25,23 @@ choose-if: police_defund = 0 and police_reform < 2
 on-arrival: police_defund = 1
 
 Purging the ranks of the police is a drastic move but ironically one that neither the corporations or syndicates can interfere with.  This frees up budget which could hopefully go towards making less corrupt institutions.  
-[? if militia_police = 1: Hopefully our militia forces can prevent the streets decending into chaos ?]
-[? if militia_police = 0: We better have a plan to prevent anarchy in the streets ?]
+[? if volunteer_patrol_level = 1: Hopefully our militia forces can prevent the streets decending into chaos ?]
+[? if volunteer_patrol_level = 0: We better have a plan to prevent anarchy in the streets ?]
 
 @improve_pay
 title: Improve pay and training
-on-arrival: police_reform += 1; police_reform += 1 if militia_police > 1; police_reform += 1 if police_defund=1
+on-arrival: police_reform += 1; police_reform += 1 if volunteer_patrol_level > 1; police_reform += 1 if police_defund=1
 # dendry: on-depart is not a valid property (was: on-depart: defund = 0)
 
 Paying the police more then a poverty wage can make them less dependent on bribes.
-[? if police_defund = 1 and militia_police < 2 : We can hire more honest replacements for the police we previously purged. ?]
-[? if militia_police > 1: The local militia's serve as a recruiting pool for non corrupt security officers. ?]
+[? if police_defund = 1 and volunteer_patrol_level < 2 : We can hire more honest replacements for the police we previously purged. ?]
+[? if volunteer_patrol_level > 1: The local militia's serve as a recruiting pool for non corrupt security officers. ?]
 
 @organize_militias
 title: Organize volunteer community militias to take over police duties
-choose-if: corporate_long_leash = 1
-unavailable-subtitle: [? if corporate_long_leash = 0 : The megacorps dont trust us enough to allow this. ?][? if miltia >= 2: There are limits to what volunteers can accomplish ?]
-on-arrival: megacorps_angry_TBD += 1; militia_police += 1
+choose-if: corporate_long_leash = 1 and volunteer_patrol_level < 2
+unavailable-subtitle: [? if corporate_long_leash = 0 : The megacorps dont trust us enough to allow this. ?][? if volunteer_patrol_level >= 2: There are limits to what volunteers can accomplish ?]
+on-arrival: {! megacorps_angry_TBD += 1; if (typeof Q.bumpVolunteerPatrolDistricts === 'function') { Q.bumpVolunteerPatrolDistricts() } !}
 
 We have established volunteer neighborhood protection services.  This is an alternative to the police but we should be careful about relying on them indefinitely, over time their strength will wane and they could turn into protection rackets themselves.
 

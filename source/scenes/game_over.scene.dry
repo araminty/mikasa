@@ -91,6 +91,17 @@ go-to: eg_menu if started == 1; root.start_menu_2 if started == 0
 {!</tr>!}
 ?]
 
+[? if game_achievement_catastrophepolitik:
+{!<tr>!}
+  {!<td style="width: 60px; height: 60px; vertical-align: middle; text-align: center; border: 2px solid #3a0000; background-color: rgba(58, 0, 0, 0.12);">!}
+    {!<img src="img/achievement/catastrophepolitik.webp" alt="Catastrophepolitik" style="width: 100%; height: 100%; object-fit: cover; display: block;">!}
+  {!</td>!}
+  {!<td style="border: 2px solid #3a0000; background-color: rgba(58, 0, 0, 0.08);">!}
+    {!<div style="padding-left: 0.5em;"><div style="font-weight: bold;">Catastrophepolitik</div><div style="font-size: 90%; color: #444;"> — Ceasefire negotiations collapsed.</div></div>!}
+  {!</td>!}
+{!</tr>!}
+?]
+
 {!</table>!}
 
 = Completed Achievements Overall
@@ -119,6 +130,17 @@ go-to: eg_menu if started == 1; root.start_menu_2 if started == 0
 {!</tr>!}
 ?]
 
+[? if achievement_catastrophepolitik:
+{!<tr>!}
+  {!<td style="width: 60px; height: 60px; vertical-align: middle; text-align: center; border: 2px solid #3a0000; background-color: rgba(58, 0, 0, 0.12);">!}
+    {!<img src="img/achievement/catastrophepolitik.webp" alt="Catastrophepolitik" style="width: 100%; height: 100%; object-fit: cover; display: block;">!}
+  {!</td>!}
+  {!<td style="border: 2px solid #3a0000; background-color: rgba(58, 0, 0, 0.08);">!}
+    {!<div style="padding-left: 0.5em;"><div style="font-weight: bold;">Catastrophepolitik</div><div style="font-size: 90%; color: #444;"> — Ceasefire negotiations collapsed.</div></div>!}
+  {!</td>!}
+{!</tr>!}
+?]
+
 {!</table>!}
 
 = Incomplete Achievements
@@ -143,6 +165,17 @@ go-to: eg_menu if started == 1; root.start_menu_2 if started == 0
   {!</td>!}
   {!<td style="border: 2px solid #888; background-color: rgba(0, 0, 0, 0.04); opacity: 0.75;">!}
     {!<div style="padding-left: 0.5em;"><div style="font-weight: bold;">Cooked Lobster</div><div style="font-size: 90%; color: #444;"> — Seven Families has no assets left.</div></div>!}
+  {!</td>!}
+{!</tr>!}
+?]
+
+[? if not achievement_catastrophepolitik:
+{!<tr>!}
+  {!<td style="width: 60px; height: 60px; vertical-align: middle; text-align: center; border: 2px solid #888; background-color: rgba(0, 0, 0, 0.06); opacity: 0.45;">!}
+    {!<img src="img/achievement/catastrophepolitik.webp" alt="Catastrophepolitik" style="width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(100%);">!}
+  {!</td>!}
+  {!<td style="border: 2px solid #888; background-color: rgba(0, 0, 0, 0.04); opacity: 0.75;">!}
+    {!<div style="padding-left: 0.5em;"><div style="font-weight: bold;">Catastrophepolitik</div><div style="font-size: 90%; color: #444;"> — Ceasefire negotiations collapsed.</div></div>!}
   {!</td>!}
 {!</tr>!}
 ?]

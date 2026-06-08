@@ -1800,6 +1800,9 @@ if (votes >= 2) {
     }
     if (Q.cable_neg_police_pay_effective > 0) {
         Q.corp_police_pay_level = Q.cable_neg_police_pay_effective
+        if (typeof Q.policePayFromCableNegLevel === 'function') {
+            Q.police_pay = Q.policePayFromCableNegLevel(Q.cable_neg_police_pay_effective)
+        }
     }
     if (Q.cable_neg_infra_cap > 0) {
         Q.corp_infra_cap = Q.cable_neg_infra_cap
@@ -1828,7 +1831,7 @@ if (Q.cable_neg_brazos_accepts === 0 && (Number(Q.brazos_reprisal) || 0) > (Numb
 }
 if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
 !}
-go-to: deal_won if cable_neg_deal = 1; deal_failed if cable_neg_deal = 0
+go-to: deal_won if cable_neg_deal = 1; cable_negotiations_lose if cable_neg_deal = 0
 
 @deal_won
 title: Ceasefire signed
@@ -1837,14 +1840,5 @@ title: Ceasefire signed
 [? if cable_neg_votes = 2: Two megacorps signed; the holdout will remember what we extracted. ?]
 
 The ceasefire holds on paper.  City enforcement begins where we demanded jurisdiction; the solar exchanges breathe easier for a day.
-
-- @return
-
-@deal_failed
-title: Talks collapse
-
-The talks failed.  Soylent [? if cable_neg_soylent_accepts = 1: signed ?][? if cable_neg_soylent_accepts = 0: walked ?]; Magrail [? if cable_neg_magrail_accepts = 1: signed ?][? if cable_neg_magrail_accepts = 0: walked ?]; Brazos [? if cable_neg_brazos_accepts = 1: signed ?][? if cable_neg_brazos_accepts = 0: walked ?].
-
-Violence in the Vats and Railyard may continue until someone blinks.
 
 - @return

@@ -1,0 +1,6 @@
+title: Militia degrade countdown
+new-page: false
+on-arrival: militia_degrade_silent_pending = 0
+go-to: jumpScene
+
+# Silent hook: militia QNM exceeded police outside the Pitts; eight-month fuse armed in crime_paramilitary_runtime.

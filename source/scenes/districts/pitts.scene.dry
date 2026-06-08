@@ -10,8 +10,20 @@ Crime level: [+ pitts_crime : crime +] ([+ pitts_crime +])
 Prosperity level: [+ pitts_prosperity : prosperity +] ([+ pitts_prosperity +])
 Political Dominance: [+ pitts_dominant_party : party +]
 
+- @militia_organizing: Community militia organizing
 - @main: Return to main
 - @subsidize_mines: Look into reopening closed mines
+
+@militia_organizing
+title: Community militia organizing
+choose-if: phase > 0 and month_actions_remaining > 0
+unavailable-subtitle: [? if phase = 0: Community organizing has not started yet. ?][? if phase > 0 and month_actions_remaining <= 0: No organizing actions left this month. ?]
+on-arrival: {!
+Q.spendOrganizingAction();
+if (typeof Q.organizeDistrictMilitia === 'function') { Q.organizeDistrictMilitia('Pitts') }
+!}
+
+We spend the month building ward-level militia networks — drills, radios, and the slow work of turning volunteers into something the neighborhood might actually trust.
 
 @subsidize_mines
 go-to: mining

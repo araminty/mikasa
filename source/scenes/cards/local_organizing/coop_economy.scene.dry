@@ -3,7 +3,7 @@ new-page: true
 is-card: true
 card-image: img/asteroid.jpg
 tags: local_organizing
-view_if: organizing_unlock = 1
+view_if: phase >= 1
 on-arrival: {! if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay() } !}
 
 The cooperatives are the bedrock of the non-corporate economy on Mikasa.  Cooperatives tend to be semi-insular groups that live together, strive for self sufficiency and have an established trade to bring in outside revenues.

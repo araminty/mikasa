@@ -3,3 +3,5 @@ max-visits: 1
 new-page: false
 on-arrival: mikasa_journey_leg = 1
 go-to: jumpScene
+
+# This is a silent event that is just setting the flag

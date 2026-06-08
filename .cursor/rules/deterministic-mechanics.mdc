@@ -1,0 +1,19 @@
+---
+description: Game simulation is deterministic except card draws and cosmetics
+alwaysApply: true
+---
+
+# Deterministic mechanics
+
+All **game mechanics** should be **deterministic**: same game state + same player choices → same outcomes.
+
+**Exceptions (may use randomness or arbitrary variation):**
+
+- **Random card draws** (deck/hand shuffle, etc.)
+- **Purely cosmetic** variation (names, flavor text, non-mechanical presentation)
+
+When designing or implementing systems (ticks, combat, economy, elections, crime/QNM, etc.):
+
+- Prefer **formulas, thresholds, and stacks** over `Math.random()` or hidden rolls.
+- Narrative **event shocks** should be **player-triggered or schedule-driven**, not RNG unless explicitly a card-draw mechanic.
+- If suggesting debug or tests, deterministic replay from `Q` state is a valid goal.

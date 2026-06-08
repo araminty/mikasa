@@ -3,7 +3,7 @@ new-page: true
 is-card: true
 card-image: img/asteroid.jpg
 tags: local_organizing
-view_if: organizing_unlock = 1
+view_if: phase >= 1
 on-arrival: {! if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay() } !}
 
 Turn popular support into power.
@@ -45,9 +45,9 @@ The corporations harshly punish destruction of property but the workers have dev
 
 @defense
 title: Community self defense
-choose-if: militia < 3 and month_actions_remaining > 0
-unavailable-subtitle: [? if month_actions_remaining <= 0: No organizing actions left this month. ?][? if month_actions_remaining > 0: We've already built up the militia ?]
-on-arrival: {! Q.spendOrganizingAction(); Q.militia += 1; !}
+choose-if: community_defense_level < 3 and month_actions_remaining > 0
+unavailable-subtitle: [? if month_actions_remaining <= 0: No organizing actions left this month. ?][? if month_actions_remaining > 0: We've already built up community defense ?]
+on-arrival: {! Q.spendOrganizingAction(); if (typeof Q.bumpCommunityDefenseOrganizing === 'function') { Q.bumpCommunityDefenseOrganizing() } !}
 
 We have established local community watch efforts to try to protect the citizens from crime.
 

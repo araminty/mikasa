@@ -1,0 +1,13 @@
+title: Deepers-Police relationships improving
+priority: 2
+tags: event
+new-page: true
+max-visits: 1
+view-if: deeps_police_acceptance_ready = 1
+on-arrival: deeps_police_isolated = 0; deeps_police_acceptance_ready = 0
+
+The city police have never been popular in Mikasa but their social standing has been especially low in the Deeps.  Deepers dont want "foreigners" to feel welcome and the city cops have been a convenient target for their scorn. When the Deeps were annexed the existing police force just became unofficial and continued operating without concern for the city police.
+
+With our efforts to address the dismal state of policing in the city, the deepers have started seeing the police as not entirely stooges of the corporations they detest for the annexation.  The city police still aren't popular but the locals might occassionally talk to them when convenient.  The unofficial deepers police force has even started keeping the city police in the loop on some cases.  The Deeps still dont trust the police or the government and still hate the annexation but at least there is a germ of cooperation.
+
+- @return

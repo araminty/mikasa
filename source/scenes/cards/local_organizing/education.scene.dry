@@ -3,7 +3,7 @@ new-page: true
 is-card: true
 card-image: img/asteroid.jpg
 tags: local_organizing, city_affairs
-view_if: organizing_unlock = 1
+view_if: phase >= 1
 on-arrival: {! if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay() } !}
 
 The education system has both greatly advanced and greatly regressed since the pre-spaceflight era.  On the positive side, ubiquitous open sourced computerized educational resources have made it trivial for parents to provide children with basic life skills. On the negative side, most children are not recieving formal schooling.  Unschooled children are often left unprepared to the workforce and ignorant of world affairs.  The problem is particularly severe among the non-human populations from the otherworld.

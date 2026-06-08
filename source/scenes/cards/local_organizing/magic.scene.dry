@@ -3,7 +3,7 @@ new-page: true
 is-card: true
 card-image: img/asteroid.jpg
 tags: local_organizing, city_affairs
-view_if: organizing_unlock = 1
+view_if: phase >= 1
 on-arrival: {! if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay() } !}
 
 Mikasa has more magical users then most of the solar system thanks to passageways to the Otherworld in the Aurora district.
