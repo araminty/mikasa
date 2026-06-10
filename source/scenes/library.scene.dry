@@ -14,15 +14,17 @@ title: menu
 - @technology_library: Technology
 - @ai_library: Artificial Intelligence
 - @street_indices_library: Syndicates and Street Indices
-- @faction_attitudes: Faction attitudes
+- @faction_attitudes: Faction attitudes and マ, ツマ
 - @backSpecialScene: Exit library
 
 
 @faction_attitudes
 
-Faction attitudes are a bit different then in the original game.  Whether they like or dislike you is generally irrelevent.  What matters is if they see you as useful/necessary (leverage) and whether you have provoked them and/or they view you as a threat (reprisal).
+On Mikasa it's generally irrelevent if corporations or syndicates like or hate you.  What matters is if you can make demands of them (leverage) or if they see the need to retalliate for your actions (reprisal).  This creates a balance which the locals call Ma and Tsuma, which locals often write in katakana マ and ツマ.  If you've got Ma, people owe you and you are important.  If you've got Tsuma it means you are using your importance or favors.
 
-At the start of the game, the corporations and syndicates will all consider you as unimportant.  If the reprisal or leverage becomes extreme they will be waging war against you or obey you.  In between these, the balance between reprisal and leverage will matter, being hostile close to the boundary with Tolerating is different from them being hostile while you have no leverage at all.
+The Ma you have is the balance of your leverage - reprisal.  If your Ma with a corporation or syndicate is negative (and you aren't too unimportant to notice), expect them to do something to hurt you.  If you've got Ma you could use it for favors like demanding they help you control a district.  This will give you Tsuma and if Tsuma is bigger then Ma, they will refuse to keep doing what you want until you give up something new or demand less.
+
+On this chart, if you are above the centerline you've made yourself an enemy, the farther below the centerline you are, the more Ma you have (and thus Tsuma you can afford).
 
 {!<img src="img/leverage_reprisal.webp">!}
 
