@@ -9,16 +9,16 @@ if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
 
 [+ month : month +] [+ year +]
 
-= Attitudes towards Democrats
+= Guanxi
 
 {!<table style="width:100%; border-collapse:collapse; font-size:0.85em; margin:0.25em 0;">!}
-{!<tr><th style="text-align:left; font-weight:normal;">Faction</th><th style="text-align:left;">Stance</th></tr>!}
-{!<tr><td style="text-align:left;">!}{!<span style="color: #44b88f;">Brazos</span>!}{!</td><td style="text-align:left;"><span class="tooltip-text" title="Leverage: !}[+ brazos_leverage +]{!; reprisal: !}[+ brazos_reprisal +]{!">!}[+ attitude_brazos : attitude +]{!</span></td></tr>!}
-{!<tr><td style="text-align:left;">!}{!<span style="color: #44b88f;">Magrail</span>!}{!</td><td style="text-align:left;"><span class="tooltip-text" title="Leverage: !}[+ magrail_leverage +]{!; reprisal: !}[+ magrail_reprisal +]{!">!}[+ attitude_magrail : attitude +]{!</span></td></tr>!}
-{!<tr><td style="text-align:left;">!}{!<span style="color: #44b88f;">Soylent</span>!}{!</td><td style="text-align:left;"><span class="tooltip-text" title="Leverage: !}[+ soylent_leverage +]{!; reprisal: !}[+ soylent_reprisal +]{!">!}[+ attitude_soylent : attitude +]{!</span></td></tr>!}
-{!<tr><td style="text-align:left;">!}{!<span style="color: #cf6e19;">Families</span>!}{!</td><td style="text-align:left;"><span class="tooltip-text" title="Leverage: !}[+ families_leverage +]{!; reprisal: !}[+ families_reprisal +]{!">!}[+ attitude_families : attitude +]{!</span></td></tr>!}
-{!<tr><td style="text-align:left;">!}{!<span style="color: #cf6e19;">Edges</span>!}{!</td><td style="text-align:left;"><span class="tooltip-text" title="Leverage: !}[+ edges_leverage +]{!; reprisal: !}[+ edges_reprisal +]{!">!}[+ attitude_edges : attitude +]{!</span></td></tr>!}
-{!<tr><td style="text-align:left;">!}{!<span style="color: #cf6e19;">Sharks</span>!}{!</td><td style="text-align:left;"><span class="tooltip-text" title="Leverage: !}[+ sharks_leverage +]{!; reprisal: !}[+ sharks_reprisal +]{!">!}[+ attitude_sharks : attitude +]{!</span></td></tr>!}
+{!<tr><th style="text-align:left; font-weight:normal;">Faction</th><th style="text-align:left;">Stance</th><th style="text-align:right; font-weight:normal;"><span class="tooltip-text" title="詰 committed / 間 total (leverage − reprisal)">詰/間</span></th></tr>!}
+{!<tr><td style="text-align:left;">!}{!<span style="color: #44b88f;">Brazos</span>!}{!</td><td style="text-align:left;"><span class="tooltip-text" title="Leverage: !}[+ brazos_leverage +]{!; reprisal: !}[+ brazos_reprisal +]{!">!}[+ attitude_brazos : attitude +]{!</span></td><td style="text-align:right;"><span class="tooltip-text" title="詰 committed / 間 total">!}[+ brazos_tsuma +]{!/!}[+ brazos_ma +]{!</span></td></tr>!}
+{!<tr><td style="text-align:left;">!}{!<span style="color: #44b88f;">Magrail</span>!}{!</td><td style="text-align:left;"><span class="tooltip-text" title="Leverage: !}[+ magrail_leverage +]{!; reprisal: !}[+ magrail_reprisal +]{!">!}[+ attitude_magrail : attitude +]{!</span></td><td style="text-align:right;"><span class="tooltip-text" title="詰 committed / 間 total">!}[+ magrail_tsuma +]{!/!}[+ magrail_ma +]{!</span></td></tr>!}
+{!<tr><td style="text-align:left;">!}{!<span style="color: #44b88f;">Soylent</span>!}{!</td><td style="text-align:left;"><span class="tooltip-text" title="Leverage: !}[+ soylent_leverage +]{!; reprisal: !}[+ soylent_reprisal +]{!">!}[+ attitude_soylent : attitude +]{!</span></td><td style="text-align:right;"><span class="tooltip-text" title="詰 committed / 間 total">!}[+ soylent_tsuma +]{!/!}[+ soylent_ma +]{!</span></td></tr>!}
+{!<tr><td style="text-align:left;">!}{!<span style="color: #cf6e19;">Families</span>!}{!</td><td style="text-align:left;"><span class="tooltip-text" title="Leverage: !}[+ families_leverage +]{!; reprisal: !}[+ families_reprisal +]{!">!}[+ attitude_families : attitude +]{!</span></td><td style="text-align:right;"><span class="tooltip-text" title="詰 committed / 間 total">!}[+ families_tsuma +]{!/!}[+ families_ma +]{!</span></td></tr>!}
+{!<tr><td style="text-align:left;">!}{!<span style="color: #cf6e19;">Edges</span>!}{!</td><td style="text-align:left;"><span class="tooltip-text" title="Leverage: !}[+ edges_leverage +]{!; reprisal: !}[+ edges_reprisal +]{!">!}[+ attitude_edges : attitude +]{!</span></td><td style="text-align:right;"><span class="tooltip-text" title="詰 committed / 間 total">!}[+ edges_tsuma +]{!/!}[+ edges_ma +]{!</span></td></tr>!}
+{!<tr><td style="text-align:left;">!}{!<span style="color: #cf6e19;">Sharks</span>!}{!</td><td style="text-align:left;"><span class="tooltip-text" title="Leverage: !}[+ sharks_leverage +]{!; reprisal: !}[+ sharks_reprisal +]{!">!}[+ attitude_sharks : attitude +]{!</span></td><td style="text-align:right;"><span class="tooltip-text" title="詰 committed / 間 total">!}[+ sharks_tsuma +]{!/!}[+ sharks_ma +]{!</span></td></tr>!}
 {!</table>!}
 
 = Current seats

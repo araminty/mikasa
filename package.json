@@ -9,6 +9,7 @@
     "make-html": "node -e \"require('./scripts/write-build-stamp.js').embedBuildStamp()\" && dendrynexus make-html --pretty -t default-tabbed-sidebar && node -e \"require('./scripts/write-build-stamp.js').writeStampFile()\"",
     "serve:dev": "node scripts/serve-dev.js",
     "lint:dendry": "node scripts/lint-dendry.js",
+    "expand:ma": "node scripts/expand-ma-shorthand.js",
     "simulate-election": "node scripts/simulate-election.js",
     "simulate-election:v2": "node scripts/simulate-election.js --v2",
     "simulate-prosperity": "node scripts/simulate-prosperity-months.js",

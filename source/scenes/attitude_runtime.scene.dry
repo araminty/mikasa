@@ -41,8 +41,25 @@ function attitudeCode(leverage, reprisal) {
     return code
 }
 
+function syncIgMaTsuma() {
+    for (var i = 0; i < IG_ATTITUDE_IDS.length; i++) {
+        var ig = IG_ATTITUDE_IDS[i]
+        var L = Number(Q[ig + '_leverage'])
+        var R = Number(Q[ig + '_reprisal'])
+        if (isNaN(L)) { L = 0 }
+        if (isNaN(R)) { R = 0 }
+        var ma = L - R
+        if (ma < 0) { ma = 0 }
+        Q[ig + '_ma'] = ma
+        var tsuma = Number(Q[ig + '_tsuma'])
+        if (isNaN(tsuma) || tsuma < 0) { Q[ig + '_tsuma'] = 0 }
+        if (tsuma > ma) { Q[ig + '_tsuma'] = ma }
+    }
+}
+
 function syncIgAttitudes() {
     if (typeof attitude !== 'function') { return }
+    syncIgMaTsuma()
     for (var i = 0; i < IG_ATTITUDE_IDS.length; i++) {
         var ig = IG_ATTITUDE_IDS[i]
         var L = Q[ig + '_leverage']
@@ -52,6 +69,7 @@ function syncIgAttitudes() {
 }
 
 Q.attitude = attitude
+Q.syncIgMaTsuma = syncIgMaTsuma
 Q.syncIgAttitudes = syncIgAttitudes
 
 // MIKASA_ATTITUDE_RUNTIME_END

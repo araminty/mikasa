@@ -1,0 +1,20 @@
+---
+description: Expand _ma / _tsuma author shorthand to 間 / 詰 in prose
+globs: planning/**/*.md,source/scenes/**/*.scene.dry
+alwaysApply: false
+---
+
+# 間 / 詰 shorthand
+
+When editing **planning markdown** or **player-facing scene prose**, you may type:
+
+| Shorthand | Becomes | Use in |
+|-----------|---------|--------|
+| `_ma` | 間 | prose, subtitles, tooltips |
+| `_tsuma` | 詰 | prose, subtitles, tooltips |
+
+**Do not** use `_ma` / `_tsuma` inside `{! !}` JS, quality names (`sharks_ma`), or backticked code (`*_ma`). Those stay ASCII.
+
+After saving, `scripts/expand-ma-shorthand.js` runs via the `afterFileEdit` hook. You can also run `npm run expand:ma`.
+
+When writing for the player, prefer expanded **間** / **詰** in final copy; shorthand is for fast drafting.

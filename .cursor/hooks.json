@@ -30,6 +30,11 @@
       {
         "command": ".cursor/hooks/log-conversation.py"
       }
+    ],
+    "afterFileEdit": [
+      {
+        "command": ".cursor/hooks/expand-ma-shorthand.sh"
+      }
     ]
   }
 }
