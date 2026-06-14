@@ -1,0 +1,52 @@
+title: Election config runtime
+max-visits: 1
+new-page: false
+on-arrival: {!
+
+// MIKASA_ELECTION_CONFIG_RUNTIME_BEGIN
+
+/** 0 = voter blocks (default, production). 1 = pops (WIP branch). */
+var ELECTION_BACKEND_VOTER_BLOCKS = 0
+var ELECTION_BACKEND_POPS = 1
+
+if (Q.election_backend == null || Q.election_backend === '') {
+    Q.election_backend = ELECTION_BACKEND_VOTER_BLOCKS
+}
+
+Q.electionBackendIsPops = function() {
+    return Number(Q.election_backend) === ELECTION_BACKEND_POPS
+}
+
+Q.electionBackendIsVoterBlocks = function() {
+    return Number(Q.election_backend) !== ELECTION_BACKEND_POPS
+}
+
+/** Active election sim state object (shape differs by backend). */
+Q.getElectionState = function() {
+    if (Q.electionBackendIsPops()) { return Q.electionPops || null }
+    return Q.electionV2 || null
+}
+
+/**
+ * Iterable population units for the active backend.
+ * Voter blocks today; individual pops once pop_election_runtime is live.
+ */
+Q.getElectionUnits = function() {
+    if (Q.electionBackendIsPops()) {
+        var pops = Q.electionPops && Q.electionPops.pops
+        return pops ? pops : []
+    }
+    if (Q.electionV2 && Q.electionV2.blocks) { return Q.electionV2.blocks }
+    if (Q.voter_blocks) { return Q.voter_blocks }
+    return []
+}
+
+Q.ELECTION_BACKEND_VOTER_BLOCKS = ELECTION_BACKEND_VOTER_BLOCKS
+Q.ELECTION_BACKEND_POPS = ELECTION_BACKEND_POPS
+
+// MIKASA_ELECTION_CONFIG_RUNTIME_END
+
+election_config_runtime_ready = 1
+
+!}
+go-to: jumpScene

@@ -1,0 +1,25 @@
+title: The Trogwen Files
+priority: 1
+max-visits: 1
+tags: event
+new-page: true
+view-if: ozzy_trial_payoff_pending = 1 and ozzy_trial_payoff_fired = 0 and month = ozzy_trial_payoff_month and year = ozzy_trial_payoff_year
+on-arrival: ozzy_trial_payoff_fired = 1; ozzy_trial_payoff_pending = 0
+
+The investigation into Trogwen has hit paydirt.  The outcome of the Carletzky trial is no longer in question; now the issue is the price of keeping this under wraps.
+
+
+- @ozzy_blackmail: Trogwen comes to an agreement.
+- @ozzy_publicity: Ozzy goes public and builds his brand
+
+@ozzy_blackmail
+title: Trogwen comes to an agreement
+
+We come to an agreement with Trogwen where we forsake the blackmail material in exchange for her turning over a dossier of blackmail material she had on others.
+
+You've gotta spend blackmail to make blackmail?
+
+@ozzy_publicity
+title: Ozzy goes public and builds his brand
+
+Trogwen's loss is Ozzy's gain.  We now have a friendly journalist with a much higher profile.

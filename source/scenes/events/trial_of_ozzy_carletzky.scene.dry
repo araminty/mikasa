@@ -1,0 +1,190 @@
+title: The Trial of Ozzy Carletzky
+priority: 1
+max-visits: 1
+tags: event
+new-page: true
+view-if: month = 1 and year = 2300
+on-arrival: {! if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() } !}
+
+The theatre critic turned citizen journalist Ozzy Carletzky has been charged with defamation for his accusations against Fairmarsh Trogwen, one of the city's most prominent and well connected Otherworld migrants.  Carletzky and Trogwen have been fighting in the courts for years over his demonstration that the cure-all product she is spokeswoman for is not only medically useless but carcinogenic.  As the case slowly winds its way through the courts however, suspicions have been raised that Goop may just be the tip of the iceberg and Trogwen is associated with a real estate firm profiting from ethnic cleansing.  Carletzky has friends among the democratic movement of Mikasa and some of them are suggesting helping him.
+
+- @geopolitical
+- @police_reformed
+- @use_leverage_corps_or_gangs
+- @cant_help_wont_help
+
+@geopolitical
+title: Our offworld contacts might help us
+choose-if: ess_hyacinth_ties = 1 or otherworld_outpost >= 1 or witness_protection_level >= 1
+unavailable-subtitle: If we only had any
+on-arrival: {!
+Q.ozzy_trial_helped = 1
+Q.ozzy_trial_help_path = 1
+Q.ozzy_trial_payoff_pending = 1
+Q.ozzy_trial_payoff_fired = 0
+var m = (Number(Q.month) || 0) + 4
+var y = Number(Q.year) || 0
+while (m > 12) { m -= 12; y += 1 }
+Q.ozzy_trial_payoff_month = m
+Q.ozzy_trial_payoff_year = y
+!}
+
+We quietly ask our contacts at the cycler waystations to pull whatever they can on Trogwen's real estate partners.  Archivists on Hyacinth and elsewhere owe Mikasa favors, and ethnic-cleansing profiteering is the sort of scandal that's hard to cover up completely.
+
+It will take months for documents to surface and be verified, but Carletzky's lawyers are told to stall.
+
+@police_reformed
+title: There is evidence for a special investigation to follow
+choose-if: police_reform >= 2 and police_investigated >= 1
+unavailable-subtitle: But our police lack the expertise
+on-arrival: {!
+Q.ozzy_trial_helped = 1
+Q.ozzy_trial_help_path = 2
+Q.ozzy_trial_payoff_pending = 1
+Q.ozzy_trial_payoff_fired = 0
+var m = (Number(Q.month) || 0) + 4
+var y = Number(Q.year) || 0
+while (m > 12) { m -= 12; y += 1 }
+Q.ozzy_trial_payoff_month = m
+Q.ozzy_trial_payoff_year = y
+!}
+
+Our reformed investigative unit treats Carletzky's court filings as probable cause.  They start tracing shell companies tied to Trogwen's wellness brand and the property syndicate Carletzky keeps naming in whispers.
+
+The work has to stay discrete — the judiciary is still largely corporate property — but a real paper trail is forming.
+
+@use_leverage_corps_or_gangs
+title: Call in a favor with a corp or gang
+choose-if: ozzy_trial_leverage_available = 1
+unavailable-subtitle: We dont have enough マ with anyone
+
+Someone with reach can buy time in the courts, lean on witnesses, or leak what the corporations already know about Trogwen's partners.
+
+- @ozzy_favor_soylent: Community Soylent
+- @ozzy_favor_magrail: Combined Magrail Trust
+- @ozzy_favor_brazos: Brazos Zaibatsu
+- @ozzy_favor_families: Families
+- @ozzy_favor_edges: Edges
+- @ozzy_favor_sharks: Sharks
+
+@ozzy_favor_soylent
+choose-if: soylent_free_ma >= 2
+on-arrival: {!
+Q.ozzy_trial_helped = 1
+Q.ozzy_trial_help_path = 3
+Q.ozzy_trial_leverage_ig = 'soylent'
+Q.soylent_leverage = Math.max(0, (Number(Q.soylent_leverage) || 0) - 1)
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+Q.ozzy_trial_payoff_pending = 1
+Q.ozzy_trial_payoff_fired = 0
+var m = (Number(Q.month) || 0) + 4
+var y = Number(Q.year) || 0
+while (m > 12) { m -= 12; y += 1 }
+Q.ozzy_trial_payoff_month = m
+Q.ozzy_trial_payoff_year = y
+!}
+
+Community Soylent has no love for Trogwen's brand of Otherworld celebrity philanthropy, and even less for a rival property syndicate muscling into Mikasa housing.  They slow-walk the defamation docket and pass us internal compliance files we were never meant to see.
+
+@ozzy_favor_magrail
+choose-if: magrail_free_ma >= 2
+on-arrival: {!
+Q.ozzy_trial_helped = 1
+Q.ozzy_trial_help_path = 3
+Q.ozzy_trial_leverage_ig = 'magrail'
+Q.magrail_leverage = Math.max(0, (Number(Q.magrail_leverage) || 0) - 1)
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+Q.ozzy_trial_payoff_pending = 1
+Q.ozzy_trial_payoff_fired = 0
+var m = (Number(Q.month) || 0) + 4
+var y = Number(Q.year) || 0
+while (m > 12) { m -= 12; y += 1 }
+Q.ozzy_trial_payoff_month = m
+Q.ozzy_trial_payoff_year = y
+!}
+
+Magrail's legal department owes us one.  They find a procedural excuse to freeze the damages hearing and quietly share what their risk analysts already compiled on Trogwen's "wellness properties."
+
+@ozzy_favor_brazos
+choose-if: brazos_free_ma >= 2
+on-arrival: {!
+Q.ozzy_trial_helped = 1
+Q.ozzy_trial_help_path = 3
+Q.ozzy_trial_leverage_ig = 'brazos'
+Q.brazos_leverage = Math.max(0, (Number(Q.brazos_leverage) || 0) - 1)
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+Q.ozzy_trial_payoff_pending = 1
+Q.ozzy_trial_payoff_fired = 0
+var m = (Number(Q.month) || 0) + 4
+var y = Number(Q.year) || 0
+while (m > 12) { m -= 12; y += 1 }
+Q.ozzy_trial_payoff_month = m
+Q.ozzy_trial_payoff_year = y
+!}
+
+Brazos Zaibatsu would rather not see another glamorous Otherworlder buying up distressed blocks through cutouts.  Their fixers stall the trial and slip Carletzky's counsel a folder of land-registry anomalies.
+
+@ozzy_favor_families
+choose-if: families_free_ma >= 2
+on-arrival: {!
+Q.ozzy_trial_helped = 1
+Q.ozzy_trial_help_path = 3
+Q.ozzy_trial_leverage_ig = 'families'
+Q.families_leverage = Math.max(0, (Number(Q.families_leverage) || 0) - 1)
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+Q.ozzy_trial_payoff_pending = 1
+Q.ozzy_trial_payoff_fired = 0
+var m = (Number(Q.month) || 0) + 4
+var y = Number(Q.year) || 0
+while (m > 12) { m -= 12; y += 1 }
+Q.ozzy_trial_payoff_month = m
+Q.ozzy_trial_payoff_year = y
+!}
+
+The Families have a network of influence that stretches throughout the solar system and even into the otherworld.  They start putting the squeeze on various clerks and contractors.  Pretty soon they leak some ironclad evidence to the press.  We suspect the evidence might be fraudulent but sometimes a lie can sell a truth better then the truth can sell itself.
+
+@ozzy_favor_edges
+choose-if: edges_free_ma >= 2
+on-arrival: {!
+Q.ozzy_trial_helped = 1
+Q.ozzy_trial_help_path = 3
+Q.ozzy_trial_leverage_ig = 'edges'
+Q.edges_leverage = Math.max(0, (Number(Q.edges_leverage) || 0) - 1)
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+Q.ozzy_trial_payoff_pending = 1
+Q.ozzy_trial_payoff_fired = 0
+var m = (Number(Q.month) || 0) + 4
+var y = Number(Q.year) || 0
+while (m > 12) { m -= 12; y += 1 }
+Q.ozzy_trial_payoff_month = m
+Q.ozzy_trial_payoff_year = y
+!}
+
+When we reached out to the Bleeding Edges, we hoped that they might find digital secrets that would help us.  The evidence they provide us is far more surprising and disturbing.  The body of a racial extremist group member is delivered anonymously with the still living head of a displaced person attached to it.  The head shows evidence of years of torture.  The body shows evidence of far more recent torture, followed by the head attachment surgery.  This disturbing witness doesn't have long to live but it's plenty of time to generate extremely compelling courtroom testimony.
+
+One of the leaders of the Edges sends us a note congratulating us on securing the evidence and suggests we do this again sometime.
+
+
+@ozzy_favor_sharks
+choose-if: sharks_free_ma >= 2
+on-arrival: {!
+Q.ozzy_trial_helped = 1
+Q.ozzy_trial_help_path = 3
+Q.ozzy_trial_leverage_ig = 'sharks'
+Q.sharks_leverage = Math.max(0, (Number(Q.sharks_leverage) || 0) - 1)
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+Q.ozzy_trial_payoff_pending = 1
+Q.ozzy_trial_payoff_fired = 0
+var m = (Number(Q.month) || 0) + 4
+var y = Number(Q.year) || 0
+while (m > 12) { m -= 12; y += 1 }
+Q.ozzy_trial_payoff_month = m
+Q.ozzy_trial_payoff_year = y
+!}
+
+The Sharks are crude but effective.  They apply pressure where Trogwen's syndicate partners actually live, and suddenly several witnesses become much more cooperative about what they saw in the Otherworld territories.
+
+@cant_help_wont_help
+title: We lack the resources to help
+
+We have to pick our battles, Carletzky will need to fight this on his own.  This trial will take years to respond, maybe by the time it finishes the situation will be different.

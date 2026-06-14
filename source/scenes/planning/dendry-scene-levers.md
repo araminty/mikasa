@@ -156,7 +156,7 @@ Deal outcomes: `cable_break_peace`, `civil_rights_unlock`, `corp_police_city_jur
 
 ### Event / story flags (examples)
 
-One-shot or persistent gates: `dundalk_reform`, `dundalk_stakeholder`, `dundalk_vigil`, `dundalk_nationalist`, `ballroom_refugee_housing`, `aurora_pyramid_housing_event`, `pitts_mines_subsidized`, `orc_marriage_*`, `jovian_refugee_prepare`, `guild_rebel_electronics_event`, advisor toggles `stacy_toggle`, `jacobs_on`, etc.
+One-shot or persistent gates: `dundalk_reform`, `dundalk_stakeholder`, `dundalk_vigil`, `dundalk_nationalist`, `ballroom_refugee_housing`, `aurora_pyramid_housing_event`, `pitts_mines_subsidized`, `orc_marriage_*`, `ess_bride_*`, `prince_s_resident`, `ess_clan_cooperation_unlock`, `ess_payoff_*_TODO`, `jovian_refugee_prepare`, `guild_rebel_electronics_event`, advisor toggles `stacy_toggle`, `jacobs_on`, etc.
 
 ### Budget
 

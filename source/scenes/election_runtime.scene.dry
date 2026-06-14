@@ -4,6 +4,7 @@ new-page: false
 on-arrival: {!
 
 // MIKASA_ELECTION_RUNTIME_BEGIN
+// Voter-block backend (Q.election_backend = 0). Pop backend: pop_election_runtime.scene.dry
 
 (function initMikasaElectionV2() {
 

@@ -1,0 +1,100 @@
+title: Pop election runtime
+max-visits: 1
+new-page: false
+on-arrival: {!
+
+// MIKASA_POP_ELECTION_RUNTIME_BEGIN
+
+/**
+ * Paradox-style pops: many small units with stratum, district, IG ties, and party lean.
+ * Replaces demographic×district VoterBlocks once tabulation lands here.
+ *
+ * Status: scaffold only — set Q.electionPops.ready = 1 when tabulation + Q I/O work.
+ */
+
+var POP_PARTY_KEYS = ['D', 'I', 'C', 'G', 'H']
+var POP_STRATUM_IDS = ['rich', 'first', 'second', 'coop', 'drone', 'alien', 'deeper', 'third_wave']
+var POP_DISTRICT_IDS = [
+    'Docks', 'Aurora', 'Vats', 'Railyard', 'Pitts', 'Limelight', 'Deeps',
+]
+
+/** Default pop size unit (Paradox pops are bundles of households). Tune later. */
+var POP_SIZE_UNIT = 1000
+
+function popZeroPartySupport() {
+    return { D: 0, I: 0, C: 0, G: 0, H: 0 }
+}
+
+function popClonePartySupport(src) {
+    var out = popZeroPartySupport()
+    if (!src) { return out }
+    for (var i = 0; i < POP_PARTY_KEYS.length; i++) {
+        var k = POP_PARTY_KEYS[i]
+        out[k] = Number(src[k]) || 0
+    }
+    return out
+}
+
+/**
+ * @param {string} id
+ * @param {object} config districtId, stratumId, size, partySupport, prosperity, igMembership
+ */
+function Pop(id, config) {
+    config = config || {}
+    this.id = id
+    this.districtId = config.districtId || ''
+    this.stratumId = config.stratumId || ''
+    this.size = Number(config.size) || POP_SIZE_UNIT
+    this.partySupport = popClonePartySupport(config.partySupport)
+    this.prosperity = Number(config.prosperity)
+    if (isNaN(this.prosperity)) { this.prosperity = 6 }
+    this.igMembership = config.igMembership || {}
+    this.turnoutMult = Number(config.turnoutMult)
+    if (isNaN(this.turnoutMult)) { this.turnoutMult = 1 }
+}
+
+function popElectionNotReady() {
+    return !Q.electionPops || Q.electionPops.ready !== 1
+}
+
+function popWarnStub(name) {
+    if (typeof console !== 'undefined' && console.warn) {
+        console.warn('[pop_election_runtime] ' + name + ' is a stub until pop tabulation ships.')
+    }
+}
+
+function popStubUpdateProjections(opts) {
+    popWarnStub('update_projections')
+    return null
+}
+
+function popStubAssignSeatsFromInitialPolling() {
+    popWarnStub('assignSeatsFromInitialPolling')
+    return false
+}
+
+function popStubRunScheduledElections(opts) {
+    popWarnStub('runScheduledElections')
+    return { skipped: true, any: false, districts: [], lines: [] }
+}
+
+Q.electionPops = {
+    ready: 0,
+    pops: [],
+    districts: POP_DISTRICT_IDS.slice(),
+    strata: POP_STRATUM_IDS.slice(),
+    popSizeUnit: POP_SIZE_UNIT,
+    backend: 'pops',
+}
+
+Q.Pop = Pop
+Q.update_projections = popStubUpdateProjections
+Q.assignSeatsFromInitialPolling = popStubAssignSeatsFromInitialPolling
+Q.runScheduledElections = popStubRunScheduledElections
+
+// MIKASA_POP_ELECTION_RUNTIME_END
+
+pop_election_runtime_ready = 1
+
+!}
+go-to: jumpScene

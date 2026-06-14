@@ -1,0 +1,83 @@
+# Prince S / Happily Ever After — flags (init in root @start)
+# Gate: happily_ever_after_event, ess_clan_marriage_unlock (TBD unlock)
+# Prince S: prince_s_resident
+# Bride (mutually exclusive): ess_bride + ess_bride_oligarch | _waystation | _local | _clan
+# Immediate: ess_corp_paranoia (oligarch), ess_hyacinth_ties (waystation)
+# Armed payoffs (*_TODO): ess_payoff_offstation, ess_payoff_hyacinth_economy, ess_payoff_local, ess_payoff_endgame_war
+# Payoff schedule (*_TODO): ess_marriage_payoff_year, ess_marriage_payoff_month, ess_marriage_payoff_fired
+
+title: Happily Ever After
+priority: 1
+max-visits: 1
+tags: event
+new-page: true
+view-if: happily_ever_after_event = 0 and 0 = 1
+on-arrival: happily_ever_after_event = 1; prince_s_resident = 1
+
+The cocktail gossip circuit has a new figure to hound.  A Morrocan Prince Sayyed, who is known worldwide as simply "S" has decided to move to Mikasa.  He is looking to settle down after a heroic career.  He did humanitarian work in disaster zones, lead rebels in warzones and gave a voice to the powerless all over the world.  In the course of his work he has entered into multiple simultaneous political marriages, a rarely used legal right of the Moroccan royalty.  But his father on his deathbed decided to disinherit S; although S was not the heir his father had enough of his insufferable righteousness.  Losing his royal status meant S had to annul all but one of his marriages.  To the shock of the Docks Highside crowd, he has apparently made his choice for love not fortune.  S and his remaining wife have decided to settle down in Mikasa and raise their children while running a foster home for otherworlders.  It's all simply too much, he acts like he's better then everyone.
+
+Oh and his bride... who was she?
+
+- @ess_bride_oligarch: Outside oligarch
+- @ess_bride_waystation: Another waystation
+- @ess_bride_local: Local
+- @ess_bride_clan: Clan of the Mother
+
+@ess_bride_oligarch
+on-arrival: {!
+ess_bride = 1
+ess_bride_oligarch = 1
+ess_corp_paranoia = 1
+ess_payoff_offstation_TODO = 1
+ess_marriage_payoff_year_TODO = Q.year + 1
+ess_marriage_payoff_month_TODO = Q.month
+soylent_reprisal += 1
+magrail_reprisal += 1
+brazos_reprisal += 1
+if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+!}
+
+Apparently S's bride is some corporate executive who has decided to leave all the trappings of wealth behind.  The rumors naturally jump to assuming she was forced out but apparently she is still quite well respected.
+
+The megacorporations assume someone is plotting something and have become more hostile towards the city government and towards each other.
+
+@ess_bride_waystation
+on-arrival: {!
+ess_bride = 1
+ess_bride_waystation = 1
+ess_hyacinth_ties = 1
+ess_payoff_hyacinth_economy_TODO = 1
+ess_marriage_payoff_year_TODO = Q.year + 1
+ess_marriage_payoff_month_TODO = Q.month
+!}
+
+Apparently S's bride is some "archaelogist" from the waystation Hyacinth who has explored the otherworld and is fluent in Ruukish.  Naturally the pair are accused of everything from kidnapping otherworld children to consorting with demons.  The couple adeptly avoids any tabloids looking for a comment but does help open up dialogues between universities and between universes.
+
+@ess_bride_local
+on-arrival: {!
+ess_bride = 1
+ess_bride_local = 1
+ess_labor_sympathy_TODO = 1
+ess_payoff_local_TODO = 1
+ess_marriage_payoff_year_TODO = Q.year + 1
+ess_marriage_payoff_month_TODO = Q.month
+!}
+
+Apparently S's bride is some girl he knew since childhood.  They say she was an orphan who was living in the streets but street rats dont marry princes.  The judgemental tongues assume this bridge is a gold digger, or perhaps even black widow.  The foolish laborers find it a heartwarming tale however.
+
+However among less judgemental crowds, S does serve as a reminder that rich or poor we are all humans.  Well except those of us who are elves or whatever but you know what I mean.
+
+@ess_bride_clan
+choose-if: ess_clan_marriage_unlock = 1
+on-arrival: {!
+ess_bride = 1
+ess_bride_clan = 1
+ess_clan_cooperation_unlock = 1
+ess_payoff_endgame_war_TODO = 1
+ess_marriage_payoff_year_TODO = Q.year + 1
+ess_marriage_payoff_month_TODO = Q.month
+!}
+
+Apparently S's bride is a forematrix from the clans of the mother who he rescued from pirates back in his 20s.  It's absurd, the clans of the mother have nothing to do with outsiders.  Surely she must be hiding a sinister past.
+
+But the more gullible, or perhaps less cynical, are excited that for the first time in a generation there is a channel of communication between the city and the Clans.

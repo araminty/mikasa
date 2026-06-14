@@ -4,7 +4,7 @@ go-to: start_menu if started = 0; to_setup_functions if started = 1
 on-arrival: {!
 
 // MIKASA_BUILD_STAMP
-Q.build_time_label = '2026-06-10 19:27:56 local';
+Q.build_time_label = '2026-06-13 20:46:27 local';
 // /MIKASA_BUILD_STAMP
 
 if (Q.started && !Q.economic_assets_runtime_ready) {
@@ -31,8 +31,20 @@ Build: [+ build_time_label +]
 - @start: Start game
 - @election_simulation: Election simulation
 - @dev_cable_neg: Cable break negotiations (dev)
+- @dev_election_backend_pops: Dev — pop election backend (WIP)
+- @dev_election_backend_blocks: Dev — voter-block backend
 - @credits: Credits
 - @game_over.achievements
+
+@dev_election_backend_pops
+title: Dev — pop election backend (WIP)
+on-arrival: election_backend = 1
+go-to: start_menu_2
+
+@dev_election_backend_blocks
+title: Dev — voter-block backend
+on-arrival: election_backend = 0
+go-to: start_menu_2
 
 @dev_cable_neg
 title: Cable break negotiations (dev)
@@ -96,6 +108,7 @@ Q.ocular_index = 89;
 Q.elections_applied_month = 0;
 Q.elections_applied_year = 0;
 Q.elections_allow_same_month_repeat = 0;
+Q.election_backend = 0;
 Q.use_decimals = 0;
 
 Q.martyrs = [];
@@ -117,6 +130,37 @@ Q.edges_reprisal = 2;
 
 Q.sharks_leverage = 0; // on the warpath
 Q.sharks_reprisal = 0; // busy
+
+Q.happily_ever_after_event = 0;
+Q.prince_s_resident = 0;
+Q.ess_bride = 0;
+Q.ess_bride_oligarch = 0;
+Q.ess_bride_waystation = 0;
+Q.ess_bride_local = 0;
+Q.ess_bride_clan = 0;
+Q.ess_clan_marriage_unlock = 0;
+Q.ess_clan_cooperation_unlock = 0;
+Q.ess_hyacinth_ties = 0;
+Q.ess_corp_paranoia = 0;
+Q.ess_labor_sympathy_TODO = 0;
+Q.ess_payoff_offstation_TODO = 0;
+Q.ess_payoff_hyacinth_economy_TODO = 0;
+Q.ess_payoff_local_TODO = 0;
+Q.ess_payoff_endgame_war_TODO = 0;
+Q.ess_marriage_payoff_year_TODO = 0;
+Q.ess_marriage_payoff_month_TODO = 0;
+Q.ess_marriage_payoff_fired_TODO = 0;
+
+Q.ozzy_trial_helped = 0;
+Q.ozzy_trial_help_path = 0;
+Q.ozzy_trial_leverage_ig = '';
+Q.ozzy_trial_payoff_pending = 0;
+Q.ozzy_trial_payoff_month = 0;
+Q.ozzy_trial_payoff_year = 0;
+Q.ozzy_trial_payoff_fired = 0;
+Q.ozzy_trial_leverage_available = 0;
+Q.ozzy_trial_reform = 0;
+Q.witness_protection_level = 0;
 
 Q.election_runtime_ready = 0;
 Q.electorate_runtime_ready = 0;
