@@ -1,0 +1,107 @@
+title: Coalitions
+new-page: true
+is-card: true
+is-pinned-card: true
+card-image: img/chamber.jpg
+on-arrival: {!
+if (typeof Q.syncCoalitionOptions === 'function') { Q.syncCoalitionOptions() }
+!}
+on-display: {!
+if (typeof Q.renderCoalitionDistrictList === 'function') { Q.renderCoalitionDistrictList() }
+!}
+
+= District coalitions
+
+Megacorps and syndicates rarely lose every seat, but they often lose an **outright majority**. When that happens you can **tolerate** their leadership — prop them up while extracting leverage — or use your **マ** to **control** the district.
+
+[? if pp_any_coalition_possible = 0: No district council currently needs a coalition deal. ?]
+
+{!<div class="coalition-district-list"></div>!}
+
+- @docks_toleration: D1 Docks — tolerate [+ pp_toleration_faction_Docks +]
+- @docks_control: D1 Docks — control ([+ pp_control_cost_Docks +] マ)
+- @aurora_control: D2 Aurora — control ([+ pp_control_cost_Aurora +] マ)
+- @vats_toleration: D3 Vats — tolerate [+ pp_toleration_faction_Vats +]
+- @vats_control: D3 Vats — control ([+ pp_control_cost_Vats +] マ)
+- @railyard_toleration: D4 Railyard — tolerate [+ pp_toleration_faction_Railyard +]
+- @railyard_control: D4 Railyard — control ([+ pp_control_cost_Railyard +] マ)
+- @pitts_toleration: D5 Pitts — tolerate [+ pp_toleration_faction_Pitts +]
+- @pitts_control: D5 Pitts — control ([+ pp_control_cost_Pitts +] マ)
+- @limelight_toleration: D6 Limelight — tolerate [+ pp_toleration_faction_Limelight +]
+- @limelight_control: D6 Limelight — control ([+ pp_control_cost_Limelight +] マ)
+- @deeps_control: D7 Deeps — control ([+ pp_control_cost_Deeps +] マ)
+- @return
+
+@docks_toleration
+view-if: pp_toleration_possible_Docks = 1
+on-arrival: {! if (typeof Q.ppApplyToleration === 'function') { Q.ppApplyToleration('Docks') } !}
+go-to: coalitions
+
+@docks_control
+view-if: pp_toleration_possible_Docks = 1
+choose-if: pp_control_affordable_Docks = 1
+unavailable-subtitle: Not enough マ
+on-arrival: {! if (typeof Q.ppApplyControl === 'function') { Q.ppApplyControl('Docks') } !}
+go-to: coalitions
+
+@aurora_control
+view-if: pp_control_possible_Aurora = 1
+choose-if: pp_control_affordable_Aurora = 1
+unavailable-subtitle: Not enough マ
+on-arrival: {! if (typeof Q.ppApplyControl === 'function') { Q.ppApplyControl('Aurora') } !}
+go-to: coalitions
+
+@vats_toleration
+view-if: pp_toleration_possible_Vats = 1
+on-arrival: {! if (typeof Q.ppApplyToleration === 'function') { Q.ppApplyToleration('Vats') } !}
+go-to: coalitions
+
+@vats_control
+view-if: pp_toleration_possible_Vats = 1
+choose-if: pp_control_affordable_Vats = 1
+unavailable-subtitle: Not enough マ
+on-arrival: {! if (typeof Q.ppApplyControl === 'function') { Q.ppApplyControl('Vats') } !}
+go-to: coalitions
+
+@railyard_toleration
+view-if: pp_toleration_possible_Railyard = 1
+on-arrival: {! if (typeof Q.ppApplyToleration === 'function') { Q.ppApplyToleration('Railyard') } !}
+go-to: coalitions
+
+@railyard_control
+view-if: pp_toleration_possible_Railyard = 1
+choose-if: pp_control_affordable_Railyard = 1
+unavailable-subtitle: Not enough マ
+on-arrival: {! if (typeof Q.ppApplyControl === 'function') { Q.ppApplyControl('Railyard') } !}
+go-to: coalitions
+
+@pitts_toleration
+view-if: pp_toleration_possible_Pitts = 1
+on-arrival: {! if (typeof Q.ppApplyToleration === 'function') { Q.ppApplyToleration('Pitts') } !}
+go-to: coalitions
+
+@pitts_control
+view-if: pp_toleration_possible_Pitts = 1
+choose-if: pp_control_affordable_Pitts = 1
+unavailable-subtitle: Not enough マ
+on-arrival: {! if (typeof Q.ppApplyControl === 'function') { Q.ppApplyControl('Pitts') } !}
+go-to: coalitions
+
+@limelight_toleration
+view-if: pp_toleration_possible_Limelight = 1
+on-arrival: {! if (typeof Q.ppApplyToleration === 'function') { Q.ppApplyToleration('Limelight') } !}
+go-to: coalitions
+
+@limelight_control
+view-if: pp_toleration_possible_Limelight = 1
+choose-if: pp_control_affordable_Limelight = 1
+unavailable-subtitle: Not enough マ
+on-arrival: {! if (typeof Q.ppApplyControl === 'function') { Q.ppApplyControl('Limelight') } !}
+go-to: coalitions
+
+@deeps_control
+view-if: pp_control_possible_Deeps = 1
+choose-if: pp_control_affordable_Deeps = 1
+unavailable-subtitle: Not enough マ
+on-arrival: {! if (typeof Q.ppApplyControl === 'function') { Q.ppApplyControl('Deeps') } !}
+go-to: coalitions

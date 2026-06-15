@@ -118,6 +118,7 @@ Q.electorateModifierCatalog = [
     new ElectorateModifier('pitts_gang_jun2300', 'district', 'Pitts', 'G', 0.3),
     new ElectorateModifier('refugee_pressure_hate', 'global', '', 'H', 0.1),
     new ElectorateModifier('dundalk_rally_reform', 'dundalk_reform', 'global', '', 'D', 1),
+    new ElectorateModifier('ozzy_trial_reform_dem', 'ozzy_trial_reform', 'global', '', 'D', 0.8),
     new ElectorateModifier('dundalk_stake_rally_corp', 'dundalk_stakeholder', 'global', '', 'C', -2),
     new ElectorateModifier('dundalk_stake_rally_dems', 'dundalk_stakeholder', 'global', '', 'D', 1),
     new ElectorateModifier('dundalk_vigil_rally_gang', 'dundalk_vigil', 'global', '', 'G', -2),

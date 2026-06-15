@@ -54,6 +54,16 @@ function syncIgMaTsuma() {
         var tsuma = Number(Q[ig + '_tsuma'])
         if (isNaN(tsuma) || tsuma < 0) { Q[ig + '_tsuma'] = 0 }
         if (tsuma > ma) { Q[ig + '_tsuma'] = ma }
+        var freeMa = ma - Q[ig + '_tsuma']
+        if (freeMa < 0) { freeMa = 0 }
+        Q[ig + '_free_ma'] = freeMa
+    }
+    Q.ozzy_trial_leverage_available = 0
+    for (var j = 0; j < IG_ATTITUDE_IDS.length; j++) {
+        if ((Number(Q[IG_ATTITUDE_IDS[j] + '_free_ma']) || 0) >= 2) {
+            Q.ozzy_trial_leverage_available = 1
+            break
+        }
     }
 }
 

@@ -53,6 +53,11 @@ var CRIME_PARAMILITARY_API = [
     'updateStacyParamilitaryReport',
     'renderStacyParamilitaryReport',
 ]
+var POLITICAL_POWER_API = [
+    'syncCoalitionOptions',
+    'ppApplyToleration',
+    'ppApplyControl',
+]
 
 function setupApiMissing(names) {
     for (var i = 0; i < names.length; i++) {
@@ -67,6 +72,7 @@ Q.setup_need_economic = 0
 Q.setup_need_attitude = 0
 Q.setup_need_organize = 0
 Q.setup_need_crime_paramilitary = 0
+Q.setup_need_political_power = 0
 
 if (setupApiMissing(ELECTION_API) || !Q.electionV2 || !Q.electionV2.blocks) {
     Q.setup_need_election = 1
@@ -91,6 +97,10 @@ if (setupApiMissing(CRIME_PARAMILITARY_API)) {
     Q.setup_need_crime_paramilitary = 1
     Q.crime_paramilitary_runtime_ready = 0
 }
+if (setupApiMissing(POLITICAL_POWER_API)) {
+    Q.setup_need_political_power = 1
+    Q.political_power_runtime_ready = 0
+}
 
 Q.setup_complete = (
     Q.setup_need_election === 0
@@ -99,6 +109,7 @@ Q.setup_complete = (
     && Q.setup_need_attitude === 0
     && Q.setup_need_organize === 0
     && Q.setup_need_crime_paramilitary === 0
+    && Q.setup_need_political_power === 0
 ) ? 1 : 0
 
 Q.setup_boot_jump = 0
@@ -122,4 +133,4 @@ if (Q.setup_complete) {
 }
 
 !}
-go-to: jumpScene if setup_boot_jump = 1; election_runtime if setup_need_election = 1; electorate_runtime if setup_need_electorate = 1; economic_assets_runtime if setup_need_economic = 1; attitude_runtime if setup_need_attitude = 1; organize_phase_tick if setup_need_organize = 1; crime_paramilitary_runtime if setup_need_crime_paramilitary = 1; jumpScene
+go-to: jumpScene if setup_boot_jump = 1; election_runtime if setup_need_election = 1; electorate_runtime if setup_need_electorate = 1; economic_assets_runtime if setup_need_economic = 1; attitude_runtime if setup_need_attitude = 1; political_power_runtime if setup_need_political_power = 1; organize_phase_tick if setup_need_organize = 1; crime_paramilitary_runtime if setup_need_crime_paramilitary = 1; jumpScene

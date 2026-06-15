@@ -1,0 +1,285 @@
+title: Political power runtime
+max-visits: 1
+new-page: false
+on-arrival: {!
+
+// MIKASA_POLITICAL_POWER_RUNTIME_BEGIN
+
+var PP_MAJORITY = 8
+var PP_DISTRICT_IDS = ['Docks', 'Aurora', 'Vats', 'Railyard', 'Pitts', 'Limelight', 'Deeps']
+var PP_HOME_PARTY = {
+    Docks: 'C',
+    Aurora: 'D',
+    Vats: 'C',
+    Railyard: 'C',
+    Pitts: 'G',
+    Limelight: 'C',
+    Deeps: 'D',
+}
+var PP_HOME_IG = {
+    Docks: 'magrail',
+    Aurora: 'families',
+    Vats: 'soylent',
+    Railyard: 'magrail',
+    Pitts: 'families',
+    Limelight: 'brazos',
+    Deeps: 'sharks',
+}
+var PP_IG_LABEL = {
+    soylent: 'Community Soylent',
+    magrail: 'Combined Magrail Trust',
+    brazos: 'Brazos Zaibatsu',
+    families: 'Families',
+    edges: 'Edges',
+    sharks: 'Sharks',
+}
+
+function ppDistrictSeats(did) {
+    return {
+        C: Number(Q[did + '_C']) || 0,
+        D: Number(Q[did + '_D']) || 0,
+        G: Number(Q[did + '_G']) || 0,
+        I: Number(Q[did + '_I']) || 0,
+        H: Number(Q[did + '_H']) || 0,
+    }
+}
+
+function ppLeadSeats(homeParty, seats) {
+    if (homeParty === 'C') { return seats.C }
+    if (homeParty === 'G') { return seats.G }
+    return seats.D
+}
+
+function ppTolerationPossible(homeParty, seats) {
+    if (homeParty === 'D') { return false }
+    var lead = ppLeadSeats(homeParty, seats)
+    var dem = seats.D
+    if (lead >= PP_MAJORITY) { return false }
+    return (lead + dem) >= PP_MAJORITY
+}
+
+function ppControlPossible(seats) {
+    if (seats.D >= PP_MAJORITY) { return false }
+    if (seats.C >= PP_MAJORITY) { return false }
+    if (seats.G >= PP_MAJORITY) { return false }
+    return true
+}
+
+function ppControlCost(seats) {
+    var dem = seats.D
+    if (dem >= PP_MAJORITY) { return 0 }
+    return Math.max(2, PP_MAJORITY - dem)
+}
+
+function ppControlPayIg(did, homeParty, seats) {
+    if (homeParty === 'C' || homeParty === 'G') {
+        return PP_HOME_IG[did] || 'magrail'
+    }
+    if ((seats.G || 0) >= (seats.C || 0)) {
+        return PP_HOME_IG[did] || 'families'
+    }
+    if ((seats.C || 0) >= 6) { return 'magrail' }
+    if (did === 'Vats') { return 'soylent' }
+    if (did === 'Limelight') { return 'brazos' }
+    return PP_HOME_IG[did] || 'magrail'
+}
+
+function ppIgFreeMa(ig) {
+    if (!ig) { return 0 }
+    return Number(Q[ig + '_free_ma']) || 0
+}
+
+function ppTolerationFactionLabel(did, homeParty) {
+    if (homeParty === 'D') { return '' }
+    var ig = PP_HOME_IG[did] || 'magrail'
+    return PP_IG_LABEL[ig] || ig
+}
+
+function ppCorpControllerLabel(did) {
+    return PP_IG_LABEL[PP_HOME_IG[did]] || 'Corporations'
+}
+
+function ppSyndicateControllerLabel(did) {
+    return PP_IG_LABEL[PP_HOME_IG[did]] || 'Syndicates'
+}
+
+function ppSupportLabel(name, seats) {
+    if (!seats) { return name }
+    return name + ' (' + seats + ')'
+}
+
+function ppInferDistrictGovernment(did, seats, governance) {
+    var homeParty = PP_HOME_PARTY[did] || 'C'
+    var gov = Number(governance) || 0
+    var controller = ''
+    var support = []
+
+    if (gov === 1) {
+        if (homeParty === 'G') {
+            controller = ppSyndicateControllerLabel(did)
+        } else {
+            controller = ppCorpControllerLabel(did)
+        }
+        if (seats.D > 0) { support.push(ppSupportLabel('Democrats', seats.D)) }
+        return { controller: controller, support: support }
+    }
+
+    if (gov === 2) {
+        controller = 'Democrats'
+        var payIg = Q['pp_control_pay_ig_' + did] || ppControlPayIg(did, homeParty, seats)
+        if (payIg) {
+            support.push(PP_IG_LABEL[payIg] || payIg)
+        }
+        return { controller: controller, support: support }
+    }
+
+    if (seats.C >= PP_MAJORITY) {
+        return { controller: ppCorpControllerLabel(did), support: [] }
+    }
+
+    if (seats.G >= PP_MAJORITY) {
+        return { controller: ppSyndicateControllerLabel(did), support: [] }
+    }
+
+    if (seats.D >= PP_MAJORITY) {
+        return { controller: 'Democrats', support: [] }
+    }
+
+    return {
+        controller: 'No governing majority',
+        support: [],
+        seatsNote: 'C:' + seats.C + ' D:' + seats.D + ' G:' + seats.G,
+    }
+}
+
+function ppDistrictSummaryHtml(did, shortLabel) {
+    var seats = ppDistrictSeats(did)
+    var governance = Q['pp_governance_' + did]
+    var info = ppInferDistrictGovernment(did, seats, governance)
+    var line = shortLabel + ' — Controlled by ' + info.controller
+    if (info.support.length > 0) {
+        line += '; supported by ' + info.support.join(', ')
+    }
+    if (info.seatsNote) {
+        line += ' (' + info.seatsNote + ')'
+    }
+    return line
+}
+
+var PP_DISTRICT_SHORT = {
+    Docks: 'D1 Docks',
+    Aurora: 'D2 Aurora',
+    Vats: 'D3 Vats',
+    Railyard: 'D4 Railyard',
+    Pitts: 'D5 Pitts',
+    Limelight: 'D6 Limelight',
+    Deeps: 'D7 Deeps',
+}
+
+function ppSyncDistrict(did) {
+    var homeParty = PP_HOME_PARTY[did] || 'C'
+    var seats = ppDistrictSeats(did)
+    var toleration = ppTolerationPossible(homeParty, seats) ? 1 : 0
+    var control = ppControlPossible(seats) ? 1 : 0
+    var cost = ppControlCost(seats)
+    var payIg = ppControlPayIg(did, homeParty, seats)
+    var affordable = (control === 1 && cost > 0 && ppIgFreeMa(payIg) >= cost) ? 1 : 0
+    var active = (toleration === 1 || control === 1) ? 1 : 0
+    Q['pp_toleration_possible_' + did] = toleration
+    Q['pp_control_possible_' + did] = control
+    Q['pp_district_active_' + did] = active
+    Q['pp_toleration_faction_' + did] = ppTolerationFactionLabel(did, homeParty)
+    Q['pp_control_cost_' + did] = cost
+    Q['pp_control_pay_ig_' + did] = payIg
+    Q['pp_control_affordable_' + did] = affordable
+    if (Q['pp_governance_' + did] == null) { Q['pp_governance_' + did] = 0 }
+    if (active === 1) { Q.pp_any_coalition_possible = 1 }
+}
+
+function ppBuildDistrictListHtml() {
+    var lines = []
+    for (var i = 0; i < PP_DISTRICT_IDS.length; i++) {
+        var did = PP_DISTRICT_IDS[i]
+        lines.push(ppDistrictSummaryHtml(did, PP_DISTRICT_SHORT[did] || did))
+    }
+    if (lines.length === 0) { return '' }
+    return '<div class="coalition-districts">' + lines.join('<br>') + '</div>'
+}
+
+function findCoalitionDistrictListRoot() {
+    if (typeof document === 'undefined') { return null }
+    return document.querySelector('.coalition-district-list')
+}
+
+function renderCoalitionDistrictList() {
+    if (typeof document === 'undefined') { return }
+    var html = ppBuildDistrictListHtml()
+    var attempts = 0
+    var maxAttempts = 12
+
+    function paint() {
+        var root = findCoalitionDistrictListRoot()
+        if (!root) { return false }
+        root.innerHTML = html
+        return true
+    }
+
+    function tryPaint() {
+        if (paint()) { return }
+        attempts += 1
+        if (attempts < maxAttempts) {
+            setTimeout(tryPaint, 0)
+        }
+    }
+    tryPaint()
+}
+
+Q.syncCoalitionOptions = function() {
+    if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+    Q.pp_any_coalition_possible = 0
+    for (var i = 0; i < PP_DISTRICT_IDS.length; i++) {
+        ppSyncDistrict(PP_DISTRICT_IDS[i])
+    }
+}
+
+Q.renderCoalitionDistrictList = renderCoalitionDistrictList
+
+Q.ppApplyToleration = function(did) {
+    var homeParty = PP_HOME_PARTY[did] || 'C'
+    var payIg = PP_HOME_IG[did] || 'magrail'
+    Q['pp_governance_' + did] = 1
+    Q[payIg + '_tsuma'] = (Number(Q[payIg + '_tsuma']) || 0) + 1
+    if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+    if (typeof Q.syncCoalitionOptions === 'function') { Q.syncCoalitionOptions() }
+}
+
+Q.ppApplyControl = function(did) {
+    var seats = ppDistrictSeats(did)
+    var homeParty = PP_HOME_PARTY[did] || 'C'
+    var cost = ppControlCost(seats)
+    var payIg = ppControlPayIg(did, homeParty, seats)
+    if (cost <= 0 || ppIgFreeMa(payIg) < cost) { return false }
+    Q['pp_governance_' + did] = 2
+    Q[payIg + '_tsuma'] = (Number(Q[payIg + '_tsuma']) || 0) + cost
+    if (typeof Q.syncIgAttitudes === 'function') { Q.syncIgAttitudes() }
+    if (typeof Q.syncCoalitionOptions === 'function') { Q.syncCoalitionOptions() }
+    return true
+}
+
+Q.ppDistrictLabel = function(did) {
+    if (typeof Q.districtDisplay === 'object' && Q.districtDisplay[did]) {
+        return Q.districtDisplay[did]
+    }
+    return did
+}
+
+Q.ppIgLabel = function(ig) {
+    return PP_IG_LABEL[ig] || ig
+}
+
+// MIKASA_POLITICAL_POWER_RUNTIME_END
+
+political_power_runtime_ready = 1
+
+!}
+go-to: jumpScene
