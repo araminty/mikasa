@@ -1,0 +1,11 @@
+{
+    "window.autoDetectColorScheme": true,
+    "editor.wordWrap": "on",
+    "workbench.agentsWindowButton.enabled": false
+
+    "[plaintext]": {
+  "editor.quickSuggestions": false,
+  "editor.suggestOnTriggerCharacters": false,
+  "editor.wordBasedSuggestions": "off"
+}
+}
