@@ -1,0 +1,315 @@
+<div id="district-buttons" style="display: flex; gap: 0.35rem; margin-bottom: 0.5rem; width: 480px; font-family: sans-serif;"></div>
+<div id="asteroid-map-container" style="width: 480px; height: 400px;"></div>
+<p id="district-click-label" style="font-family: sans-serif; margin: 0.5rem 0;">
+  Click a district or a number above to select.
+</p>
+<style>
+  #district-buttons button {
+    flex: 1;
+    padding: 0.35rem 0;
+    font-size: 0.95rem;
+    cursor: pointer;
+    border: 1px solid #446688;
+    background: #1a2a3a;
+    color: #c8dce8;
+    border-radius: 4px;
+  }
+  #district-buttons button:hover {
+    background: #243848;
+  }
+  #district-buttons button.is-selected {
+    background: #ffdd22;
+    color: #1a1a00;
+    border-color: #ccb000;
+    font-weight: bold;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="mapping_landscape_data.js"></script>
+<script>
+const DISTRICT_COLORS = [
+  0x142d54,
+  0x1e6b8a,
+  0x2d4a9a,
+  0x176b7a,
+  0x4a5088,
+  0x3a78b0,
+  0x1a4480,
+];
+const DISTRICT_HOVER_COLOR = 0x92d0ff;
+const DISTRICT_SELECTED_COLOR = 0xffdd22;
+
+const DRAG_ROTATE_SPEED = 0.004;
+const CLICK_DRAG_THRESHOLD_PX = 4;
+const VIEW_YAW_MAX = 1.45;
+const VIEW_PITCH_MAX = 1.35;
+
+const _viewYawAxis = new THREE.Vector3(0, 1, 0);
+const _viewScratch = new THREE.Vector3();
+const _viewQuat = new THREE.Quaternion();
+
+function geometryFromPositions(positions) {
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geometry.computeBoundingSphere();
+  return geometry;
+}
+
+function createTubeMaterial() {
+  return new THREE.MeshBasicMaterial({
+    color: 0x4a7a9a,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.5,
+    depthWrite: false,
+  });
+}
+
+const container = document.getElementById('asteroid-map-container');
+const clickLabel = document.getElementById('district-click-label');
+const districtButtonsEl = document.getElementById('district-buttons');
+const width = container.clientWidth;
+const height = container.clientHeight;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x000000);
+
+const camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 500);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(width, height);
+container.appendChild(renderer.domElement);
+
+const mapGroup = new THREE.Group();
+mapGroup.rotation.x = -0.42;
+scene.add(mapGroup);
+
+const mapData = MIKASA_LANDSCAPE_MAP_DATA;
+
+const landscapeMaterial = new THREE.LineBasicMaterial({
+  color: 0x2a6b38,
+  transparent: true,
+  opacity: 0.28,
+  depthWrite: false,
+});
+const landscapeMesh = new THREE.LineSegments(
+  geometryFromPositions(mapData.landscape.positions),
+  landscapeMaterial
+);
+landscapeMesh.renderOrder = 0;
+mapGroup.add(landscapeMesh);
+
+const districtMeshes = [];
+
+for (let d = 0; d < mapData.districts.length; d++) {
+  const record = mapData.districts[d];
+  const geometry = geometryFromPositions(record.positions);
+  const material = new THREE.MeshBasicMaterial({
+    color: DISTRICT_COLORS[d],
+    wireframe: true,
+  });
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.renderOrder = 1;
+  mesh.position.set(record.position[0], record.position[1], record.position[2]);
+  mesh.userData.baseColor = DISTRICT_COLORS[d];
+  mesh.userData.districtIndex = record.index;
+  mesh.name = record.name;
+  mapGroup.add(mesh);
+  districtMeshes.push(mesh);
+}
+
+const tubeMaterial = createTubeMaterial();
+
+for (let i = 0; i < mapData.straightTubes.length; i++) {
+  const tube = new THREE.Mesh(
+    geometryFromPositions(mapData.straightTubes[i].positions),
+    tubeMaterial
+  );
+  tube.renderOrder = 0.5;
+  mapGroup.add(tube);
+}
+
+const kinkedTube = new THREE.Mesh(
+  geometryFromPositions(mapData.kinkedTube.positions),
+  tubeMaterial
+);
+kinkedTube.renderOrder = 0.5;
+mapGroup.add(kinkedTube);
+
+const districtButtons = [];
+for (let i = 0; i < mapData.districts.length; i++) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.textContent = String(i + 1);
+  button.dataset.districtIndex = String(i);
+  button.addEventListener('click', () => selectDistrict(i));
+  districtButtonsEl.appendChild(button);
+  districtButtons.push(button);
+}
+
+const cameraDistance = 28;
+let viewYaw = 0.15;
+let viewPitch = 0.08;
+const baseViewDir = new THREE.Vector3(0.35, -0.55, 1).normalize();
+
+function updateCameraView() {
+  _viewScratch.copy(baseViewDir);
+  _viewQuat.setFromAxisAngle(new THREE.Vector3(1, 0, 0), viewPitch);
+  _viewScratch.applyQuaternion(_viewQuat);
+  _viewQuat.setFromAxisAngle(_viewYawAxis, viewYaw);
+  _viewScratch.applyQuaternion(_viewQuat).normalize();
+  camera.position.copy(_viewScratch.multiplyScalar(cameraDistance));
+  camera.lookAt(0, 0, -1.5);
+}
+
+updateCameraView();
+
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+let hoveredDistrict = null;
+let selectedDistrictIndex = null;
+let pointerOverCanvas = false;
+let isDragging = false;
+let dragPointerId = null;
+let lastDragX = 0;
+let lastDragY = 0;
+let dragDistancePx = 0;
+
+function updateMouseFromEvent(event) {
+  const rect = renderer.domElement.getBoundingClientRect();
+  mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+}
+
+function pickDistrict() {
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(districtMeshes, false);
+  return intersects.length > 0 ? intersects[0].object : null;
+}
+
+function setDistrictColor(mesh, hex) {
+  mesh.material.color.setHex(hex);
+}
+
+function updateDistrictButtonStates() {
+  for (let i = 0; i < districtButtons.length; i++) {
+    districtButtons[i].classList.toggle('is-selected', i === selectedDistrictIndex);
+  }
+}
+
+function restoreDistrictColor(mesh) {
+  if (mesh.userData.districtIndex === selectedDistrictIndex) {
+    setDistrictColor(mesh, DISTRICT_SELECTED_COLOR);
+  } else {
+    setDistrictColor(mesh, mesh.userData.baseColor);
+  }
+}
+
+function selectDistrict(index) {
+  if (index < 0 || index >= districtMeshes.length) return;
+  selectedDistrictIndex = index;
+  for (let i = 0; i < districtMeshes.length; i++) {
+    if (i === index) {
+      setDistrictColor(districtMeshes[i], DISTRICT_SELECTED_COLOR);
+    } else {
+      setDistrictColor(districtMeshes[i], districtMeshes[i].userData.baseColor);
+    }
+  }
+  hoveredDistrict = null;
+  updateDistrictButtonStates();
+  clickLabel.textContent =
+    'Selected: ' + districtMeshes[index].name + ' (#' + (index + 1) + ')';
+}
+
+function clearHover() {
+  if (!hoveredDistrict) return;
+  restoreDistrictColor(hoveredDistrict);
+  hoveredDistrict = null;
+  if (!isDragging) renderer.domElement.style.cursor = 'default';
+}
+
+function updateHover() {
+  if (!pointerOverCanvas || isDragging) return;
+  const hit = pickDistrict();
+  if (hit === hoveredDistrict) return;
+  clearHover();
+  if (hit) {
+    hoveredDistrict = hit;
+    if (hit.userData.districtIndex !== selectedDistrictIndex) {
+      setDistrictColor(hit, DISTRICT_HOVER_COLOR);
+    }
+    renderer.domElement.style.cursor = 'pointer';
+  }
+}
+
+function handleDistrictSelection(mesh) {
+  selectDistrict(mesh.userData.districtIndex);
+}
+
+function rotateFromDragDelta(dx, dy) {
+  viewYaw = Math.max(-VIEW_YAW_MAX, Math.min(VIEW_YAW_MAX, viewYaw - dx * DRAG_ROTATE_SPEED));
+  viewPitch = Math.max(-VIEW_PITCH_MAX, Math.min(VIEW_PITCH_MAX, viewPitch - dy * DRAG_ROTATE_SPEED));
+  updateCameraView();
+}
+
+renderer.domElement.addEventListener('pointerdown', (event) => {
+  if (event.button !== 0) return;
+  isDragging = true;
+  dragPointerId = event.pointerId;
+  lastDragX = event.clientX;
+  lastDragY = event.clientY;
+  dragDistancePx = 0;
+  clearHover();
+  renderer.domElement.setPointerCapture(event.pointerId);
+  renderer.domElement.style.cursor = 'grabbing';
+});
+
+renderer.domElement.addEventListener('pointermove', (event) => {
+  updateMouseFromEvent(event);
+  if (isDragging && event.pointerId === dragPointerId) {
+    const dx = event.clientX - lastDragX;
+    const dy = event.clientY - lastDragY;
+    dragDistancePx += Math.abs(dx) + Math.abs(dy);
+    lastDragX = event.clientX;
+    lastDragY = event.clientY;
+    rotateFromDragDelta(dx, dy);
+    return;
+  }
+  updateHover();
+});
+
+function endDrag(event) {
+  if (!isDragging || event.pointerId !== dragPointerId) return;
+  const wasClick = dragDistancePx < CLICK_DRAG_THRESHOLD_PX;
+  isDragging = false;
+  dragPointerId = null;
+  if (renderer.domElement.hasPointerCapture(event.pointerId)) {
+    renderer.domElement.releasePointerCapture(event.pointerId);
+  }
+  if (wasClick) {
+    updateMouseFromEvent(event);
+    const hit = pickDistrict();
+    if (hit) handleDistrictSelection(hit);
+  }
+  renderer.domElement.style.cursor = pointerOverCanvas ? 'grab' : 'default';
+  updateHover();
+}
+
+renderer.domElement.addEventListener('pointerup', endDrag);
+renderer.domElement.addEventListener('pointercancel', endDrag);
+renderer.domElement.addEventListener('pointerenter', () => {
+  pointerOverCanvas = true;
+  if (!isDragging) renderer.domElement.style.cursor = 'grab';
+});
+renderer.domElement.addEventListener('pointerleave', () => {
+  pointerOverCanvas = false;
+  clearHover();
+  if (!isDragging) renderer.domElement.style.cursor = 'default';
+});
+
+function animate() {
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+}
+
+animate();
+</script>

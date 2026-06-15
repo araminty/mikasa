@@ -1,0 +1,642 @@
+<div id="asteroid-map-container" style="width: 400px; height: 400px;"></div>
+<p id="district-click-label" style="font-family: sans-serif; margin: 0.5rem 0;">
+  Drag to rotate. Click a blue district to select.
+</p>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="mapping_shape_data.js"></script>
+<script>
+const DISTRICT_COLORS = [
+  0x142d54, // deep navy
+  0x1e6b8a, // teal-blue
+  0x2d4a9a, // royal
+  0x176b7a, // dark cyan
+  0x4a5088, // blue-violet
+  0x3a78b0, // steel sky
+  0x1a4480, // midnight blue
+];
+const DISTRICT_HOVER_COLOR = 0x92d0ff;
+
+const ASTEROID_GEOM_RADIUS = 18;
+const HULL_CLIP_TOLERANCE = ASTEROID_GEOM_RADIUS * 0.01;
+const ASTEROID_DETAIL = 3;
+const ASTEROID_SHAPE_SEED = 0x4d494b4153;
+const CULL_RADIUS_FACTOR = 0.42;
+const DRAG_ROTATE_SPEED = 0.004;
+const CLICK_DRAG_THRESHOLD_PX = 4;
+const VIEW_YAW_MAX = 2.36;
+const VIEW_PITCH_MAX = 2.26;
+const CLUSTER_DIRECTION = new THREE.Vector3(0.85, 0.35, 0.55).normalize();
+const _viewYawAxis = new THREE.Vector3(0, 1, 0);
+const _viewScratch = new THREE.Vector3();
+const _viewQuat = new THREE.Quaternion();
+
+function mulberry32(seed) {
+  return function () {
+    seed |= 0;
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function buildShapeNoise(vertexCount, seed) {
+  const rng = mulberry32(seed);
+  const noise = new Array(vertexCount);
+  for (let i = 0; i < vertexCount; i++) {
+    noise[i] = 0.8 + rng() * 0.05;
+  }
+  return noise;
+}
+
+function distortIcosahedron(geometry, noiseFactors, label) {
+  const position = geometry.attributes.position;
+  if (noiseFactors.length !== position.count) {
+    throw new Error(
+      label +
+        ' noise length ' +
+        noiseFactors.length +
+        ' != geometry position count ' +
+        position.count +
+        ' (IcosahedronGeometry detail=1 uses non-indexed verts, not 42 unique corners)'
+    );
+  }
+  for (let i = 0; i < position.count; i++) {
+    const noise = noiseFactors[i];
+    position.setXYZ(
+      i,
+      position.getX(i) * noise * 1.5,
+      position.getY(i) * noise * 1.2,
+      position.getZ(i) * noise
+    );
+  }
+  position.needsUpdate = true;
+  geometry.computeBoundingSphere();
+  return geometry;
+}
+
+/** Squash local Z and lump X/Y into a flat, irregular slab (local Z becomes radial after orient). */
+function distortFlatLumpyDistrict(geometry, noiseFactors, label) {
+  const position = geometry.attributes.position;
+  if (noiseFactors.length !== position.count) {
+    throw new Error(
+      label +
+        ' noise length ' +
+        noiseFactors.length +
+        ' != geometry position count ' +
+        position.count
+    );
+  }
+  for (let i = 0; i < position.count; i++) {
+    const noiseA = noiseFactors[i];
+    const noiseB = noiseFactors[(i + 17) % noiseFactors.length];
+    const noiseC = noiseFactors[(i + 31) % noiseFactors.length];
+    position.setXYZ(
+      i,
+      position.getX(i) * noiseA * 1.62,
+      position.getY(i) * noiseB * 1.48,
+      position.getZ(i) * noiseC * 0.24
+    );
+  }
+  position.needsUpdate = true;
+  geometry.computeBoundingSphere();
+  return geometry;
+}
+
+function maxVertexRadius(geometry) {
+  const position = geometry.attributes.position;
+  let maxR = 0;
+  for (let i = 0; i < position.count; i++) {
+    const x = position.getX(i);
+    const y = position.getY(i);
+    const z = position.getZ(i);
+    maxR = Math.max(maxR, Math.sqrt(x * x + y * y + z * z));
+  }
+  return maxR;
+}
+
+function minDistanceToDistricts(point, districtCenters) {
+  let minDist = Infinity;
+  for (let i = 0; i < districtCenters.length; i++) {
+    const d = point.distanceTo(districtCenters[i]);
+    if (d < minDist) minDist = d;
+  }
+  return minDist;
+}
+
+/** Drop triangle corners that are far from every district center. */
+function cullGeometryFarFromDistricts(geometry, districtCenters, keepRadius) {
+  const position = geometry.attributes.position;
+  const kept = [];
+  const vertex = new THREE.Vector3();
+
+  for (let i = 0; i < position.count; i += 3) {
+    let keepTriangle = false;
+    for (let j = 0; j < 3; j++) {
+      vertex.fromBufferAttribute(position, i + j);
+      if (minDistanceToDistricts(vertex, districtCenters) <= keepRadius) {
+        keepTriangle = true;
+        break;
+      }
+    }
+    if (!keepTriangle) continue;
+    for (let j = 0; j < 3; j++) {
+      kept.push(position.getX(i + j), position.getY(i + j), position.getZ(i + j));
+    }
+  }
+
+  const culled = new THREE.BufferGeometry();
+  culled.setAttribute('position', new THREE.Float32BufferAttribute(kept, 3));
+  culled.computeBoundingSphere();
+  return culled;
+}
+
+function tangentFrame(normal) {
+  const up =
+    Math.abs(normal.y) < 0.9
+      ? new THREE.Vector3(0, 1, 0)
+      : new THREE.Vector3(1, 0, 0);
+  const tangent1 = new THREE.Vector3().crossVectors(up, normal).normalize();
+  const tangent2 = new THREE.Vector3().crossVectors(normal, tangent1).normalize();
+  return { tangent1, tangent2 };
+}
+
+/** radialT: 0 = deep interior, 1 = as close to hull as allowed. */
+function interiorRadius(shellOuter, districtRadius, radialT) {
+  const minR = shellOuter * 0.12;
+  const maxR = shellOuter - districtRadius * 1.25;
+  return minR + (maxR - minR) * radialT;
+}
+
+function districtMeshExtent(districtRadius, scaleX, scaleY, scaleZ, flat) {
+  const inPlane = flat ? 1.62 : 1.5;
+  const throughPlane = flat ? 0.24 : 1;
+  const maxScale = Math.max(
+    scaleX * inPlane,
+    scaleY * inPlane,
+    scaleZ * throughPlane * 1.05
+  );
+  return districtRadius * maxScale * 1.08;
+}
+
+function placeOnInteriorShell(
+  anchorDir,
+  offsetU,
+  offsetV,
+  spread,
+  shellOuter,
+  districtRadius,
+  radialT,
+  meshExtent
+) {
+  const radial = anchorDir.clone().normalize();
+  const r = interiorRadius(shellOuter, districtRadius, radialT);
+  const anchor = radial.clone().multiplyScalar(r);
+  const { tangent1, tangent2 } = tangentFrame(radial);
+  const position = anchor
+    .clone()
+    .addScaledVector(tangent1, offsetU * spread)
+    .addScaledVector(tangent2, offsetV * spread);
+  const maxCenterR = shellOuter - meshExtent;
+  if (position.length() > maxCenterR) position.setLength(maxCenterR);
+  return { position, radial: position.clone().normalize(), tangent1, tangent2 };
+}
+
+/** Major axis in the tangent plane (orthogonal to radius from asteroid center). */
+function orientDistrictMesh(mesh, radial, majorTangent) {
+  const zAxis = radial.clone().normalize();
+  const yAxis = majorTangent.clone().normalize();
+  let xAxis = new THREE.Vector3().crossVectors(yAxis, zAxis);
+  if (xAxis.lengthSq() < 1e-8) {
+    xAxis = new THREE.Vector3().crossVectors(
+      zAxis,
+      Math.abs(zAxis.y) < 0.9 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(1, 0, 0)
+    );
+  }
+  xAxis.normalize();
+  yAxis.crossVectors(zAxis, xAxis).normalize();
+  mesh.quaternion.setFromRotationMatrix(
+    new THREE.Matrix4().makeBasis(xAxis, yAxis, zAxis)
+  );
+}
+
+function tangentMajorAxis(radial, tangent1, tangent2, angle) {
+  return tangent1
+    .clone()
+    .multiplyScalar(Math.cos(angle))
+    .addScaledVector(tangent2, Math.sin(angle));
+}
+
+function averageRayDirection(positions) {
+  const sum = new THREE.Vector3();
+  for (let i = 0; i < positions.length; i++) {
+    sum.add(positions[i].clone().normalize());
+  }
+  return sum.normalize();
+}
+
+function placeAlongRay(rayDirection, radius, shellOuter, meshExtent) {
+  const radial = rayDirection.clone().normalize();
+  const position = radial.clone().multiplyScalar(radius);
+  const maxCenterR = shellOuter - meshExtent;
+  if (position.length() > maxCenterR) position.setLength(maxCenterR);
+  const frame = tangentFrame(radial);
+  return {
+    position,
+    radial,
+    tangent1: frame.tangent1,
+    tangent2: frame.tangent2,
+  };
+}
+
+function asteroidSurfaceDistance(direction, asteroidMesh) {
+  const dir = direction.clone().normalize();
+  const ray = new THREE.Raycaster(new THREE.Vector3(0, 0, 0), dir, 0, 1000);
+  const hits = ray.intersectObject(asteroidMesh, false);
+  return hits.length > 0 ? hits[0].distance : shellOuter;
+}
+
+function measureMaxOutwardExtent(geometry, scale, quaternion, outwardRadial) {
+  const position = geometry.attributes.position;
+  const vertex = new THREE.Vector3();
+  const out = outwardRadial.clone().normalize();
+  let maxOut = -Infinity;
+  for (let i = 0; i < position.count; i++) {
+    vertex.fromBufferAttribute(position, i);
+    vertex.multiply(scale).applyQuaternion(quaternion);
+    maxOut = Math.max(maxOut, vertex.dot(out));
+  }
+  return maxOut;
+}
+
+/** Push hub center inward so its outer face meets the asteroid hull. */
+function placeHubDistrictOnSurface(mesh, outwardRadial, asteroidMesh) {
+  const out = outwardRadial.clone().normalize();
+  const surfaceR = asteroidSurfaceDistance(out, asteroidMesh);
+  const maxOut = measureMaxOutwardExtent(
+    mesh.geometry,
+    mesh.scale,
+    mesh.quaternion,
+    out
+  );
+  mesh.position.copy(out).multiplyScalar(surfaceR - maxOut);
+}
+
+function clipDistrictBeyondAsteroid(districtMesh, asteroidMesh, tolerance) {
+  districtMesh.updateMatrixWorld(true);
+  const worldToLocal = districtMesh.matrixWorld.clone().invert();
+  const position = districtMesh.geometry.attributes.position;
+  const kept = [];
+  const vertex = new THREE.Vector3();
+  const ray = new THREE.Raycaster();
+
+  function allowedRadius(direction) {
+    ray.set(new THREE.Vector3(0, 0, 0), direction.clone().normalize());
+    const hits = ray.intersectObject(asteroidMesh, false);
+    const surfaceR = hits.length > 0 ? hits[0].distance : shellOuter;
+    return surfaceR + tolerance;
+  }
+
+  for (let i = 0; i < position.count; i += 3) {
+    const clipped = [];
+    let keepTriangle = false;
+    for (let j = 0; j < 3; j++) {
+      vertex.fromBufferAttribute(position, i + j).applyMatrix4(districtMesh.matrixWorld);
+      const dist = vertex.length();
+      if (dist < 1e-8) {
+        clipped.push(vertex.clone());
+        keepTriangle = true;
+        continue;
+      }
+      const maxR = allowedRadius(vertex);
+      if (dist > maxR) {
+        vertex.multiplyScalar(maxR / dist);
+      } else {
+        keepTriangle = true;
+      }
+      clipped.push(vertex.clone());
+    }
+    if (!keepTriangle) continue;
+    for (let j = 0; j < 3; j++) {
+      clipped[j].applyMatrix4(worldToLocal);
+      kept.push(clipped[j].x, clipped[j].y, clipped[j].z);
+    }
+  }
+
+  districtMesh.geometry.dispose();
+  const clippedGeometry = new THREE.BufferGeometry();
+  clippedGeometry.setAttribute(
+    'position',
+    new THREE.Float32BufferAttribute(kept, 3)
+  );
+  clippedGeometry.computeBoundingSphere();
+  districtMesh.geometry = clippedGeometry;
+}
+
+// Seven districts: hub (d=0) centered among three outers, two inner, one separated.
+const EDGE_RADIAL_T = 0.75;
+const INNER_RADIAL_T = 0.58;
+const HUB_SIZE_FACTOR = 2;
+const CLUSTER_LAYOUT = [
+  { u: 1.02, v: 0.72, radial: EDGE_RADIAL_T, role: 'outer', majorAngle: 0.35 },
+  { u: -1.02, v: 0.72, radial: EDGE_RADIAL_T, role: 'outer', majorAngle: 2.0 },
+  { u: -1.02, v: -0.72, radial: EDGE_RADIAL_T, role: 'outer', majorAngle: -2.45 },
+  { u: 0.72, v: 0.5, radial: INNER_RADIAL_T, role: 'inner' },
+  { u: -0.72, v: -0.5, radial: INNER_RADIAL_T, role: 'inner' },
+  { u: 1.55, v: 0.65, radial: 0.72, role: 'separated', separated: true },
+];
+
+const container = document.getElementById('asteroid-map-container');
+const clickLabel = document.getElementById('district-click-label');
+const width = container.clientWidth;
+const height = container.clientHeight;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x000000);
+
+const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(width, height);
+container.appendChild(renderer.domElement);
+
+const mapGroup = new THREE.Group();
+scene.add(mapGroup);
+
+const asteroidMaterial = new THREE.MeshBasicMaterial({
+  color: 0x00ff00,
+  wireframe: true,
+});
+const fullAsteroidGeom = new THREE.IcosahedronGeometry(
+  ASTEROID_GEOM_RADIUS,
+  ASTEROID_DETAIL
+);
+const asteroidNoise = buildShapeNoise(
+  fullAsteroidGeom.attributes.position.count,
+  ASTEROID_SHAPE_SEED
+);
+distortIcosahedron(fullAsteroidGeom, asteroidNoise, 'asteroid');
+const shellOuter = maxVertexRadius(fullAsteroidGeom);
+const clusterSpread = shellOuter * 0.12;
+const fullAsteroidMesh = new THREE.Mesh(fullAsteroidGeom, asteroidMaterial);
+
+const districtMeshes = [];
+const districtCenters = [];
+const districtRadius = Math.min(shellOuter * 0.09, 0.9);
+const edgeScale = { x: 1.32, y: 1.12, z: 1 };
+const innerScale = { x: 1.08, y: 0.96, z: 1 };
+const hubScale = {
+  x: edgeScale.x * HUB_SIZE_FACTOR,
+  y: edgeScale.y * HUB_SIZE_FACTOR,
+  z: edgeScale.z * HUB_SIZE_FACTOR,
+};
+const outerPositions = [];
+
+function buildDistrictMesh(d, layout, options) {
+  const spread = layout.separated ? clusterSpread * 2.6 : clusterSpread;
+  const isHub = options.isHub;
+  const geomRadius = isHub ? districtRadius * HUB_SIZE_FACTOR : districtRadius;
+  const scale = isHub ? hubScale : layout.role === 'outer' ? edgeScale : innerScale;
+  const placed = options.placed;
+
+  const districtMaterial = new THREE.MeshBasicMaterial({
+    color: DISTRICT_COLORS[d],
+    wireframe: true,
+  });
+  const districtGeom = distortFlatLumpyDistrict(
+    new THREE.IcosahedronGeometry(geomRadius, 1),
+    DISTRICT_VERTEX_NOISE[d],
+    'district ' + (d + 1)
+  );
+  const districtMesh = new THREE.Mesh(districtGeom, districtMaterial);
+  districtMesh.renderOrder = 1;
+  districtMesh.scale.set(scale.x, scale.y, scale.z);
+  orientDistrictMesh(
+    districtMesh,
+    placed.radial,
+    tangentMajorAxis(
+      placed.radial,
+      placed.tangent1,
+      placed.tangent2,
+      isHub ? 0 : layout.majorAngle != null ? layout.majorAngle : layout.u * 2.2
+    )
+  );
+  districtMesh.position.copy(placed.position);
+
+  if (isHub) {
+    placeHubDistrictOnSurface(districtMesh, placed.radial, fullAsteroidMesh);
+    clipDistrictBeyondAsteroid(districtMesh, fullAsteroidMesh, HULL_CLIP_TOLERANCE);
+  }
+
+  districtMesh.userData.baseColor = DISTRICT_COLORS[d];
+  districtMesh.userData.districtIndex = d;
+  districtMesh.name = 'district_' + (d + 1);
+  return districtMesh;
+}
+
+for (let i = 0; i < CLUSTER_LAYOUT.length; i++) {
+  const layout = CLUSTER_LAYOUT[i];
+  const d = i + 1;
+  const spread = layout.separated ? clusterSpread * 2.6 : clusterSpread;
+  const scale = layout.role === 'outer' ? edgeScale : innerScale;
+  const placed = placeOnInteriorShell(
+    CLUSTER_DIRECTION,
+    layout.u,
+    layout.v,
+    spread,
+    shellOuter,
+    districtRadius,
+    layout.radial,
+    districtMeshExtent(districtRadius, scale.x, scale.y, scale.z, true)
+  );
+  if (layout.role === 'outer') outerPositions.push(placed.position.clone());
+  const districtMesh = buildDistrictMesh(d, layout, { placed, isHub: false });
+  mapGroup.add(districtMesh);
+  districtMeshes.push(districtMesh);
+  districtCenters.push(districtMesh.position.clone());
+}
+
+const hubDirection = averageRayDirection(outerPositions);
+const outerMeanRadius =
+  outerPositions.reduce((sum, pos) => sum + pos.length(), 0) / outerPositions.length;
+const hubPlaced = placeAlongRay(
+  hubDirection,
+  outerMeanRadius,
+  shellOuter,
+  districtMeshExtent(
+    districtRadius * HUB_SIZE_FACTOR,
+    hubScale.x,
+    hubScale.y,
+    hubScale.z,
+    true
+  )
+);
+const hubMesh = buildDistrictMesh(0, { role: 'hub' }, { placed: hubPlaced, isHub: true });
+mapGroup.add(hubMesh);
+districtMeshes.unshift(hubMesh);
+districtCenters.unshift(hubMesh.position.clone());
+
+const cullKeepRadius = Math.max(
+  clusterSpread * 3.8 + districtRadius * 2.5,
+  shellOuter * CULL_RADIUS_FACTOR
+);
+const asteroidGeom = cullGeometryFarFromDistricts(
+  fullAsteroidGeom,
+  districtCenters,
+  cullKeepRadius
+);
+fullAsteroidMesh.geometry = null;
+fullAsteroidGeom.dispose();
+mapGroup.add(new THREE.Mesh(asteroidGeom, asteroidMaterial));
+
+const cameraDistance = shellOuter * 1.72;
+const clusterViewPitchAxis = tangentFrame(CLUSTER_DIRECTION).tangent1;
+let viewYaw = 0;
+let viewPitch = 0;
+
+function clampViewOffset(value, max) {
+  return Math.max(-max, Math.min(max, value));
+}
+
+function updateCameraView() {
+  _viewScratch.copy(CLUSTER_DIRECTION);
+  _viewQuat.setFromAxisAngle(clusterViewPitchAxis, viewPitch);
+  _viewScratch.applyQuaternion(_viewQuat);
+  _viewQuat.setFromAxisAngle(_viewYawAxis, viewYaw);
+  _viewScratch.applyQuaternion(_viewQuat).normalize();
+  camera.position.copy(_viewScratch.multiplyScalar(cameraDistance));
+  camera.lookAt(0, 0, 0);
+}
+
+updateCameraView();
+
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+let hoveredDistrict = null;
+let pointerOverCanvas = false;
+let isDragging = false;
+let dragPointerId = null;
+let lastDragX = 0;
+let lastDragY = 0;
+let dragDistancePx = 0;
+
+function updateMouseFromEvent(event) {
+  const rect = renderer.domElement.getBoundingClientRect();
+  mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+}
+
+function pickDistrict() {
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(districtMeshes, false);
+  return intersects.length > 0 ? intersects[0].object : null;
+}
+
+function setDistrictColor(mesh, hex) {
+  mesh.material.color.setHex(hex);
+}
+
+function clearHover() {
+  if (!hoveredDistrict) return;
+  setDistrictColor(hoveredDistrict, hoveredDistrict.userData.baseColor);
+  hoveredDistrict = null;
+  if (!isDragging) renderer.domElement.style.cursor = 'default';
+}
+
+function updateHover() {
+  if (!pointerOverCanvas || isDragging) return;
+
+  const hit = pickDistrict();
+  if (hit === hoveredDistrict) return;
+
+  clearHover();
+  if (hit) {
+    hoveredDistrict = hit;
+    setDistrictColor(hit, DISTRICT_HOVER_COLOR);
+    renderer.domElement.style.cursor = 'pointer';
+  }
+}
+
+function handleDistrictSelection(mesh) {
+  const index = mesh.userData.districtIndex + 1;
+  clickLabel.textContent = 'Selected: ' + mesh.name + ' (#' + index + ')';
+  console.log('District clicked:', mesh.name, mesh);
+}
+
+function rotateFromDragDelta(dx, dy) {
+  viewYaw = clampViewOffset(viewYaw - dx * DRAG_ROTATE_SPEED, VIEW_YAW_MAX);
+  viewPitch = clampViewOffset(viewPitch - dy * DRAG_ROTATE_SPEED, VIEW_PITCH_MAX);
+  updateCameraView();
+}
+
+renderer.domElement.addEventListener('pointerdown', (event) => {
+  if (event.button !== 0) return;
+
+  isDragging = true;
+  dragPointerId = event.pointerId;
+  lastDragX = event.clientX;
+  lastDragY = event.clientY;
+  dragDistancePx = 0;
+  clearHover();
+  renderer.domElement.setPointerCapture(event.pointerId);
+  renderer.domElement.style.cursor = 'grabbing';
+});
+
+renderer.domElement.addEventListener('pointermove', (event) => {
+  updateMouseFromEvent(event);
+
+  if (isDragging && event.pointerId === dragPointerId) {
+    const dx = event.clientX - lastDragX;
+    const dy = event.clientY - lastDragY;
+    dragDistancePx += Math.abs(dx) + Math.abs(dy);
+    lastDragX = event.clientX;
+    lastDragY = event.clientY;
+    rotateFromDragDelta(dx, dy);
+    return;
+  }
+
+  updateHover();
+});
+
+function endDrag(event) {
+  if (!isDragging || event.pointerId !== dragPointerId) return;
+
+  const wasClick = dragDistancePx < CLICK_DRAG_THRESHOLD_PX;
+  isDragging = false;
+  dragPointerId = null;
+
+  if (renderer.domElement.hasPointerCapture(event.pointerId)) {
+    renderer.domElement.releasePointerCapture(event.pointerId);
+  }
+
+  if (wasClick) {
+    updateMouseFromEvent(event);
+    const hit = pickDistrict();
+    if (hit) handleDistrictSelection(hit);
+  }
+
+  renderer.domElement.style.cursor = pointerOverCanvas ? 'grab' : 'default';
+  updateHover();
+}
+
+renderer.domElement.addEventListener('pointerup', endDrag);
+renderer.domElement.addEventListener('pointercancel', endDrag);
+
+renderer.domElement.addEventListener('pointerenter', () => {
+  pointerOverCanvas = true;
+  if (!isDragging) renderer.domElement.style.cursor = 'grab';
+});
+
+renderer.domElement.addEventListener('pointerleave', () => {
+  pointerOverCanvas = false;
+  clearHover();
+  if (!isDragging) renderer.domElement.style.cursor = 'default';
+});
+
+function animate() {
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+}
+
+animate();
+</script>

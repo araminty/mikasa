@@ -1,0 +1,678 @@
+{
+  "exportedAt": "2026-06-06T23:41:53.386Z",
+  "note": "Baseline before prosperity optimizer run; mirrors organize_phase_tick + asset batches.",
+  "intraMesh": {
+    "rich": {
+      "first": 0.0005,
+      "second": 0.0015,
+      "coop": 0.0004,
+      "drone": 0,
+      "alien": 0,
+      "deeper": 0,
+      "third_wave": 0
+    },
+    "first": {
+      "rich": 0.0003,
+      "second": 0.002,
+      "coop": 0.001,
+      "drone": 0.0004,
+      "alien": 0,
+      "deeper": 0,
+      "third_wave": 0
+    },
+    "second": {
+      "rich": 0.0004,
+      "first": 0.002,
+      "coop": 0.0012,
+      "drone": 0.0005,
+      "alien": 0,
+      "deeper": 0,
+      "third_wave": 0
+    },
+    "coop": {
+      "rich": 0.0003,
+      "first": 0.001,
+      "second": 0.001,
+      "drone": 0.0006,
+      "alien": 0,
+      "deeper": 0,
+      "third_wave": 0
+    },
+    "drone": {
+      "rich": 0,
+      "first": 0.0003,
+      "second": 0.0004,
+      "coop": 0.0008,
+      "alien": 0,
+      "deeper": 0,
+      "third_wave": 0
+    },
+    "alien": {
+      "rich": 0,
+      "first": 0,
+      "second": 0,
+      "coop": 0,
+      "drone": 0,
+      "deeper": 0.0004,
+      "third_wave": 0
+    },
+    "deeper": {
+      "rich": 0,
+      "first": 0,
+      "second": 0,
+      "coop": 0,
+      "drone": 0,
+      "alien": 0.0004,
+      "third_wave": 0
+    },
+    "third_wave": {
+      "rich": 0,
+      "first": 0.0004,
+      "second": 0.0006,
+      "coop": 0.0004,
+      "drone": 0,
+      "alien": 0,
+      "deeper": 0
+    }
+  },
+  "igHomeLinks": [
+    {
+      "ig": "Soylent",
+      "district": "Vats",
+      "toStrata": {
+        "rich": 0.001,
+        "first": 0.001,
+        "second": 0.0015,
+        "coop": 0.002,
+        "drone": 0.009,
+        "alien": 0,
+        "deeper": 0.0005,
+        "third_wave": 0
+      }
+    },
+    {
+      "ig": "Magrail",
+      "district": "Railyard",
+      "toStrata": {
+        "rich": 0.001,
+        "first": 0.0012,
+        "second": 0.001,
+        "coop": 0.0035,
+        "drone": 0.008,
+        "alien": 0,
+        "deeper": 0.0005,
+        "third_wave": 0
+      }
+    },
+    {
+      "ig": "Brazos",
+      "district": "Limelight",
+      "toStrata": {
+        "rich": 0.0012,
+        "first": 0.004,
+        "second": 0.0015,
+        "coop": 0.002,
+        "drone": 0.008,
+        "alien": 0,
+        "deeper": 0.0005,
+        "third_wave": 0
+      }
+    },
+    {
+      "ig": "Families",
+      "district": "Pitts",
+      "toStrata": {
+        "rich": 0,
+        "first": 0.002,
+        "second": 0.004,
+        "coop": 0.002,
+        "drone": 0,
+        "alien": 0,
+        "deeper": 0.0008,
+        "third_wave": 0
+      }
+    },
+    {
+      "ig": "Edges",
+      "district": "Railyard",
+      "toStrata": {
+        "rich": 0.0008,
+        "first": 0.0025,
+        "second": 0.003,
+        "coop": 0.0015,
+        "drone": 0.0025,
+        "alien": 0,
+        "deeper": 0.0005,
+        "third_wave": 0
+      }
+    },
+    {
+      "ig": "Sharks",
+      "district": "Deeps",
+      "toStrata": {
+        "rich": 0.0006,
+        "first": 0.001,
+        "second": 0.001,
+        "coop": 0.0008,
+        "drone": 0,
+        "alien": 0.003,
+        "deeper": 0.005,
+        "third_wave": 0
+      }
+    }
+  ],
+  "assetBatches": [
+    {
+      "key": "brazos_vats",
+      "ownerType": "ig",
+      "owner": "Brazos",
+      "district": "Limelight",
+      "count": 25
+    },
+    {
+      "key": "magrail_railyard",
+      "ownerType": "ig",
+      "owner": "Magrail",
+      "district": "Railyard",
+      "count": 27
+    },
+    {
+      "key": "soylent_vats",
+      "ownerType": "ig",
+      "owner": "Soylent",
+      "district": "Vats",
+      "count": 28
+    },
+    {
+      "key": "families_pitts",
+      "ownerType": "ig",
+      "owner": "Families",
+      "district": "Pitts",
+      "count": 9
+    },
+    {
+      "key": "edges_railyard",
+      "ownerType": "ig",
+      "owner": "Edges",
+      "district": "Railyard",
+      "count": 7
+    },
+    {
+      "key": "sharks_deeps",
+      "ownerType": "ig",
+      "owner": "Sharks",
+      "district": "Deeps",
+      "count": 7
+    },
+    {
+      "key": "coop_aurora",
+      "ownerType": "stratum",
+      "owner": "coop",
+      "district": "Aurora",
+      "count": 20
+    },
+    {
+      "key": "rich_docks",
+      "ownerType": "stratum",
+      "owner": "rich",
+      "district": "Docks",
+      "count": 6
+    },
+    {
+      "key": "first_aurora",
+      "ownerType": "stratum",
+      "owner": "first",
+      "district": "Aurora",
+      "count": 5
+    },
+    {
+      "key": "second_aurora",
+      "ownerType": "stratum",
+      "owner": "second",
+      "district": "Aurora",
+      "count": 3
+    },
+    {
+      "key": "alien_aurora",
+      "ownerType": "stratum",
+      "owner": "alien",
+      "district": "Aurora",
+      "count": 1
+    }
+  ],
+  "linkParamSpec": [
+    {
+      "kind": "intra",
+      "from": "rich",
+      "to": "first",
+      "base": 0.0005,
+      "key": "intra:rich->first"
+    },
+    {
+      "kind": "intra",
+      "from": "rich",
+      "to": "second",
+      "base": 0.0015,
+      "key": "intra:rich->second"
+    },
+    {
+      "kind": "intra",
+      "from": "rich",
+      "to": "coop",
+      "base": 0.0004,
+      "key": "intra:rich->coop"
+    },
+    {
+      "kind": "intra",
+      "from": "first",
+      "to": "rich",
+      "base": 0.0003,
+      "key": "intra:first->rich"
+    },
+    {
+      "kind": "intra",
+      "from": "first",
+      "to": "second",
+      "base": 0.002,
+      "key": "intra:first->second"
+    },
+    {
+      "kind": "intra",
+      "from": "first",
+      "to": "coop",
+      "base": 0.001,
+      "key": "intra:first->coop"
+    },
+    {
+      "kind": "intra",
+      "from": "first",
+      "to": "drone",
+      "base": 0.0004,
+      "key": "intra:first->drone"
+    },
+    {
+      "kind": "intra",
+      "from": "second",
+      "to": "rich",
+      "base": 0.0004,
+      "key": "intra:second->rich"
+    },
+    {
+      "kind": "intra",
+      "from": "second",
+      "to": "first",
+      "base": 0.002,
+      "key": "intra:second->first"
+    },
+    {
+      "kind": "intra",
+      "from": "second",
+      "to": "coop",
+      "base": 0.0012,
+      "key": "intra:second->coop"
+    },
+    {
+      "kind": "intra",
+      "from": "second",
+      "to": "drone",
+      "base": 0.0005,
+      "key": "intra:second->drone"
+    },
+    {
+      "kind": "intra",
+      "from": "coop",
+      "to": "rich",
+      "base": 0.0003,
+      "key": "intra:coop->rich"
+    },
+    {
+      "kind": "intra",
+      "from": "coop",
+      "to": "first",
+      "base": 0.001,
+      "key": "intra:coop->first"
+    },
+    {
+      "kind": "intra",
+      "from": "coop",
+      "to": "second",
+      "base": 0.001,
+      "key": "intra:coop->second"
+    },
+    {
+      "kind": "intra",
+      "from": "coop",
+      "to": "drone",
+      "base": 0.0006,
+      "key": "intra:coop->drone"
+    },
+    {
+      "kind": "intra",
+      "from": "drone",
+      "to": "first",
+      "base": 0.0003,
+      "key": "intra:drone->first"
+    },
+    {
+      "kind": "intra",
+      "from": "drone",
+      "to": "second",
+      "base": 0.0004,
+      "key": "intra:drone->second"
+    },
+    {
+      "kind": "intra",
+      "from": "drone",
+      "to": "coop",
+      "base": 0.0008,
+      "key": "intra:drone->coop"
+    },
+    {
+      "kind": "intra",
+      "from": "alien",
+      "to": "deeper",
+      "base": 0.0004,
+      "key": "intra:alien->deeper"
+    },
+    {
+      "kind": "intra",
+      "from": "deeper",
+      "to": "alien",
+      "base": 0.0004,
+      "key": "intra:deeper->alien"
+    },
+    {
+      "kind": "intra",
+      "from": "third_wave",
+      "to": "first",
+      "base": 0.0004,
+      "key": "intra:third_wave->first"
+    },
+    {
+      "kind": "intra",
+      "from": "third_wave",
+      "to": "second",
+      "base": 0.0006,
+      "key": "intra:third_wave->second"
+    },
+    {
+      "kind": "intra",
+      "from": "third_wave",
+      "to": "coop",
+      "base": 0.0004,
+      "key": "intra:third_wave->coop"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Soylent",
+      "district": "Vats",
+      "stratum": "rich",
+      "base": 0.001,
+      "key": "ig:Soylent:rich"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Soylent",
+      "district": "Vats",
+      "stratum": "first",
+      "base": 0.001,
+      "key": "ig:Soylent:first"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Soylent",
+      "district": "Vats",
+      "stratum": "second",
+      "base": 0.0015,
+      "key": "ig:Soylent:second"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Soylent",
+      "district": "Vats",
+      "stratum": "coop",
+      "base": 0.002,
+      "key": "ig:Soylent:coop"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Soylent",
+      "district": "Vats",
+      "stratum": "drone",
+      "base": 0.009,
+      "key": "ig:Soylent:drone"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Soylent",
+      "district": "Vats",
+      "stratum": "deeper",
+      "base": 0.0005,
+      "key": "ig:Soylent:deeper"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Magrail",
+      "district": "Railyard",
+      "stratum": "rich",
+      "base": 0.001,
+      "key": "ig:Magrail:rich"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Magrail",
+      "district": "Railyard",
+      "stratum": "first",
+      "base": 0.0012,
+      "key": "ig:Magrail:first"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Magrail",
+      "district": "Railyard",
+      "stratum": "second",
+      "base": 0.001,
+      "key": "ig:Magrail:second"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Magrail",
+      "district": "Railyard",
+      "stratum": "coop",
+      "base": 0.0035,
+      "key": "ig:Magrail:coop"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Magrail",
+      "district": "Railyard",
+      "stratum": "drone",
+      "base": 0.008,
+      "key": "ig:Magrail:drone"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Magrail",
+      "district": "Railyard",
+      "stratum": "deeper",
+      "base": 0.0005,
+      "key": "ig:Magrail:deeper"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Brazos",
+      "district": "Limelight",
+      "stratum": "rich",
+      "base": 0.0012,
+      "key": "ig:Brazos:rich"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Brazos",
+      "district": "Limelight",
+      "stratum": "first",
+      "base": 0.004,
+      "key": "ig:Brazos:first"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Brazos",
+      "district": "Limelight",
+      "stratum": "second",
+      "base": 0.0015,
+      "key": "ig:Brazos:second"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Brazos",
+      "district": "Limelight",
+      "stratum": "coop",
+      "base": 0.002,
+      "key": "ig:Brazos:coop"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Brazos",
+      "district": "Limelight",
+      "stratum": "drone",
+      "base": 0.008,
+      "key": "ig:Brazos:drone"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Brazos",
+      "district": "Limelight",
+      "stratum": "deeper",
+      "base": 0.0005,
+      "key": "ig:Brazos:deeper"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Families",
+      "district": "Pitts",
+      "stratum": "first",
+      "base": 0.002,
+      "key": "ig:Families:first"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Families",
+      "district": "Pitts",
+      "stratum": "second",
+      "base": 0.004,
+      "key": "ig:Families:second"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Families",
+      "district": "Pitts",
+      "stratum": "coop",
+      "base": 0.002,
+      "key": "ig:Families:coop"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Families",
+      "district": "Pitts",
+      "stratum": "deeper",
+      "base": 0.0008,
+      "key": "ig:Families:deeper"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Edges",
+      "district": "Railyard",
+      "stratum": "rich",
+      "base": 0.0008,
+      "key": "ig:Edges:rich"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Edges",
+      "district": "Railyard",
+      "stratum": "first",
+      "base": 0.0025,
+      "key": "ig:Edges:first"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Edges",
+      "district": "Railyard",
+      "stratum": "second",
+      "base": 0.003,
+      "key": "ig:Edges:second"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Edges",
+      "district": "Railyard",
+      "stratum": "coop",
+      "base": 0.0015,
+      "key": "ig:Edges:coop"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Edges",
+      "district": "Railyard",
+      "stratum": "drone",
+      "base": 0.0025,
+      "key": "ig:Edges:drone"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Edges",
+      "district": "Railyard",
+      "stratum": "deeper",
+      "base": 0.0005,
+      "key": "ig:Edges:deeper"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Sharks",
+      "district": "Deeps",
+      "stratum": "rich",
+      "base": 0.0006,
+      "key": "ig:Sharks:rich"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Sharks",
+      "district": "Deeps",
+      "stratum": "first",
+      "base": 0.001,
+      "key": "ig:Sharks:first"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Sharks",
+      "district": "Deeps",
+      "stratum": "second",
+      "base": 0.001,
+      "key": "ig:Sharks:second"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Sharks",
+      "district": "Deeps",
+      "stratum": "coop",
+      "base": 0.0008,
+      "key": "ig:Sharks:coop"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Sharks",
+      "district": "Deeps",
+      "stratum": "alien",
+      "base": 0.003,
+      "key": "ig:Sharks:alien"
+    },
+    {
+      "kind": "ig_home",
+      "ig": "Sharks",
+      "district": "Deeps",
+      "stratum": "deeper",
+      "base": 0.005,
+      "key": "ig:Sharks:deeper"
+    }
+  ]
+}

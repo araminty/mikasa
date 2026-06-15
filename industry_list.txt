@@ -1,0 +1,58 @@
+exports, general:
+longshore (export)
+pmc (export, military value)
+tax haven/flag of convenience (export, diplomacy event)
+hospitality (export)
+luxury crafts/art (export)
+otherworld safaris (export)
+luxury voidcraft (export)
+
+exports, corporate industries:
+electromotive systems (magrail)
+weaponry (magrail)
+tailored microorganism cultures (soylent)
+pharmaceuticals (soylent)
+disposible electronics (brazos)
+hologram arrays (brazos)
+
+import substitutions:
+business services/capital (import substitution)
+Dock logistics machinery (import substitution)
+chemical inputs (import substitution)
+agri/aqua machinery (import substitution)
+grav plating (import substitution)
+mining (import substitution)
+metalurgy (import substitution)
+transport machinery (import substitution, piss off magrail)
+otherworld medicine (import substitution, piss off soylent)
+unplugged media (import substitution, piss off brazos)
+
+internal demand: (existing at start) 
+agriculture/aquaculture (internal)
+logistics (internal)
+energy (internal)
+Textiles + homewares (internal)
+life support equipment (internal)
+
+Dual purposing for war preperations:
+niche electronics -> war drones (linked to guilds) (requires chemical inputs)
+hidden routes -> reconnaisence (linked to clans) (no industry)
+grav plating -> concealment field arrays (linked to deepers) (requires grav plating)
+luxury voidcraft -> combat voidcraft (linked to first wave) (requires luxury voidcraft)
+??? linked to second wave
+??? linked to CoOps
+syth-kipple control fields (linked to third wave) (no industry requirement) // combines jovian mech control knowledge with earth kipple knowledge
+protective wards (linked to otherworlders) (no industry requirement)
+backdoor security exploits (linked to drones) (no industry requirement)
+??? linked to rich (maybe the just provide money?)
+
+
+
+Implementation roadmap:
+Assets could be tagged as linked to these industries (can also not be tagged anything in particular)
+Self-sufficiency is tracked by the number of import substitution tags that have at least one asset
+self-sufficiency gives a bonus to industries tracked internal, a smaller boost to ones tagged self-sufficiency and a penalty to ones tagged export
+The corporations get annoyed as import substitution gears up
+The syndicates get more powerful as import substitution gears up, especially import substitution assets in the Pitts or their home district (so double the pitts for the 7 families)
+
+Once you are far enough along that you are gearing up for hostilities with the corporations, having certain groups support you strongly enough will trigger events where they will offer war industries.  Some of these will be linked to certain industries (so weak if that industry is struggling, stronger if that industry is afluent+has multiple tagged assets).  Others of these wont have an industry requirement but will require strong support from the associated group and may require that group be economically secure enough.  (Clans and drones just require relations)

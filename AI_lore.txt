@@ -1,0 +1,19 @@
+Some random lore notes about AI, internet and infrastructure.
+
+In the setting there is a "dead internet" problem.  Extremely aggressive AI resulted in self expanding botnet networks which have filled up every public facing data system with spam.  Too many bad actors profit from the status quo so the dead internet problem isn't getting solved.  A big problem about deploying AI for tasks is protecting it from corruption from the dead internet.  If it weren't for system corruption, the century old "halo" of internet satellites around Mikasa would easily be able to handle the needs of even a much larger population.
+
+AI systems in this setting are extremely robust and capable of splitting their calculations across many different servers.  They wont have a dedicated block of processing power to make a query, they will expand out to find processing power and then withdraw afterwards to avoid getting corrupted by malicious actors.  They end up as these digital migrants endlessly zipping around, except because they can be extremely asynchronous they are in many places at once.
+
+The Clans of the Mother have uncorrupted AIs (which are also a teensy bit magical in nature) but they live outside the city and rarely interact with Mikasa.  If you look at the advisor card for Callista, she is the rare exception.  The corruption of AI is actually one of the reasons the Clans are so isolationist.  They feel that outsiders are not sufficiently concerned about "Demons".
+
+The city has many ancient automated systems which could actually run pretty decently if there was reliable internet and AI.  Stuff like automated public transit works very sporadically.  The life support systems (and artificial gravity plating) in abandoned sections of the city are bricked due to AI corruption.  Outside of the richest parts of the city, people often live in places where they just ripped out the computer systems and kludged together a more low tech controller system.  Of course if people are desperate enough (like they are in much of the Pitts), they'll just live in places without reliable life support at all and do their best to be careful about CO2 poisoning.  The kludged replacement systems are much less efficient which wears out city equipment and drains energy and life support.
+
+The energy drain links into another issue which is that Mikasa is in an orbit that takes it far away from the Sun at the farthest point and it's currently far along the outward track.  So solar power isn't as abundant as it is at other times meaning that just throwing energy at problems could be an issue (although later in the game Mikasa will be coming closer to the Sun, making energy more available).  And the alternatives to solar often rely on complex regulation computers which use... AI.
+
+The upshot of this is that the shortage of reliable AI bandwidth means that lots of non-digital systems are getting worn out faster and used less efficiently, so the AI problem is one and the same with the infrastructure problem.  (And the infrastructure problem is a big issue when the refugees start coming in.)
+
+Large amounts of the working bandwidth is getting gobbled up by the corporations.  Their demands are about equally split between running complex processes (futuristic equivalent to protein folding problems) and creating a digital VR realm for their employees.  Without VR, the lives of the drones would seem a lot bleaker.
+
+One good thing for the aspiring democratic movement is that the legacy of the Aurora Bank means that the Aurora district has a lot of experts in esoteric subjects, including some in addressing AI corruption.  Since Aurora is the center of the democratic movement, that means the democrats have the potential to establish some leverage.
+
+The Bleeding Edges (gang with a lot of hackers) are by no means the only ones contributing to dead internet but they definitely are a big part of the problem on Mikasa.

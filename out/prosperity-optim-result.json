@@ -1,0 +1,747 @@
+{
+  "options": {
+    "months": 6,
+    "iterations": 200,
+    "residualMult": 10,
+    "linkWeight": 1,
+    "verbose": false,
+    "progress": true,
+    "showDecays": false,
+    "jsonOut": "/home/airy/mikasa/out/prosperity-optim-result.json",
+    "help": false,
+    "linksOnly": true,
+    "heuristicSign": true,
+    "asymmetric": true,
+    "method": "coordinate",
+    "assetStep": 1,
+    "linkStep": 0.00005,
+    "minAsset": 0,
+    "maxAsset": 60,
+    "minLink": 0,
+    "maxLink": 0.02,
+    "spsaA0": 0.002,
+    "spsaC0": 0.0002,
+    "spsaAlpha": 0.602,
+    "spsaGamma": 0.101
+  },
+  "vector": [
+    0.010199999999999966,
+    0.011499999999999958,
+    0.010399999999999965,
+    0,
+    0.011999999999999957,
+    0.010999999999999961,
+    0.0031000000000000016,
+    0,
+    0.011699999999999959,
+    0.01119999999999996,
+    0.003200000000000002,
+    0,
+    0.0006999999999999999,
+    0.010999999999999961,
+    0.0033000000000000017,
+    0.009999999999999967,
+    0.010399999999999965,
+    0.010799999999999962,
+    0.010399999999999965,
+    0.00794999999999998,
+    0.010099999999999967,
+    0.010599999999999964,
+    0.010399999999999965,
+    0.010899999999999962,
+    0.004899999999999997,
+    0.011499999999999958,
+    0.011999999999999957,
+    0.005700000000000019,
+    0.0026000000000000003,
+    0,
+    0.005199999999999996,
+    0.00964999999999997,
+    0.013499999999999944,
+    0.0058000000000000135,
+    0.0015499999999999993,
+    0.01119999999999996,
+    0.007099999999999981,
+    0.011499999999999958,
+    0.011999999999999957,
+    0.006000000000000012,
+    0.0026000000000000003,
+    0.010149999999999968,
+    0.01399999999999994,
+    0.011999999999999957,
+    0.0009500000000000001,
+    0,
+    0.0012000000000000001,
+    0.010549999999999962,
+    0.011499999999999958,
+    1.2197274440461925e-19,
+    0.0012,
+    0.010599999999999964,
+    0.010999999999999961,
+    0.010999999999999961,
+    0.010799999999999962,
+    0.001099999999999999,
+    0.01499999999999994
+  ],
+  "stepScale": 1,
+  "report": {
+    "loss": {
+      "total": 15.551184714078797,
+      "residualLoss": 15.116484714078798,
+      "linkPenalty": 0.43469999999999864
+    },
+    "assets": [
+      {
+        "key": "brazos_vats",
+        "owner": "Brazos",
+        "district": "Limelight",
+        "baseline": 25,
+        "optimized": 25
+      },
+      {
+        "key": "magrail_railyard",
+        "owner": "Magrail",
+        "district": "Railyard",
+        "baseline": 27,
+        "optimized": 27
+      },
+      {
+        "key": "soylent_vats",
+        "owner": "Soylent",
+        "district": "Vats",
+        "baseline": 28,
+        "optimized": 28
+      },
+      {
+        "key": "families_pitts",
+        "owner": "Families",
+        "district": "Pitts",
+        "baseline": 9,
+        "optimized": 9
+      },
+      {
+        "key": "edges_railyard",
+        "owner": "Edges",
+        "district": "Railyard",
+        "baseline": 7,
+        "optimized": 7
+      },
+      {
+        "key": "sharks_deeps",
+        "owner": "Sharks",
+        "district": "Deeps",
+        "baseline": 7,
+        "optimized": 7
+      },
+      {
+        "key": "coop_aurora",
+        "owner": "coop",
+        "district": "Aurora",
+        "baseline": 20,
+        "optimized": 20
+      },
+      {
+        "key": "rich_docks",
+        "owner": "rich",
+        "district": "Docks",
+        "baseline": 6,
+        "optimized": 6
+      },
+      {
+        "key": "first_aurora",
+        "owner": "first",
+        "district": "Aurora",
+        "baseline": 5,
+        "optimized": 5
+      },
+      {
+        "key": "second_aurora",
+        "owner": "second",
+        "district": "Aurora",
+        "baseline": 3,
+        "optimized": 3
+      },
+      {
+        "key": "alien_aurora",
+        "owner": "alien",
+        "district": "Aurora",
+        "baseline": 1,
+        "optimized": 1
+      }
+    ],
+    "linksChanged": [
+      {
+        "key": "intra:rich->first",
+        "baseline": 0.0005,
+        "optimized": 0.0102
+      },
+      {
+        "key": "intra:rich->second",
+        "baseline": 0.0015,
+        "optimized": 0.0115
+      },
+      {
+        "key": "intra:rich->coop",
+        "baseline": 0.0004,
+        "optimized": 0.0104
+      },
+      {
+        "key": "intra:first->rich",
+        "baseline": 0.0003,
+        "optimized": 0
+      },
+      {
+        "key": "intra:first->second",
+        "baseline": 0.002,
+        "optimized": 0.012
+      },
+      {
+        "key": "intra:first->coop",
+        "baseline": 0.001,
+        "optimized": 0.011
+      },
+      {
+        "key": "intra:first->drone",
+        "baseline": 0.0004,
+        "optimized": 0.0031
+      },
+      {
+        "key": "intra:second->rich",
+        "baseline": 0.0004,
+        "optimized": 0
+      },
+      {
+        "key": "intra:second->first",
+        "baseline": 0.002,
+        "optimized": 0.0117
+      },
+      {
+        "key": "intra:second->coop",
+        "baseline": 0.0012,
+        "optimized": 0.0112
+      },
+      {
+        "key": "intra:second->drone",
+        "baseline": 0.0005,
+        "optimized": 0.0032
+      },
+      {
+        "key": "intra:coop->rich",
+        "baseline": 0.0003,
+        "optimized": 0
+      },
+      {
+        "key": "intra:coop->first",
+        "baseline": 0.001,
+        "optimized": 0.0007
+      },
+      {
+        "key": "intra:coop->second",
+        "baseline": 0.001,
+        "optimized": 0.011
+      },
+      {
+        "key": "intra:coop->drone",
+        "baseline": 0.0006,
+        "optimized": 0.0033
+      },
+      {
+        "key": "intra:drone->first",
+        "baseline": 0.0003,
+        "optimized": 0.01
+      },
+      {
+        "key": "intra:drone->second",
+        "baseline": 0.0004,
+        "optimized": 0.0104
+      },
+      {
+        "key": "intra:drone->coop",
+        "baseline": 0.0008,
+        "optimized": 0.0108
+      },
+      {
+        "key": "intra:alien->deeper",
+        "baseline": 0.0004,
+        "optimized": 0.0104
+      },
+      {
+        "key": "intra:deeper->alien",
+        "baseline": 0.0004,
+        "optimized": 0.00795
+      },
+      {
+        "key": "intra:third_wave->first",
+        "baseline": 0.0004,
+        "optimized": 0.0101
+      },
+      {
+        "key": "intra:third_wave->second",
+        "baseline": 0.0006,
+        "optimized": 0.0106
+      },
+      {
+        "key": "intra:third_wave->coop",
+        "baseline": 0.0004,
+        "optimized": 0.0104
+      },
+      {
+        "key": "ig:Soylent:rich",
+        "baseline": 0.001,
+        "optimized": 0.0109
+      },
+      {
+        "key": "ig:Soylent:first",
+        "baseline": 0.001,
+        "optimized": 0.0049
+      },
+      {
+        "key": "ig:Soylent:second",
+        "baseline": 0.0015,
+        "optimized": 0.0115
+      },
+      {
+        "key": "ig:Soylent:coop",
+        "baseline": 0.002,
+        "optimized": 0.012
+      },
+      {
+        "key": "ig:Soylent:drone",
+        "baseline": 0.009,
+        "optimized": 0.0057
+      },
+      {
+        "key": "ig:Soylent:deeper",
+        "baseline": 0.0005,
+        "optimized": 0.0026
+      },
+      {
+        "key": "ig:Magrail:rich",
+        "baseline": 0.001,
+        "optimized": 0
+      },
+      {
+        "key": "ig:Magrail:first",
+        "baseline": 0.0012,
+        "optimized": 0.0052
+      },
+      {
+        "key": "ig:Magrail:second",
+        "baseline": 0.001,
+        "optimized": 0.00965
+      },
+      {
+        "key": "ig:Magrail:coop",
+        "baseline": 0.0035,
+        "optimized": 0.0135
+      },
+      {
+        "key": "ig:Magrail:drone",
+        "baseline": 0.008,
+        "optimized": 0.0058
+      },
+      {
+        "key": "ig:Magrail:deeper",
+        "baseline": 0.0005,
+        "optimized": 0.00155
+      },
+      {
+        "key": "ig:Brazos:rich",
+        "baseline": 0.0012,
+        "optimized": 0.0112
+      },
+      {
+        "key": "ig:Brazos:first",
+        "baseline": 0.004,
+        "optimized": 0.0071
+      },
+      {
+        "key": "ig:Brazos:second",
+        "baseline": 0.0015,
+        "optimized": 0.0115
+      },
+      {
+        "key": "ig:Brazos:coop",
+        "baseline": 0.002,
+        "optimized": 0.012
+      },
+      {
+        "key": "ig:Brazos:drone",
+        "baseline": 0.008,
+        "optimized": 0.006
+      },
+      {
+        "key": "ig:Brazos:deeper",
+        "baseline": 0.0005,
+        "optimized": 0.0026
+      },
+      {
+        "key": "ig:Families:first",
+        "baseline": 0.002,
+        "optimized": 0.01015
+      },
+      {
+        "key": "ig:Families:second",
+        "baseline": 0.004,
+        "optimized": 0.014
+      },
+      {
+        "key": "ig:Families:coop",
+        "baseline": 0.002,
+        "optimized": 0.012
+      },
+      {
+        "key": "ig:Families:deeper",
+        "baseline": 0.0008,
+        "optimized": 0.00095
+      },
+      {
+        "key": "ig:Edges:rich",
+        "baseline": 0.0008,
+        "optimized": 0
+      },
+      {
+        "key": "ig:Edges:first",
+        "baseline": 0.0025,
+        "optimized": 0.0012
+      },
+      {
+        "key": "ig:Edges:second",
+        "baseline": 0.003,
+        "optimized": 0.01055
+      },
+      {
+        "key": "ig:Edges:coop",
+        "baseline": 0.0015,
+        "optimized": 0.0115
+      },
+      {
+        "key": "ig:Edges:drone",
+        "baseline": 0.0025,
+        "optimized": 0
+      },
+      {
+        "key": "ig:Edges:deeper",
+        "baseline": 0.0005,
+        "optimized": 0.0012
+      },
+      {
+        "key": "ig:Sharks:rich",
+        "baseline": 0.0006,
+        "optimized": 0.0106
+      },
+      {
+        "key": "ig:Sharks:first",
+        "baseline": 0.001,
+        "optimized": 0.011
+      },
+      {
+        "key": "ig:Sharks:second",
+        "baseline": 0.001,
+        "optimized": 0.011
+      },
+      {
+        "key": "ig:Sharks:coop",
+        "baseline": 0.0008,
+        "optimized": 0.0108
+      },
+      {
+        "key": "ig:Sharks:alien",
+        "baseline": 0.003,
+        "optimized": 0.0011
+      },
+      {
+        "key": "ig:Sharks:deeper",
+        "baseline": 0.005,
+        "optimized": 0.015
+      }
+    ],
+    "links": [
+      {
+        "key": "intra:rich->first",
+        "baseline": 0.0005,
+        "optimized": 0.0102
+      },
+      {
+        "key": "intra:rich->second",
+        "baseline": 0.0015,
+        "optimized": 0.0115
+      },
+      {
+        "key": "intra:rich->coop",
+        "baseline": 0.0004,
+        "optimized": 0.0104
+      },
+      {
+        "key": "intra:first->rich",
+        "baseline": 0.0003,
+        "optimized": 0
+      },
+      {
+        "key": "intra:first->second",
+        "baseline": 0.002,
+        "optimized": 0.012
+      },
+      {
+        "key": "intra:first->coop",
+        "baseline": 0.001,
+        "optimized": 0.011
+      },
+      {
+        "key": "intra:first->drone",
+        "baseline": 0.0004,
+        "optimized": 0.0031
+      },
+      {
+        "key": "intra:second->rich",
+        "baseline": 0.0004,
+        "optimized": 0
+      },
+      {
+        "key": "intra:second->first",
+        "baseline": 0.002,
+        "optimized": 0.0117
+      },
+      {
+        "key": "intra:second->coop",
+        "baseline": 0.0012,
+        "optimized": 0.0112
+      },
+      {
+        "key": "intra:second->drone",
+        "baseline": 0.0005,
+        "optimized": 0.0032
+      },
+      {
+        "key": "intra:coop->rich",
+        "baseline": 0.0003,
+        "optimized": 0
+      },
+      {
+        "key": "intra:coop->first",
+        "baseline": 0.001,
+        "optimized": 0.0007
+      },
+      {
+        "key": "intra:coop->second",
+        "baseline": 0.001,
+        "optimized": 0.011
+      },
+      {
+        "key": "intra:coop->drone",
+        "baseline": 0.0006,
+        "optimized": 0.0033
+      },
+      {
+        "key": "intra:drone->first",
+        "baseline": 0.0003,
+        "optimized": 0.01
+      },
+      {
+        "key": "intra:drone->second",
+        "baseline": 0.0004,
+        "optimized": 0.0104
+      },
+      {
+        "key": "intra:drone->coop",
+        "baseline": 0.0008,
+        "optimized": 0.0108
+      },
+      {
+        "key": "intra:alien->deeper",
+        "baseline": 0.0004,
+        "optimized": 0.0104
+      },
+      {
+        "key": "intra:deeper->alien",
+        "baseline": 0.0004,
+        "optimized": 0.00795
+      },
+      {
+        "key": "intra:third_wave->first",
+        "baseline": 0.0004,
+        "optimized": 0.0101
+      },
+      {
+        "key": "intra:third_wave->second",
+        "baseline": 0.0006,
+        "optimized": 0.0106
+      },
+      {
+        "key": "intra:third_wave->coop",
+        "baseline": 0.0004,
+        "optimized": 0.0104
+      },
+      {
+        "key": "ig:Soylent:rich",
+        "baseline": 0.001,
+        "optimized": 0.0109
+      },
+      {
+        "key": "ig:Soylent:first",
+        "baseline": 0.001,
+        "optimized": 0.0049
+      },
+      {
+        "key": "ig:Soylent:second",
+        "baseline": 0.0015,
+        "optimized": 0.0115
+      },
+      {
+        "key": "ig:Soylent:coop",
+        "baseline": 0.002,
+        "optimized": 0.012
+      },
+      {
+        "key": "ig:Soylent:drone",
+        "baseline": 0.009,
+        "optimized": 0.0057
+      },
+      {
+        "key": "ig:Soylent:deeper",
+        "baseline": 0.0005,
+        "optimized": 0.0026
+      },
+      {
+        "key": "ig:Magrail:rich",
+        "baseline": 0.001,
+        "optimized": 0
+      },
+      {
+        "key": "ig:Magrail:first",
+        "baseline": 0.0012,
+        "optimized": 0.0052
+      },
+      {
+        "key": "ig:Magrail:second",
+        "baseline": 0.001,
+        "optimized": 0.00965
+      },
+      {
+        "key": "ig:Magrail:coop",
+        "baseline": 0.0035,
+        "optimized": 0.0135
+      },
+      {
+        "key": "ig:Magrail:drone",
+        "baseline": 0.008,
+        "optimized": 0.0058
+      },
+      {
+        "key": "ig:Magrail:deeper",
+        "baseline": 0.0005,
+        "optimized": 0.00155
+      },
+      {
+        "key": "ig:Brazos:rich",
+        "baseline": 0.0012,
+        "optimized": 0.0112
+      },
+      {
+        "key": "ig:Brazos:first",
+        "baseline": 0.004,
+        "optimized": 0.0071
+      },
+      {
+        "key": "ig:Brazos:second",
+        "baseline": 0.0015,
+        "optimized": 0.0115
+      },
+      {
+        "key": "ig:Brazos:coop",
+        "baseline": 0.002,
+        "optimized": 0.012
+      },
+      {
+        "key": "ig:Brazos:drone",
+        "baseline": 0.008,
+        "optimized": 0.006
+      },
+      {
+        "key": "ig:Brazos:deeper",
+        "baseline": 0.0005,
+        "optimized": 0.0026
+      },
+      {
+        "key": "ig:Families:first",
+        "baseline": 0.002,
+        "optimized": 0.01015
+      },
+      {
+        "key": "ig:Families:second",
+        "baseline": 0.004,
+        "optimized": 0.014
+      },
+      {
+        "key": "ig:Families:coop",
+        "baseline": 0.002,
+        "optimized": 0.012
+      },
+      {
+        "key": "ig:Families:deeper",
+        "baseline": 0.0008,
+        "optimized": 0.00095
+      },
+      {
+        "key": "ig:Edges:rich",
+        "baseline": 0.0008,
+        "optimized": 0
+      },
+      {
+        "key": "ig:Edges:first",
+        "baseline": 0.0025,
+        "optimized": 0.0012
+      },
+      {
+        "key": "ig:Edges:second",
+        "baseline": 0.003,
+        "optimized": 0.01055
+      },
+      {
+        "key": "ig:Edges:coop",
+        "baseline": 0.0015,
+        "optimized": 0.0115
+      },
+      {
+        "key": "ig:Edges:drone",
+        "baseline": 0.0025,
+        "optimized": 0
+      },
+      {
+        "key": "ig:Edges:deeper",
+        "baseline": 0.0005,
+        "optimized": 0.0012
+      },
+      {
+        "key": "ig:Sharks:rich",
+        "baseline": 0.0006,
+        "optimized": 0.0106
+      },
+      {
+        "key": "ig:Sharks:first",
+        "baseline": 0.001,
+        "optimized": 0.011
+      },
+      {
+        "key": "ig:Sharks:second",
+        "baseline": 0.001,
+        "optimized": 0.011
+      },
+      {
+        "key": "ig:Sharks:coop",
+        "baseline": 0.0008,
+        "optimized": 0.0108
+      },
+      {
+        "key": "ig:Sharks:alien",
+        "baseline": 0.003,
+        "optimized": 0.0011
+      },
+      {
+        "key": "ig:Sharks:deeper",
+        "baseline": 0.005,
+        "optimized": 0.015
+      }
+    ]
+  }
+}

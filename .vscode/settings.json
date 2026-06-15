@@ -1,0 +1,33 @@
+{
+  "editor.minimap.enabled": false,
+  "editor.bracketPairColorization.enabled": false,
+  "editor.guides.bracketPairs": false,
+  "editor.smoothScrolling": false,
+  "editor.cursorSmoothCaretAnimation": "off",
+  "editor.renderWhitespace": "none",
+  "editor.renderLineHighlight": "line",
+  "editor.occurrencesHighlight": "off",
+  "editor.codeLens": false,
+  "editor.inlayHints.enabled": "off",
+  "editor.largeFileOptimizations": true,
+  "editor.maxTokenizationLineLength": 20000,
+
+  "workbench.list.smoothScrolling": false,
+  "workbench.editor.enablePreview": true,
+  "workbench.editor.limit.enabled": true,
+  "workbench.editor.limit.value": 12,
+
+  "terminal.integrated.gpuAcceleration": "off",
+
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/out/**": true,
+    "**/.git/objects/**": true,
+    "**/.cursor/conversation-history/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/out": true,
+    "**/.cursor/conversation-history": true
+  }
+}
