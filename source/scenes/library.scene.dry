@@ -8,6 +8,7 @@ go-to: menu
 @menu
 title: menu
 
+- @parties_library: Party Descriptions
 - @guilds_library: Guild Descriptions
 - @demographics_library: Demographic Descriptions
 - @districts_library: District Descriptions
@@ -16,6 +17,21 @@ title: menu
 - @street_indices_library: Syndicates and Street Indices
 - @faction_attitudes: Faction attitudes and マ, ツマ
 - @backSpecialScene: Exit library
+
+
+@parties_library
+
+[? if corporate_party_acronym = "MNP" : MNP - The Mikasa National Party is all but openly a vehicle for the interests of the Big Three.  They have been in power continuously for over a century.  In the aftermath of the brutal suppression of the Stakeholder Rebellion, Mikasa was a single party state run by the Mikasa National Party. They are often just called the Corporates. ?]
+
+
+[? if corporate_party_acronym = "DNVP" : DNVP - In the aftermath of the tether scandal the ranks of the Mikasa National Party were purged.  The remainder of the old party created a new party called the Democratic New Voters Party. Meet the new boss, same as the old boss. They are called the Corporates justs like their predecessor. ?]
+
+
+I - Within a few years of the Stakeholder Rebellion, a number of special interest parties had been relegalized to represent various business interests and trade associations.  The number continued to expand over time.  These parties tend to be concentrated in single districts and are collectively called Independents or Special Interests.
+
+G - A number of the special interest parties have been suborned by the criminal syndicates of Mikasa.  Parties that are viewed as being highly influenced by the syndicates are often just refered to as Gangs.
+
+Social Democratic Forum: (That's us)  The social democratic forum was created from special interest parties from each of the seven districts.  Initially just a loose minority parliamentary faction, the SDF gained in stature as the Civil Servant's Party started gaining increasing vote share within the Aurora district.  This parliamentary grouping has come to be seen as the defacto democratic opposition.  Politicians from the affiliated groups are typically just called SDF politicians or Democrats.
 
 
 @faction_attitudes
@@ -135,7 +151,7 @@ Limelight: The home turf of the electronics powerhouse Brazos Zaibatsu.  Cheap d
 
 The Railyard: Dominated by the corporate compounds of the megacorp Magrail Combine.  The best armed district in Mikasa, they take a pride in displaying the signiture product of their flagship corporation.  Their open carry culture tends to make outsiders stay away.
 
-The Outside: small independent communities call The Clans of The Mother inhabit tunnels throughout Mikasa.  Their communities are seperated by sections of vacuum and operate autonomously.  They make The Deeps look cosmopolitan by comparison and dont accept outside currency.  They keep uncorrupted Guardian Spirits in habitats away from the dead internet and largely withdrew from Mikasa after watching the city tolerate Demons in public systems.
+The Outside: small independent communities call The Clans of The Mother inhabit tunnels throughout Mikasa.  Their communities are seperated by sections of vacuum and operate autonomously.  They make The Deeps look cosmopolitan by comparison and dont accept outside currency.  They keep uncorrupted Guardian Spirits in habitats away from the dead internet and largely withdrew from Mikasa after watching the city tolerate "Demons" in public computer systems.
 
 - @menu
 - @backSpecialScene: Exit library.

@@ -5,9 +5,9 @@ max-visits: 1
 tags: event
 view-if: month = 12
 
-The employment contracts of Megacorporation employees in Mikasa generally forbid them to vote for candidates the corporation deems unacceptable.  Consequently the only choice is between voting as their employeer wants and abstaining.  The Megacorps induce their employees not to abstain with financial and workplace incentives.
+The employment contracts of Megacorporation employees in Mikasa generally forbid them to vote for candidates the corporation deems unacceptable.  Consequently the ballots for corporate employees only ever have the name of the [+ corporate_party_name +] candidates approved by their employeers.  The only real choice is vote or abstain.  The Megacorps pay out some minor financial incentives to encourage voting but historically these have been small.
 
-It seems that the syndiates have decided it's worth counter bribing the drones, paying them not to vote.  This would shift the electorate for general population elections in favor of other candiates, including the ones the syndicates bribe or pressure people into supporting.  The effect would be most strongly felt in the districts with the main corporate strongholds, the Railyard, Limelight and Vats.
+It seems that the syndiates have decided it's worth counter bribing the drones, paying them not to vote.  This would shift the electorate for general population elections in favor of the special interest parties who are more friendly to the syndicates.  The effect would be most strongly felt in the districts with the main corporate strongholds, the Railyard, Limelight and Vats.
 
 -@useful
 -@troubling

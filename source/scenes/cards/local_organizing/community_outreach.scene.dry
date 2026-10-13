@@ -8,7 +8,7 @@ on-arrival: {! if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncAct
 
 = Community Conflicts
 
-The corporate dominated government allows local conflicts and disputes to fester.  If anything they find the a divided community advantageous.  We dont necessarily need government powers to fix every problem, the democratic movement has attracted respected figures from the various communities who can mediate disputes and promote unity throughout the city.
+The corporate dominated government allows local conflicts and disputes to fester.  If anything they find the a divided community advantageous.  We dont necessarily need government powers to fix every problem, the SDF has attracted respected figures from the various communities who can mediate disputes and promote unity throughout the city.
 
 - @first_wave_community
 - @second_wave_community

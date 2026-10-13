@@ -4,7 +4,7 @@ max-visits: 1
 tags: event
 view-if: month = 11 and year = 2301
 
-The city government and democratic movement in Mikasa has an unusual opportunity.  The offstation corporation that owns the freight MSS Dundalk which incited the Battle of the Tether has been caught red handed bribing the judiciary.  Normally they would simply keep their assets outside of Mikasa jurisdiction and refuse to pay the fines but the MSS Dundalk is currently undergoing repairs in Mikasa and vulnerable to siezure.
+Fortune is smiling on the SDF for once.  The offstation corporation that owns the freight MSS Dundalk which incited the Battle of the Tether has been caught red handed bribing the judiciary.  Normally they would simply keep their assets outside of Mikasa jurisdiction and refuse to pay the fines but the MSS Dundalk is currently undergoing repairs in Mikasa and vulnerable to siezure.
 
 Naturally Canterbary Logistics is trying to get the Dundalk out of port before the courts decide anything.  But the thousands of workers put out of work by their actions are obstructing access to the spaceport with mass protests while their fellow workers in the docks slow walk the repairs.  Mikasa's three megacorps are eager to use Canterbary Logistics as a scapegoat and make no effort to suppress the demonstrations.  The first legal mass political protests in a century are underway with crowds cheering on speakers denouncing injustice. What should be the main thrust of the speeches at these protests?
 
@@ -27,15 +27,15 @@ title: Careful and circumspect criticism of the megacorps
 on-arrival: {!
 budget += 2; 
 dundalk_stakeholder += 1;
-soylent_anger +=0.10; 
-magrail_anger += 0.10; 
-brazos_anger += 0.10;
+soylent_reprisal +=0.5; 
+magrail_reprisal += 0.5; 
+brazos_reprisal += 0.5;
 martyrs.push("Aisha Renee");
 !}
 
-Overtly criticizing the megacorps would be a swift path to a slander trial.  But the proliferation of euphemisms leaves room for plausible deniability.  A common talking point is how we can't return to harmony until the people get what they are owed.  The people understand the oblique meaning and get whipped up into a frenzy.  The courts imprison several scapegoats and impound the Dundalk.  At the impromptu celebrations afterwards people wonder if this might be the start of something more.  
+Overtly criticizing the megacorps would be a swift path to a slander trial at best.  But the proliferation of euphemisms leaves room for plausible deniability.  A common talking point is how we can't return to harmony until the people get what they are owed.  The people understand the oblique meaning and get whipped up into a frenzy.  The courts imprison several scapegoats and impound the Dundalk.  At the impromptu celebrations afterwards people wonder if this might be the start of something more.  
 
-The corporations understand the double meaning as well.  Several speakers suffer from street crime in the weeks after the rally.  A particularly inflamatory speaker named Aisha Renee dies in what is called a suicide and becomes immortalized as a martyr.
+The corporations understand the double meaning as well.  Several speakers suffer from street crime in the weeks after the rally.  A poet named Aisha Renee who read out a very provocative work dies in what is called a suicide and becomes immortalized as a martyr.
 
 
 @anti_crime
@@ -48,7 +48,7 @@ martyrs.push("Alex Platea");
 
 The speakers shout vitrol at the gangsters while many in the crowds mutter under their breath that the corporations are gangsters under a different name.  The courts cave and impound the vessel.  At the impromptu celebrations afterwards people wonder if this might be the start of something more.  
 
-Syndicate hitmen attempt to publicly assassinate a particularly inflamatory speaker named Aisha Lee but are thwarted and lynched by members of the crowd.  A young person named Alex Platea dies stopping the assassination and becomes immortalized as a martyr.
+Syndicate hitmen attempt to publicly assassinate a particularly inflamatory speaker named Aisha Renee but are thwarted and lynched by members of the crowd.  A young medical professional named Alex Platea dies stopping the assassination and becomes immortalized as a martyr.
 
 
 @mikasa_first
@@ -56,10 +56,10 @@ title: Stir up anger at offworld exploitation
 on-arrival: {!
 budget +=2;
 dundalk_nationalist += 20; 
-soylent_anger -=0.10; 
-magrail_anger -= 0.10; 
-brazos_anger -= 0.10;
+soylent_reprisal -= 1; 
+magrail_reprisal -= 1; 
+brazos_reprisal -= 1;
 !}
 
-Stiring up anger about outsiders rallies the people behind the government in a way that the megacorps and syndicates can't object to.  The courts imprison several scapegoats and impound the Dundalk.  But attacking outsiders stokes the fires of xenophobia, clashes between communities is on the rise.
+Stiring up anger about outsiders rallies the people behind the SDF in a way that the megacorps and syndicates can't object to.  The courts imprison several scapegoats and impound the Dundalk.  But attacking outsiders stokes the fires of xenophobia, clashes between communities is on the rise.
 
