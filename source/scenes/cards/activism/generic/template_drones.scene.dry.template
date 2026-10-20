@@ -22,10 +22,10 @@ Workers deck stub. Starting foothold card.
 @mutual_aid
 title: Mutual Aid networks
 subtitle: Equipment pooling, reciprocal lending
-choose-if: month_actions_remaining > 0
-unavailable-subtitle: No organizing actions left this month.
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
-Q.spendOrganizingAction();
+Q.spendWorkerActionWithFallback();
 [EFFECT_CODE_HERE]
 if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
 !}
@@ -36,10 +36,10 @@ The group helps folks within the [Demographic] stretch their resources until the
 title: Help the district
 subtitle: Depends on the group prosperity
 view-if: 1 = 0; NEED_GROUP_PROSPERITY_FIRST
-choose-if: month_actions_remaining > 0
-unavailable-subtitle: No organizing actions left this month.
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
-Q.spendOrganizingAction();
+Q.spendWorkerActionWithFallback();
 [EFFECT_CODE_HERE]
 if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
 !}
@@ -51,7 +51,7 @@ title: Fund them in a citywide improvement effort
 choose-if: TBD
 unavailable-subtitle: Requires high support for the SDF, prosperity and an infusion of investment
 on-arrival: {!
-Q.spendOrganizingAction();
+Q.spendWorkerActionWithFallback();
 [EFFECT_CODE_HERE]
 if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
 !}
@@ -60,11 +60,11 @@ We fund these people in improving their industry throughout the city.
 
 @gotv
 title: Get out the vote
-choose-if: month_actions_remaining > 0
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
 view-if: drones_can_vote_trigger = 1
-unavailable-subtitle: No organizing actions left this month.
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
-Q.spendOrganizingAction();
+Q.spendWorkerActionWithFallback();
 [EFFECT_CODE_HERE]
 if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
 !}
@@ -74,11 +74,11 @@ Most of the workers have little love for the megacorps or syndicates, word of mo
 
 @kitv
 title: Keep in the vote
-choose-if: month_actions_remaining > 0
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
 view-if: drones_can_vote_trigger = 0
-unavailable-subtitle: No organizing actions left this month.
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
-Q.spendOrganizingAction();
+Q.spendWorkerActionWithFallback();
 [EFFECT_CODE_HERE]
 if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
 !}
