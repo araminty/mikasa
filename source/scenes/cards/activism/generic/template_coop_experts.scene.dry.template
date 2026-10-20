@@ -12,32 +12,44 @@ on-arrival: {! if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncAct
 
 Cooperatives / Experts deck stub. Starting foothold card.
 
-- @[ACTION1_ID]
-- @[ACTION2_ID]
+- @public_good
+- @scale_up
 - @return
 
-@[ACTION1_ID]
-title: [Action name]
-subtitle: [Effect preview]
+@public_good
+title: Provide public benefit
+subtitle: Directly impact relevant city values
 choose-if: professional_actions_remaining > 0 or month_actions_remaining > 0
 unavailable-subtitle: [! if professional_actions_remaining > 0: No professional actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
 Q.spendProfessionalActionWithFallback();
+// Directly impacts a city statistic (e.g., crime_reduction, health_access)
+// Example: Q.crime_reduction = (Number(Q.crime_reduction) || 0) + 0.5;
 [EFFECT_CODE_HERE]
 if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
 !}
 
-[FLAVOR_TEXT]
+Provides a public good that corporations don't, directly improving city conditions.
 
-@[ACTION2_ID]
-title: [Action name]
-subtitle: [Effect preview]
+@scale_up
+title: Scale up operations
+subtitle: Grow coop membership or provide jobs
 choose-if: professional_actions_remaining > 0 or month_actions_remaining > 0
 unavailable-subtitle: [! if professional_actions_remaining > 0: No professional actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
 Q.spendProfessionalActionWithFallback();
+// Choose ONE path per coop:
+// Path A: Expand ranks - grow coop members
+// Q.coop_[GROUP_NAME]_members += 5;
+// if (Q.coop_[GROUP_NAME]_gigWorkers > Q.coop_[GROUP_NAME]_members * 0.3) {
+//     Q.coop_[GROUP_NAME]_members += 3;  // Extra from gig workers
+// }
+// Path B: Provide jobs - hire gig workers targeting lowest-prosperity demographics
+// const lowestStratum = findLowestProsperityStratum('[DISTRICT]');
+// Q.coop_[GROUP_NAME]_gigWorkers += 3;
+// Q.bumpBlockProsperity('[DISTRICT]', lowestStratum, 0.03);
 [EFFECT_CODE_HERE]
 if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
 !}
 
-[FLAVOR_TEXT]
+Expands coop operations: grow membership or provide jobs to vulnerable demographics.

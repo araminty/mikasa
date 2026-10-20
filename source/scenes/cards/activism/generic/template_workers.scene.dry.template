@@ -12,32 +12,66 @@ on-arrival: {! if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncAct
 
 Workers deck stub. Starting foothold card.
 
-- @[ACTION1_ID]
-- @[ACTION2_ID]
+- @mutual_aid
+- @public_aid
+- @sector_integration
+- @gotv
 - @return
 
-@[ACTION1_ID]
-title: [Action name]
-subtitle: [Brief effect preview]
+@mutual_aid
+title: Mutual Aid networks
+subtitle: Equipment pooling, reciprocal lending
 choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
 unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
 Q.spendWorkerActionWithFallback();
-[EFFECT_CODE_HERE]
+Q.bumpBlockProsperity('[DISTRICT]', '[STRATUM]', 0.05);
 if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
 !}
 
-[FLAVOR_TEXT]
+The group helps folks within the [DEMOGRAPHIC] stretch their resources until the next paycheck.
 
-@[ACTION2_ID]
-title: [Action name]
-subtitle: [Brief effect preview]
+@public_aid
+title: Public aid network
+subtitle: Help within the area, requires group prosperity
 choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
 unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
 Q.spendWorkerActionWithFallback();
-[EFFECT_CODE_HERE]
+// Requires: Q.prosperity_[STRATUM] > average district prosperity
+Q.bumpBlockProsperity('[DISTRICT]', '[STRATUM]', 0.03);
+Q.bumpBlockProsperity('[DISTRICT]', 'drone', 0.02);
 if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
 !}
 
-[FLAVOR_TEXT]
+Group leverages its relative advantage to help others in the district.
+
+@sector_integration
+title: Sector integration
+subtitle: ONE-TIME TRIGGER - Power up the group
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+Q.spendWorkerActionWithFallback();
+// TODO: Implement one-time trigger for citywide sector improvement
+if (typeof Q.[GROUP_NAME]_triggered !== 'number') {
+    Q.[GROUP_NAME]_triggered = 1;
+    // Citywide effect: e.g., Q.[sector]_efficiency += 0.1
+}
+if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+!}
+
+Once organized, the group can trigger a permanent citywide improvement in their sector.
+
+@gotv
+title: Get out the vote
+subtitle: Canvas for SDF support
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+Q.spendWorkerActionWithFallback();
+Q.workers_canvas_[DISTRICT] = (Number(Q.workers_canvas_[DISTRICT]) || 0) + 1;
+if (typeof Q.update_projections === 'function') { Q.update_projections() }
+!}
+
+Word of mouth canvassing to convince workers that supporting the SDF could actually make a difference.

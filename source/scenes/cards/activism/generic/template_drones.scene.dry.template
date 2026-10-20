@@ -14,7 +14,8 @@ Workers deck stub. Starting foothold card.
 
 - @mutual_aid
 - @public_aid
-- @sector_integration
+- @sabotage
+- @strike
 - @gotv
 - @kitv
 - @return
@@ -26,37 +27,58 @@ choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
 unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
 Q.spendWorkerActionWithFallback();
-[EFFECT_CODE_HERE]
+Q.bumpBlockProsperity('[DISTRICT]', 'drone', 0.05);
 if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
 !}
 
-The group helps folks within the [Demographic] stretch their resources until the next paycheck.
+The group helps folks within the [DEMOGRAPHIC] stretch their resources until the next paycheck.
 
 @public_aid
-title: Help the district
-subtitle: Depends on the group prosperity
-view-if: 1 = 0; NEED_GROUP_PROSPERITY_FIRST
+title: Public aid network
+subtitle: Help within the area, requires group prosperity
 choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
 unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
 Q.spendWorkerActionWithFallback();
-[EFFECT_CODE_HERE]
+// Requires: Q.prosperity_drone > average district prosperity
+Q.bumpBlockProsperity('[DISTRICT]', 'drone', 0.03);
+Q.bumpBlockProsperity('[DISTRICT]', 'third_wave', 0.02);
 if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
 !}
 
-With this group doing better then most they are able to offer work and connections to others in the district.
+Group leverages its relative advantage to help others in the district.
 
-@sector_integration
-title: Fund them in a citywide improvement effort
-choose-if: TBD
-unavailable-subtitle: Requires high support for the SDF, prosperity and an infusion of investment
+@sabotage
+title: Sabotage
+subtitle: Ding relevant Big 3 prosperity citywide
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
 Q.spendWorkerActionWithFallback();
-[EFFECT_CODE_HERE]
+// Map district to corp: Vats -> Soylent, Railyard -> Magrail, Limelight -> Brazos
+Q.prosperity_[CORP] = Math.max(0, (Number(Q.prosperity_[CORP]) || 0) - 0.5);
 if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
 !}
 
-We fund these people in improving their industry throughout the city.
+Deniable sand in the gears — missing catalysts, "accidental" contamination holds.
+
+@strike
+title: General strike
+subtitle: NOT YET IMPLEMENTED - High bar to trigger
+choose-if: false
+unavailable-subtitle: Strike threshold not yet met
+on-arrival: {!
+Q.spendWorkerActionWithFallback();
+// TODO: Implement strike mechanics
+// Ways to lower bar:
+// - Establish welfare system
+// - Establish unemployment system
+// - Channel secret funds to underground unions
+// - Cut deal with syndicates
+// Every successful strike makes subsequent strikes easier
+!}
+
+Mass walkout, production halts, economic shock.
 
 @gotv
 title: Get out the vote
@@ -65,11 +87,11 @@ view-if: drones_can_vote_trigger = 1
 unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
 Q.spendWorkerActionWithFallback();
-[EFFECT_CODE_HERE]
-if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+Q.workers_canvas_[DISTRICT] = (Number(Q.workers_canvas_[DISTRICT]) || 0) + 1;
+if (typeof Q.update_projections === 'function') { Q.update_projections() }
 !}
 
-Most of the workers have little love for the megacorps or syndicates, word of mouth canvasing can help convince them that supporting the SDF could actually make a difference.
+Most workers have little love for the megacorps or syndicates, word of mouth canvassing can help convince them that supporting the SDF could actually make a difference.
 
 
 @kitv
@@ -80,7 +102,7 @@ unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left
 on-arrival: {!
 Q.spendWorkerActionWithFallback();
 [EFFECT_CODE_HERE]
-if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+if (typeof Q.update_projections === 'function') { Q.update_projections() }
 !}
 
 The drones have signed away their right to vote for anyone but the corporate approved candidates. We convince them to turn down the meager voting incentives and stay home instead.
