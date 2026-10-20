@@ -21,8 +21,7 @@ subtitle: Ding Seven Families bottom line
 choose-if: professional_actions_remaining > 0 or month_actions_remaining > 0
 unavailable-subtitle: [! if professional_actions_remaining > 0: No professional actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
-if (typeof Q.spendProfessionalAction === 'function' && Q.spendProfessionalAction()) {}
-else if (typeof Q.spendOrganizingAction === 'function') { Q.spendOrganizingAction(); }
+Q.spendProfessionalActionWithFallback();
 Q.prosperity_families = Math.max(0, (Number(Q.prosperity_families) || 0) - 0.5);
 if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
 !}

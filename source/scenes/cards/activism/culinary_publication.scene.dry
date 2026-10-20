@@ -24,8 +24,7 @@ subtitle: Popular among the poor
 choose-if: professional_actions_remaining > 0 or month_actions_remaining > 0
 unavailable-subtitle: [! if professional_actions_remaining > 0: No professional actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
-if (typeof Q.spendProfessionalAction === 'function' && Q.spendProfessionalAction()) {}
-else if (typeof Q.spendOrganizingAction === 'function') { Q.spendOrganizingAction(); }
+Q.spendProfessionalActionWithFallback();
 Q.anti_corp_media += 1;
 !}
 
@@ -37,8 +36,7 @@ subtitle: Humanize the non-humans
 choose-if: professional_actions_remaining > 0 or month_actions_remaining > 0
 unavailable-subtitle: [! if professional_actions_remaining > 0: No professional actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
-if (typeof Q.spendProfessionalAction === 'function' && Q.spendProfessionalAction()) {}
-else if (typeof Q.spendOrganizingAction === 'function') { Q.spendOrganizingAction(); }
+Q.spendProfessionalActionWithFallback();
 Q.otherworld_media += 1;
 Q.parochialism = Math.max(0, (Number(Q.parochialism) || 0) - 1);
 if (typeof Q.update_projections === 'function') { Q.update_projections() }
@@ -53,8 +51,7 @@ view-if: self_sufficiency_media = 0
 choose-if: professional_actions_remaining > 0 or month_actions_remaining > 0
 unavailable-subtitle: [! if professional_actions_remaining > 0: No professional actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
-if (typeof Q.spendProfessionalAction === 'function' && Q.spendProfessionalAction()) {}
-else if (typeof Q.spendOrganizingAction === 'function') { Q.spendOrganizingAction(); }
+Q.spendProfessionalActionWithFallback();
 Q.self_sufficiency_media += 1;
 !}
 
@@ -66,8 +63,7 @@ subtitle: Negotiations with megacorps
 choose-if: professional_actions_remaining > 0 or month_actions_remaining > 0
 unavailable-subtitle: [! if professional_actions_remaining > 0: No professional actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
-if (typeof Q.spendProfessionalAction === 'function' && Q.spendProfessionalAction()) {}
-else if (typeof Q.spendOrganizingAction === 'function') { Q.spendOrganizingAction(); }
+Q.spendProfessionalActionWithFallback();
 Q.kiss_ass_media += 1;
 !}
 

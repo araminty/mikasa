@@ -22,11 +22,7 @@ subtitle: [Effect preview]
 choose-if: professional_actions_remaining > 0 or month_actions_remaining > 0
 unavailable-subtitle: [! if professional_actions_remaining > 0: No professional actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
-if (typeof Q.spendProfessionalAction === 'function' && Q.spendProfessionalAction()) {
-    // Used professional action
-} else if (typeof Q.spendOrganizingAction === 'function' && Q.spendOrganizingAction()) {
-    // Used generic action
-}
+Q.spendProfessionalActionWithFallback();
 [EFFECT_CODE_HERE]
 if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
 !}
@@ -39,11 +35,7 @@ subtitle: [Effect preview]
 choose-if: professional_actions_remaining > 0 or month_actions_remaining > 0
 unavailable-subtitle: [! if professional_actions_remaining > 0: No professional actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
-if (typeof Q.spendProfessionalAction === 'function' && Q.spendProfessionalAction()) {
-    // Used professional action
-} else if (typeof Q.spendOrganizingAction === 'function' && Q.spendOrganizingAction()) {
-    // Used generic action
-}
+Q.spendProfessionalActionWithFallback();
 [EFFECT_CODE_HERE]
 if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
 !}

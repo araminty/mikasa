@@ -22,11 +22,7 @@ subtitle: [Brief effect preview]
 choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
 unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
-if (typeof Q.spendWorkerAction === 'function' && Q.spendWorkerAction()) {
-    // Used worker action
-} else if (typeof Q.spendOrganizingAction === 'function' && Q.spendOrganizingAction()) {
-    // Used generic action
-}
+Q.spendWorkerActionWithFallback();
 [EFFECT_CODE_HERE]
 if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
 !}
@@ -39,11 +35,7 @@ subtitle: [Brief effect preview]
 choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
 unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
-if (typeof Q.spendWorkerAction === 'function' && Q.spendWorkerAction()) {
-    // Used worker action
-} else if (typeof Q.spendOrganizingAction === 'function' && Q.spendOrganizingAction()) {
-    // Used generic action
-}
+Q.spendWorkerActionWithFallback();
 [EFFECT_CODE_HERE]
 if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
 !}

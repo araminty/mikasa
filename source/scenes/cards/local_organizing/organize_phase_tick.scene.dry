@@ -1018,6 +1018,36 @@ Q.spendProfessionalAction = function() {
     return true
 }
 
+/** Helper to spend worker action with fallback to generic */
+Q.spendWorkerActionWithFallback = function() {
+    if (typeof Q.spendWorkerAction === 'function' && Q.spendWorkerAction()) {
+        return true
+    }
+    if (typeof Q.spendOrganizingAction === 'function' && Q.spendOrganizingAction()) {
+        return true
+    }
+    return false
+}
+
+/** Helper to spend professional action with fallback to generic */
+Q.spendProfessionalActionWithFallback = function() {
+    if (typeof Q.spendProfessionalAction === 'function' && Q.spendProfessionalAction()) {
+        return true
+    }
+    if (typeof Q.spendOrganizingAction === 'function' && Q.spendOrganizingAction()) {
+        return true
+    }
+    return false
+}
+
+/** Helper to spend generic action only */
+Q.spendGenericAction = function() {
+    if (typeof Q.spendOrganizingAction === 'function') {
+        return Q.spendOrganizingAction()
+    }
+    return false
+}
+
 /** Month-start: +1 reserve (cap 4), reset used, set limit 2 or 3 if idle last month. */
 Q.beginActionEconomyMonth = function() {
     var usedLast = Number(Q.month_actions_used) || 0

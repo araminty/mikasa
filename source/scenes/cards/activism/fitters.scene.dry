@@ -1,0 +1,70 @@
+title: Familial Order of Tank Fitters
+new-page: true
+is-card: true
+card-image: img/deck_workers_clip.webp
+tags: workers
+view-if: phase >= 1
+on-arrival: {! if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay() } !}
+
+= Pride of the Pitts - Tank Fitters
+
+The FOTF HQ is part fortress, part museum.  They have aquaculture artifacts dating back as far as 18th century Earth.  This building was one of the last bastions of the stakeholder's revolt and hatred of the Megacorps is the saltwater in their veins.  The feeling is mutual but everyone needs to eat so even the Big 3 will hire the Tank Fitters when they have no other choice.
+
+
+- @mutual_aid
+- @public_aid
+- @sector_integration
+- @gotv
+
+@mutual_aid
+title: [Action name]
+subtitle: [Brief effect preview]
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
+on-arrival: {!
+Q.spendOrganizingAction();
+[EFFECT_CODE_HERE]
+if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+!}
+
+
+
+@public_aid
+title: [Action name]
+subtitle: [Brief effect preview]
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
+on-arrival: {!
+Q.spendOrganizingAction();
+[EFFECT_CODE_HERE]
+if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+!}
+
+[FLAVOR_TEXT]
+
+@sector_integration
+title: [Action name]
+subtitle: [Brief effect preview]
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
+on-arrival: {!
+Q.spendOrganizingAction();
+[EFFECT_CODE_HERE]
+if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+!}
+
+[FLAVOR_TEXT]
+
+
+@gotv
+title: [Action name]
+subtitle: [Brief effect preview]
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
+on-arrival: {!
+Q.spendOrganizingAction();
+[EFFECT_CODE_HERE]
+if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+!}
+
+[FLAVOR_TEXT]
