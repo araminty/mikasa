@@ -1,0 +1,30 @@
+title: Programmer Collective
+new-page: true
+is-card: true
+card-image: img/asteroid.jpg
+tags: coop_experts
+view-if: phase >= 1
+on-arrival: {! if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay() } !}
+
+= Programmer Collective
+
+TBD name / district. A coop of systems people who scrub botnets off forgotten machines.
+
+Cooperatives / Experts deck stub.
+
+- @purge_botnets
+- @return
+
+@purge_botnets
+title: Purge forgotten botnets
+subtitle: Ding Bleeding Edges bottom line
+choose-if: professional_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if professional_actions_remaining > 0: No professional actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+if (typeof Q.spendProfessionalAction === 'function' && Q.spendProfessionalAction()) {}
+else if (typeof Q.spendOrganizingAction === 'function') { Q.spendOrganizingAction(); }
+Q.prosperity_edges = Math.max(0, (Number(Q.prosperity_edges) || 0) - 0.5);
+if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+!}
+
+They clear compromised systems the Edges would rather leave haunted.

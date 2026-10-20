@@ -1,0 +1,45 @@
+title: The Body Shop
+new-page: true
+is-card: true
+card-image: img/asteroid.jpg
+tags: coop_experts
+view-if: phase >= 1
+on-arrival: {! if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay() } !}
+
+= The Body Shop
+
+Aurora district. Cyberware refurbishment experts.
+
+Cooperatives / Experts deck stub.
+
+- @recycled_chrome
+- @ears
+- @return
+
+@recycled_chrome
+title: Recycled chrome networks
+subtitle: Ding Sharkskin bottom line
+choose-if: professional_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if professional_actions_remaining > 0: No professional actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+if (typeof Q.spendProfessionalAction === 'function' && Q.spendProfessionalAction()) {}
+else if (typeof Q.spendOrganizingAction === 'function') { Q.spendOrganizingAction(); }
+Q.prosperity_sharks = Math.max(0, (Number(Q.prosperity_sharks) || 0) - 0.5);
+if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+!}
+
+The Body Shop expands distribution of refurbished chrome.
+
+@ears
+title: They have ears everywhere
+subtitle: Ding corporate support among nonshareholder wealthy
+choose-if: professional_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if professional_actions_remaining > 0: No professional actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+if (typeof Q.spendProfessionalAction === 'function' && Q.spendProfessionalAction()) {}
+else if (typeof Q.spendOrganizingAction === 'function') { Q.spendOrganizingAction(); }
+Q.harm_reduction_ears += 1;
+if (typeof Q.update_projections === 'function') { Q.update_projections() }
+!}
+
+Some of the corporate dirty laundry comes to light.

@@ -1,0 +1,60 @@
+title: Brazos Shadow Local
+new-page: true
+is-card: true
+card-image: img/asteroid.jpg
+tags: workers
+view-if: phase >= 1
+on-arrival: {! if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay() } !}
+
+= Brazos Shadow Local
+
+Limelight district. A covert union among Brazos Zaibatsu drones.
+
+Workers deck stub.
+
+- @sabotage
+- @mutual_aid
+- @stealth_canvas
+- @return
+
+@sabotage
+title: Sabotage the fabs
+subtitle: Hurt Brazos prosperity
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+if (typeof Q.spendWorkerAction === 'function' && Q.spendWorkerAction()) {}
+else if (typeof Q.spendOrganizingAction === 'function') { Q.spendOrganizingAction(); }
+Q.prosperity_brazos = Math.max(0, (Number(Q.prosperity_brazos) || 0) - 0.5);
+if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+!}
+
+Shift swaps and quiet refusals.
+
+@mutual_aid
+title: Mutual aid in the fabs
+subtitle: Help Limelight drone prosperity
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+if (typeof Q.spendWorkerAction === 'function' && Q.spendWorkerAction()) {}
+else if (typeof Q.spendOrganizingAction === 'function') { Q.spendOrganizingAction(); }
+if (typeof Q.bumpBlockProsperity === 'function') { Q.bumpBlockProsperity('Limelight', 'drone', 0.05); }
+if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+!}
+
+Med-kit pools and rent bridges.
+
+@stealth_canvas
+title: Stealth canvas
+subtitle: Limelight canvas
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+if (typeof Q.spendWorkerAction === 'function' && Q.spendWorkerAction()) {}
+else if (typeof Q.spendOrganizingAction === 'function') { Q.spendOrganizingAction(); }
+Q.workers_canvas_limelight += 1;
+if (typeof Q.update_projections === 'function') { Q.update_projections() }
+!}
+
+Clean-room gossip and dorm flyers.

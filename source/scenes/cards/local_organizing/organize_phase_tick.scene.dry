@@ -972,6 +972,11 @@ function syncActionEconomyDisplay() {
         remaining = Math.min(slotsLeft, reserve)
     }
     Q.month_actions_remaining = remaining
+    
+    // Sync worker and professional action budgets
+    Q.worker_actions_remaining = Math.max(0, (Number(Q.worker_actions_limit) || 0) - (Number(Q.worker_actions_used) || 0))
+    Q.professional_actions_remaining = Math.max(0, (Number(Q.professional_actions_limit) || 0) - (Number(Q.professional_actions_used) || 0))
+    
     syncMainHandActionDescription()
     return Q.month_actions_remaining
 }
@@ -989,6 +994,30 @@ Q.spendOrganizingAction = function() {
     return true
 }
 
+Q.canSpendWorkerAction = function() {
+    syncActionEconomyDisplay()
+    return (Number(Q.worker_actions_remaining) || 0) > 0
+}
+
+Q.spendWorkerAction = function() {
+    if (!Q.canSpendWorkerAction()) { return false }
+    Q.worker_actions_used = (Number(Q.worker_actions_used) || 0) + 1
+    syncActionEconomyDisplay()
+    return true
+}
+
+Q.canSpendProfessionalAction = function() {
+    syncActionEconomyDisplay()
+    return (Number(Q.professional_actions_remaining) || 0) > 0
+}
+
+Q.spendProfessionalAction = function() {
+    if (!Q.canSpendProfessionalAction()) { return false }
+    Q.professional_actions_used = (Number(Q.professional_actions_used) || 0) + 1
+    syncActionEconomyDisplay()
+    return true
+}
+
 /** Month-start: +1 reserve (cap 4), reset used, set limit 2 or 3 if idle last month. */
 Q.beginActionEconomyMonth = function() {
     var usedLast = Number(Q.month_actions_used) || 0
@@ -1000,6 +1029,15 @@ Q.beginActionEconomyMonth = function() {
     if (reserve < 0) { reserve = 0 }
     if (reserve > ACTION_RESERVE_MAX) { reserve = ACTION_RESERVE_MAX }
     Q.action_reserve = Math.min(ACTION_RESERVE_MAX, reserve + 1)
+    
+    // Initialize worker and professional action budgets (flat 1/month each)
+    Q.worker_actions_used = 0
+    Q.worker_actions_limit = 1
+    Q.worker_actions_remaining = 1
+    Q.professional_actions_used = 0
+    Q.professional_actions_limit = 1
+    Q.professional_actions_remaining = 1
+    
     applyActionSurgeIfNewPhase()
     return syncActionEconomyDisplay()
 }

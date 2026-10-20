@@ -1,0 +1,60 @@
+title: Soylent Underground
+new-page: true
+is-card: true
+card-image: img/asteroid.jpg
+tags: workers
+view-if: phase >= 1
+on-arrival: {! if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay() } !}
+
+= Soylent Underground
+
+Vats district. An illegal shop-floor network among Community Soylent drones.
+
+Workers deck stub.
+
+- @sabotage
+- @mutual_aid
+- @stealth_canvas
+- @return
+
+@sabotage
+title: Sabotage the vat lines
+subtitle: Hurt Soylent prosperity
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+if (typeof Q.spendWorkerAction === 'function' && Q.spendWorkerAction()) {}
+else if (typeof Q.spendOrganizingAction === 'function') { Q.spendOrganizingAction(); }
+Q.prosperity_soylent = Math.max(0, (Number(Q.prosperity_soylent) || 0) - 0.5);
+if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+!}
+
+Deniable sand in the gears.
+
+@mutual_aid
+title: Mutual aid on the floor
+subtitle: Help Vats drone prosperity
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+if (typeof Q.spendWorkerAction === 'function' && Q.spendWorkerAction()) {}
+else if (typeof Q.spendOrganizingAction === 'function') { Q.spendOrganizingAction(); }
+if (typeof Q.bumpBlockProsperity === 'function') { Q.bumpBlockProsperity('Vats', 'drone', 0.05); }
+if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+!}
+
+Shift covers and shared rations.
+
+@stealth_canvas
+title: Stealth canvas
+subtitle: Vats canvas
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+if (typeof Q.spendWorkerAction === 'function' && Q.spendWorkerAction()) {}
+else if (typeof Q.spendOrganizingAction === 'function') { Q.spendOrganizingAction(); }
+Q.workers_canvas_vats += 1;
+if (typeof Q.update_projections === 'function') { Q.update_projections() }
+!}
+
+Door-to-door among the drones.

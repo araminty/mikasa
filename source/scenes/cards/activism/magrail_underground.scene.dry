@@ -1,0 +1,60 @@
+title: Magrail Rank and File
+new-page: true
+is-card: true
+card-image: img/asteroid.jpg
+tags: workers
+view-if: phase >= 1
+on-arrival: {! if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay() } !}
+
+= Magrail Rank and File
+
+Railyard district. An underground labor circle among Combined Magrail Trust drones.
+
+Workers deck stub.
+
+- @sabotage
+- @mutual_aid
+- @stealth_canvas
+- @return
+
+@sabotage
+title: Sabotage the yards
+subtitle: Hurt Magrail prosperity
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+if (typeof Q.spendWorkerAction === 'function' && Q.spendWorkerAction()) {}
+else if (typeof Q.spendOrganizingAction === 'function') { Q.spendOrganizingAction(); }
+Q.prosperity_magrail = Math.max(0, (Number(Q.prosperity_magrail) || 0) - 0.5);
+if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+!}
+
+Safety gripes become leverage.
+
+@mutual_aid
+title: Mutual aid in the yards
+subtitle: Help Railyard drone prosperity
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+if (typeof Q.spendWorkerAction === 'function' && Q.spendWorkerAction()) {}
+else if (typeof Q.spendOrganizingAction === 'function') { Q.spendOrganizingAction(); }
+if (typeof Q.bumpBlockProsperity === 'function') { Q.bumpBlockProsperity('Railyard', 'drone', 0.05); }
+if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+!}
+
+Injury funds and tool libraries.
+
+@stealth_canvas
+title: Stealth canvas
+subtitle: Railyard canvas
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+if (typeof Q.spendWorkerAction === 'function' && Q.spendWorkerAction()) {}
+else if (typeof Q.spendOrganizingAction === 'function') { Q.spendOrganizingAction(); }
+Q.workers_canvas_railyard += 1;
+if (typeof Q.update_projections === 'function') { Q.update_projections() }
+!}
+
+Quiet conversations in break cages.

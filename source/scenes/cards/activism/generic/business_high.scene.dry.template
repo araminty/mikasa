@@ -1,0 +1,49 @@
+title: [GROUP_NAME]
+new-page: true
+is-card: true
+card-image: img/aurora_pyramid.webp
+tags: business
+view-if: phase >= 1
+on-arrival: {! if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay() } !}
+
+= [GROUP_NAME]
+
+[DISTRICT] district. A [formal/informal] association of [profession/type] — [brief: economic role, political stance].
+
+Business deck stub. Advanced foothold card.
+
+- @local_campaign
+- @investment_network
+- @return
+
+@local_campaign
+title: [District] business campaign
+subtitle: Ding Big 3 prosperity, help city
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
+on-arrival: {!
+Q.spendOrganizingAction();
+const groupProsperity = Q.prosperity_business || 8;
+const scale = 0.15 + (groupProsperity / 15);
+Q.prosperity_soylent = Math.max(0, (Number(Q.prosperity_soylent) || 0) - scale * 0.5);
+Q.prosperity_magrail = Math.max(0, (Number(Q.prosperity_magrail) || 0) - scale * 0.5);
+Q.prosperity_brazos = Math.max(0, (Number(Q.prosperity_brazos) || 0) - scale * 0.5);
+Q.prosperity_citywide = (Number(Q.prosperity_citywide) || 0) + (scale * 0.75);
+if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+!}
+
+[FLAVOR: Coordinated campaigns, elite pressure, political leverage]
+
+@investment_network
+title: Local investment network
+subtitle: Reduce capital costs citywide
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
+on-arrival: {!
+Q.spendOrganizingAction();
+const businessWealth = Q.business_wealth || 8;
+const capitalReduction = businessWealth * 0.015;
+Q.capital_cost_reduction = Math.min(0.75, (Number(Q.capital_cost_reduction) || 0) + capitalReduction);
+!}
+
+[FLAVOR: Elite businesses invest in local infrastructure, reducing costs for all]
