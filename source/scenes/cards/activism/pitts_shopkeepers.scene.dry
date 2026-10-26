@@ -1,0 +1,45 @@
+title: Pitts Shopkeepers' Association
+new-page: true
+is-card: true
+card-image: img/deck_keyboard_torch_clip.webp
+tags: business
+view-if: phase >= 1
+on-arrival: {! if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay() } !}
+
+= Pitts Shopkeepers' Association
+
+Pitts district. An informal compact of corner stores, noodle stands, repair kiosks and market stalls.  Individually they are nobody; together they are the retail backbone of the district and the first to feel every shakedown and every supply squeeze.  Not rich, not powerful, but they know every face on their block and every hand that reaches into their tills.
+
+- @local_campaign
+- @anti_racket_pledge
+- @return
+
+@local_campaign
+title: Buy from your block
+subtitle: Steer custom away from the Big 3, help Pitts commerce
+choose-if: month_actions_remaining > 0
+unavailable-subtitle: No organizing actions left this month.
+on-arrival: {!
+Q.spendGenericAction();
+Q.prosperity_soylent = Math.max(0, (Number(Q.prosperity_soylent) || 0) - 0.2);
+Q.prosperity_magrail = Math.max(0, (Number(Q.prosperity_magrail) || 0) - 0.2);
+Q.prosperity_brazos = Math.max(0, (Number(Q.prosperity_brazos) || 0) - 0.2);
+if (typeof Q.bumpDistrictProsperity === 'function') { Q.bumpDistrictProsperity('Pitts', 0.04); }
+if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+!}
+
+A coordinated campaign of chalkboard signs, shared supplier lists and word of mouth.  Nobody marches, nobody makes speeches — the neighbors just start buying their groceries two doors down instead of from the vending companies.
+
+@anti_racket_pledge
+title: Anti-racket pledge
+subtitle: Publicly refuse the Families' protection money — hard bar
+view-if: anti_racket_pitts_taken = 0
+choose-if: month_actions_remaining > 0 and police_reform >= 2 and prosperity_families <= 6
+unavailable-subtitle: [! if police_reform < 2: Police too weak or corrupt ?][! if prosperity_families > 6: Families too strong ?]No organizing actions left this month.
+on-arrival: anti_racket_pitts_taken = 1; {!
+Q.spendGenericAction();
+Q.prosperity_families = Math.max(0, (Number(Q.prosperity_families) || 0) - 1.5);
+if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+!}
+
+Every shop on the street posts the same pledge in the same window on the same morning: no more envelopes, no more lookouts in the doorway, no more "insurance".  The Families' protection racket lives on being owed — a whole block refusing at once is the one thing it cannot forgive or absorb.

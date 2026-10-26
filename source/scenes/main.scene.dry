@@ -29,17 +29,36 @@ Actions available this month: [+ month_actions_remaining +] ([+ month_actions_us
 
 #Here, the main deck will be displayed. Clicking on the deck draws a card into your hand. Clicking on a card activates that card.
 
-- @local_organizing
+- @workers_deck
+- @experts_deck
+- @others_deck
 - @city_affairs
 - @advance
 - #advisor
 
-@local_organizing
-title: Community Organizing
-card-image: img/aurora_pyramid.webp
+@workers_deck
+title: Workers
+card-image: img/deck_workers.webp
+view-if: phase >= 1
 is-deck: true
 
-- #local_organizing
+- #workers
+
+@experts_deck
+title: Experts
+card-image: img/deck_experts_clip.webp
+view-if: phase >= 1
+is-deck: true
+
+- #coop_experts
+
+@others_deck
+title: Others
+card-image: img/deck_keyboard_torch.webp
+view-if: phase >= 1
+is-deck: true
+
+- #business
 
 @city_affairs
 title: City Affairs
@@ -48,4 +67,12 @@ view-if: phase>1
 is-deck: true
 
 - #city_affairs
+
+@local_organizing
+title: Community Organizing
+card-image: img/aurora_pyramid.webp
+view-if: 0
+is-deck: true
+
+- #local_organizing
 
