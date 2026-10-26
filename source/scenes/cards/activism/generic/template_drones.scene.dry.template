@@ -83,7 +83,7 @@ Mass walkout, production halts, economic shock.
 @gotv
 title: Get out the vote
 choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
-view-if: drones_can_vote_trigger = 1
+view-if: corp_or_abstain = 0
 unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
 Q.spendWorkerActionWithFallback();
@@ -97,7 +97,7 @@ Most workers have little love for the megacorps or syndicates, word of mouth can
 @kitv
 title: Keep in the vote
 choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
-view-if: drones_can_vote_trigger = 0
+view-if: corp_or_abstain = 1
 unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
 Q.spendWorkerActionWithFallback();

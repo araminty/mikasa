@@ -1,0 +1,70 @@
+title: Supa Rando Tobishima
+new-page: true
+is-card: true
+card-image: img/deck_workers_clip.webp
+tags: workers
+view-if: phase >= 1
+on-arrival: {! if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay() } !}
+
+= The Longshoremen
+
+The union breaking laws and fragmentation among hundreds of employers mean that the longshoremen only have an informal meeting place: the baths named Supa Rando Tobishima.  Many longshoremen and the retired elders who serve as leaders frequent the sprawling bathhouse which was built back in the Golden Age of traffic long before the asteroid mining era bust.  
+
+The bathhouse is extremely odd, its central space is a meticulously and faithfully reconstructed Roman bathhouse from the reign of emperor Hadrian (who is among the gods whose statues adorn the place).  But the place operates on centuries old Japanese customs, imitation furūtsu gyūnyū is all but mandatory (kōhī gyūnyū is nowhere to be found for some reason), Aikido classes are held in a space labeled "palaestra" and there is a strict bar on tattoos with no exceptions.  A grand lenticular mural shows Mount Fuji from some angles and Mount Vesuvius from others.  Every five years when the station passes Luna there is a celebration held at the garden of Minerva with genuine furūtsu gyūnyū made from imported cow's milk.  These traditions apparently date back to an ancient architect named Yoshida but he attributed his inspiration to a man he just called "Senpai" who is not recorded anywhere but Yoshida's accounts.
+
+The bathhouse is open to all comers but actually getting invited into the conversations in the hypocaust where they talk business requires the longshoremen like you.  Those welcomed into the Ganban'yoku can be part of the discussion of where the longshoremen should put their efforts.
+
+- @mutual_aid
+- @public_aid
+- @sector_integration
+- @gotv
+- @return
+
+@mutual_aid
+title: Mutual Aid networks
+subtitle: Equipment pooling, reciprocal lending
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+Q.spendWorkerActionWithFallback();
+Q.bumpBlockProsperity('Docks', 'first', 0.05);
+if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+!}
+
+The longshoremen help folks within the first wave stretch their resources until the next paycheck.
+
+@public_aid
+title: Public aid network
+subtitle: Help within the area, requires group prosperity
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+Q.spendWorkerActionWithFallback();
+// Requires: Q.prosperity_first > average district prosperity
+Q.bumpBlockProsperity('Docks', 'first', 0.03);
+Q.bumpBlockProsperity('Docks', 'drone', 0.02);
+if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+!}
+
+Group leverages its relative advantage to help others in the district.
+
+@sector_integration
+title: Sector integration
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: longshoremen_sector_triggered = 1; {! Q.spendWorkerActionWithFallback(); Q.syncProsperityDisplays(); !}
+
+Once organized, the group can trigger a permanent citywide improvement in their sector.
+
+@gotv
+title: Get out the vote
+subtitle: Canvas for SDF support
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+Q.spendWorkerActionWithFallback();
+Q.workers_canvas_Docks = (Number(Q.workers_canvas_Docks) || 0) + 1;
+if (typeof Q.update_projections === 'function') { Q.update_projections() }
+!}
+
+Word of mouth canvassing to convince workers that supporting the SDF could actually make a difference.

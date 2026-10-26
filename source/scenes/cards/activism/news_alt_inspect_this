@@ -1,0 +1,70 @@
+title: Culinary Publication
+new-page: true
+is-card: true
+card-image: img/asteroid.jpg
+tags: coop_experts
+view-if: phase >= 1
+on-arrival: {! if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay() } !}
+
+= Culinary Publication
+
+A decentralized alternative media network among street food vendors.
+
+Cooperatives / Experts deck stub.
+
+- @labor
+- @otherworld
+- @wealthy
+- @diplomatic
+- @return
+
+@labor
+title: Horror stories about the big 3
+subtitle: Popular among the poor
+choose-if: professional_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if professional_actions_remaining > 0: No professional actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+Q.spendProfessionalActionWithFallback();
+Q.anti_corp_media += 1;
+!}
+
+Populist rhetoric is an easy way to get people wanting change.
+
+@otherworld
+title: Accounts from the Otherworld
+subtitle: Humanize the non-humans
+choose-if: professional_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if professional_actions_remaining > 0: No professional actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+Q.spendProfessionalActionWithFallback();
+Q.otherworld_media += 1;
+Q.parochialism = Math.max(0, (Number(Q.parochialism) || 0) - 1);
+if (typeof Q.update_projections === 'function') { Q.update_projections() }
+!}
+
+Tales about what life is really like in the Otherworld.
+
+@wealthy
+title: Self sufficiency
+subtitle: High skilled workers and cooperatives would like this
+view-if: self_sufficiency_media = 0
+choose-if: professional_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if professional_actions_remaining > 0: No professional actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+Q.spendProfessionalActionWithFallback();
+Q.self_sufficiency_media += 1;
+!}
+
+Debates on IP restrictions for agrinutritional growth mediums.
+
+@diplomatic
+title: Mikasa's place in the solar system
+subtitle: Negotiations with megacorps
+choose-if: professional_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if professional_actions_remaining > 0: No professional actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+Q.spendProfessionalActionWithFallback();
+Q.kiss_ass_media += 1;
+!}
+
+It doesn't move the needle on public opinion but maybe some good ideas will emerge.

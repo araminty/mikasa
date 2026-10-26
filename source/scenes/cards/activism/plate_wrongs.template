@@ -1,0 +1,75 @@
+title: The Plate Wrongs
+new-page: true
+is-card: true
+card-image: img/deck_workers_clip.webp
+tags: workers
+view-if: phase >= 1
+on-arrival: {! if (typeof Q.syncActionEconomyDisplay === 'function') { Q.syncActionEconomyDisplay() } !}
+
+= Plate Wrongs
+
+The workshops of the Plate Wrongs is deliberately, offensively discordant.  Localized gravity fields are deployed to ambush the unsuspecting.  The workspace are all null-G zones but getting to them involves navigating a literal maze of gravity fields.  If they like you their attitude tends towards irreverence, if they dont like you they tend to be surely.
+
+- @mutual_aid
+- @public_aid
+- @sector_integration
+- @gotv
+- @return
+
+@mutual_aid
+title: Mutual Aid networks
+subtitle: Equipment pooling, reciprocal lending
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+Q.spendWorkerActionWithFallback();
+Q.bumpBlockProsperity('Deeps', '[STRATUM]', 0.05);
+if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+!}
+
+The group helps folks within the [DEMOGRAPHIC] stretch their resources until the next paycheck.
+
+@public_aid
+title: Public aid network
+subtitle: Help within the area, requires group prosperity
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+Q.spendWorkerActionWithFallback();
+// Requires: Q.prosperity_[STRATUM] > average district prosperity
+Q.bumpBlockProsperity('Deeps', '[STRATUM]', 0.03);
+Q.bumpBlockProsperity('Deeps', 'drone', 0.02);
+if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+!}
+
+Group leverages its relative advantage to help others in the district.
+
+@sector_integration
+title: Sector integration
+subtitle: ONE-TIME TRIGGER - Power up the group
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+Q.spendWorkerActionWithFallback();
+// TODO: Implement one-time trigger for citywide sector improvement
+if (typeof Q.[GROUP_NAME]_triggered !== 'number') {
+    Q.[GROUP_NAME]_triggered = 1;
+    // Citywide effect: e.g., Q.[sector]_efficiency += 0.1
+}
+if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+!}
+
+Once organized, the group can trigger a permanent citywide improvement in their sector.
+
+@gotv
+title: Get out the vote
+subtitle: Canvas for SDF support
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: {!
+Q.spendWorkerActionWithFallback();
+Q.workers_canvas_Deeps = (Number(Q.workers_canvas_Deeps) || 0) + 1;
+if (typeof Q.update_projections === 'function') { Q.update_projections() }
+!}
+
+Word of mouth canvassing to convince workers that supporting the SDF could actually make a difference.

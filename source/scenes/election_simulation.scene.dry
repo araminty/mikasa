@@ -38,7 +38,7 @@ Populations (in 10,000s):
  
 {!<tr><td>!}Deepers{!</td><td>!} [+ Docks_deeper_pop +]{!</td><td>!}[+ Aurora_deeper_pop +]{!</td><td>!}[+ Vats_deeper_pop +]{!</td><td>!}[+ Railyard_deeper_pop +]{!</td><td>!}[+ Pitts_deeper_pop +]{!</td><td>!}[+ Limelight_deeper_pop +]{!</td><td>!}[+ Deeps_deeper_pop +]{!</td></tr>!}  
 
-{!<tr><td>!}Clans{!</td><td>!} [+ Docks_coop_pop +]{!</td><td>!}[+ Aurora_coop_pop +]{!</td><td>!}[+ Vats_coop_pop +]{!</td><td>!}[+ Railyard_coop_pop +]{!</td><td>!}[+ Pitts_coop_pop +]{!</td><td>!}[+ Limelight_coop_pop +]{!</td><td>!}[+ Deeps_coop_pop +]{!</td></tr>!}  
+{!<tr><td>!}Coops{!</td><td>!} [+ Docks_coop_pop +]{!</td><td>!}[+ Aurora_coop_pop +]{!</td><td>!}[+ Vats_coop_pop +]{!</td><td>!}[+ Railyard_coop_pop +]{!</td><td>!}[+ Pitts_coop_pop +]{!</td><td>!}[+ Limelight_coop_pop +]{!</td><td>!}[+ Deeps_coop_pop +]{!</td></tr>!}  
 
 {!<tr><td>!}Corp Drone{!</td><td>!} [+ Docks_drone_pop +]{!</td><td>!}[+ Aurora_drone_pop +]{!</td><td>!}[+ Vats_drone_pop +]{!</td><td>!}[+ Railyard_drone_pop +]{!</td><td>!}[+ Pitts_drone_pop +]{!</td><td>!}[+ Limelight_drone_pop +]{!</td><td>!}[+ Deeps_drone_pop +]{!</td></tr>!}   
 

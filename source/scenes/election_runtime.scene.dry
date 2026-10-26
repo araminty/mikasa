@@ -24,7 +24,7 @@ const STRATUM_DISPLAY = {
     rich: 'Rich',
     first: 'First',
     second: 'Second',
-    coop: 'Clans',
+    coop: 'Coops',
     drone: 'Corp Drone',
     alien: 'Otherworlder',
     deeper: 'Deepers',

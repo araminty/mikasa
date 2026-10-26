@@ -17,54 +17,56 @@ The FOTF HQ is part fortress, part museum.  They have aquaculture artifacts dati
 - @gotv
 
 @mutual_aid
-title: [Action name]
-subtitle: [Brief effect preview]
-choose-if: month_actions_remaining > 0
-unavailable-subtitle: No organizing actions left this month.
+title: The Order's tool cribs
+subtitle: Gear pooling and reciprocal lending among the tank crews
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
-Q.spendOrganizingAction();
-[EFFECT_CODE_HERE]
+Q.spendWorkerActionWithFallback();
+Q.bumpBlockProsperity('Pitts', 'first', 0.05);
 if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
 !}
 
-
+A fitter's kit is half their livelihood and the other half is knowing who owes you a favor.  The communal cribs stretch both: borrow the rig you can't afford, bank the goodwill for the month the pumps fail on your watch instead of someone else's.
 
 @public_aid
-title: [Action name]
-subtitle: [Brief effect preview]
-choose-if: month_actions_remaining > 0
-unavailable-subtitle: No organizing actions left this month.
+title: Open the workshop doors
+subtitle: Help the district, depends on the Order's prosperity
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
-Q.spendOrganizingAction();
-[EFFECT_CODE_HERE]
+Q.spendWorkerActionWithFallback();
+// Requires: Q.prosperity_first > average district prosperity
+Q.bumpBlockProsperity('Pitts', 'first', 0.03);
+Q.bumpBlockProsperity('Pitts', 'drone', 0.02);
 if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
 !}
 
-[FLAVOR_TEXT]
+The Order is doing better than most in the Pitts and it shows.  Non-members get their torn net-seams welded and their dead pumps rebuilt at cost, and nobody asks too many questions about where the spare parts came from.
 
 @sector_integration
-title: [Action name]
-subtitle: [Brief effect preview]
-choose-if: month_actions_remaining > 0
-unavailable-subtitle: No organizing actions left this month.
-on-arrival: {!
-Q.spendOrganizingAction();
-[EFFECT_CODE_HERE]
+title: The Grand Refit
+subtitle: ONE-TIME TRIGGER - Power up the Order
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
+on-arrival: fitters_sector_triggered = 1; {!
+Q.spendWorkerActionWithFallback();
+// TODO: Implement one-time trigger for citywide sector improvement
+// Citywide effect: e.g., a station-wide aquaculture overhaul making food more affordable
 if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
 !}
 
-[FLAVOR_TEXT]
-
+The Order's grandest project since the stakeholder's revolt: fitters dispatched to every tank on the station, sharing the craft that their great-grandparents died defending.  Even the Big 3 would have to hire them, and hate every minute of it.
 
 @gotv
-title: [Action name]
-subtitle: [Brief effect preview]
-choose-if: month_actions_remaining > 0
-unavailable-subtitle: No organizing actions left this month.
+title: Shop floor canvassing
+subtitle: Canvas Pitts for SDF support
+choose-if: worker_actions_remaining > 0 or month_actions_remaining > 0
+unavailable-subtitle: [! if worker_actions_remaining > 0: No worker actions left ?][! if month_actions_remaining > 0: No generic actions left ?]No organizing actions left this month.
 on-arrival: {!
-Q.spendOrganizingAction();
-[EFFECT_CODE_HERE]
-if (typeof Q.syncProsperityDisplays === 'function') { Q.syncProsperityDisplays() }
+Q.spendWorkerActionWithFallback();
+Q.workers_canvas_Pitts = (Number(Q.workers_canvas_Pitts) || 0) + 1;
+if (typeof Q.update_projections === 'function') { Q.update_projections() }
 !}
 
-[FLAVOR_TEXT]
+Hatred of the megacorps is the saltwater in their veins and they have a long memory for everyone else who got crushed.  When a Fitter vouches for the SDF at the tank side, whole crews listen.
